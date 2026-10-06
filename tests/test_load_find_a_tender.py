@@ -26,12 +26,16 @@ class FakeResult:
 class FakeSession:
     """Records SQL calls; answers the watermark query with `last_end`."""
 
-    def __init__(self, last_end: datetime | None = None) -> None:
+    def __init__(self, last_end: datetime | None = None, database: str | None = '"TENDER_DB"') -> None:
         self.last_end = last_end
+        self.database = database
         self.calls: list[SqlCall] = []
 
-    def use_warehouse(self, name: str) -> None:
-        pass
+    def get_current_database(self) -> str | None:
+        return self.database
+
+    def get_current_warehouse(self) -> str:
+        return '"TENDER_WH"'
 
     def sql(self, query: str, params: list[Any] | None = None) -> FakeResult:
         self.calls.append((query, params))
@@ -136,6 +140,11 @@ def test_failed_run_logs_failure_and_raises(
 
     [run] = session.inserts_into(loader.RUNS_TABLE)
     assert run[3:7] == [1, 100, "failed", "API down"]  # pages, releases, status, error
+
+
+def test_connection_without_database_is_rejected() -> None:
+    with pytest.raises(ValueError, match="must set: database"):
+        loader.main(FakeSession(database=None).as_session())
 
 
 def test_timestamps_are_written_as_naive_utc() -> None:

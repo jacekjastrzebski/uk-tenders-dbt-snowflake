@@ -12,6 +12,8 @@ The overlap and re-runs can load the same release twice; dbt removes duplicates.
 
 Run locally:  uv run ingestion/load_find_a_tender.py
 Uses the Snowflake connection named in SNOWFLAKE_CONNECTION_NAME (default "tender").
+The connection sets the database and warehouse, so the same code runs against any
+environment; table names below are relative to that database.
 """
 
 import json
@@ -30,9 +32,8 @@ from urllib3.util.retry import Retry
 API_URL = "https://www.find-tender.service.gov.uk/api/1.0/ocdsReleasePackages"
 API_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"  # no time zone; we send UTC
 
-WAREHOUSE = "TENDER_WH"
-RELEASES_TABLE = "TENDER_DB.RAW.FIND_A_TENDER_RELEASES"
-RUNS_TABLE = "TENDER_DB.RAW.FIND_A_TENDER_INGEST_RUNS"
+RELEASES_TABLE = "RAW.FIND_A_TENDER_RELEASES"
+RUNS_TABLE = "RAW.FIND_A_TENDER_INGEST_RUNS"
 
 OVERLAP = timedelta(minutes=15)
 FIRST_RUN_LOOKBACK = timedelta(hours=3)
@@ -55,7 +56,7 @@ class RunStats:
 
 
 def main(session: Session) -> str:
-    session.use_warehouse(WAREHOUSE)
+    check_connection(session)
     run_id = datetime.now(UTC).strftime("%Y%m%dT%H%M%SZ")
     window = next_window(session)
     stats = RunStats()
@@ -77,6 +78,20 @@ def main(session: Session) -> str:
         log_run(session, run_id, window, stats, status="success")
 
     return f"Run {run_id}: {stats.releases} releases in {stats.pages} pages"
+
+
+def check_connection(session: Session) -> None:
+    """Fail early if the connection does not set a database and warehouse."""
+    missing = [
+        name
+        for name, value in [
+            ("database", session.get_current_database()),
+            ("warehouse", session.get_current_warehouse()),
+        ]
+        if not value
+    ]
+    if missing:
+        raise ValueError(f"Snowflake connection must set: {', '.join(missing)}")
 
 
 def next_window(session: Session) -> Window:
