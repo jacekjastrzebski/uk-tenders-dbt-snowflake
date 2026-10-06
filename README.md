@@ -11,4 +11,7 @@ uv sync                                   # create .venv and install dependencie
 uv run pre-commit install                 # run checks before every commit
 uv run pytest                             # run tests (no network or Snowflake needed)
 uv run mypy                               # type check (strict; type hints are required)
+uv run ingestion/load_find_a_tender.py    # load the last window into Snowflake
 ```
+
+The loader uses the Snowflake connection named in `SNOWFLAKE_CONNECTION_NAME` (default `tender`) from `~/.snowflake/config.toml`.
