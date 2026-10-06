@@ -1,0 +1,793 @@
+{
+  "uri": "https://www.find-tender.service.gov.uk/api/1.0/ocdsReleasePackages?updatedFrom=2026-10-06T15:44:10&updatedTo=2026-10-06T18:44:10&limit=4",
+  "version": "1.1",
+  "extensions": [
+    "https://standard.open-contracting.org/profiles/eu/latest/en/extension.json",
+    "https://raw.githubusercontent.com/open-contracting-extensions/ocds_amendment_rationale_classifications_extension/master/extension.json",
+    "https://raw.githubusercontent.com/open-contracting-extensions/ocds_budget_breakdown_extension/master/extension.json",
+    "https://raw.githubusercontent.com/open-contracting-extensions/ocds_contract_completion_extension/master/extension.json",
+    "https://raw.githubusercontent.com/open-contracting-extensions/ocds_documentation_extension/master/extension.json",
+    "https://raw.githubusercontent.com/open-contracting-extensions/ocds_pagination_extension/master/extension.json",
+    "https://raw.githubusercontent.com/open-contracting-extensions/ocds_suitability_extension/master/extension.json",
+    "https://raw.githubusercontent.com/portaledcahn/ocds_Links_extension/main/extension.json",
+    "https://raw.githubusercontent.com/cabinetoffice/ocds_uk_extension/main/extension.json",
+    "https://raw.githubusercontent.com/open-contracting-extensions/ocds_performance_failures_extension/master/extension.json"
+  ],
+  "publishedDate": "2026-10-06T18:31:55+01:00",
+  "publisher": {
+    "name": "Cabinet Office",
+    "scheme": "GB-GOR",
+    "uid": "D2",
+    "uri": "https://www.gov.uk/government/organisations/cabinet-office"
+  },
+  "license": "http://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/",
+  "publicationPolicy": "https://www.gov.uk/government/publications/open-contracting",
+  "releases": [
+    {
+      "id": "094477-2026",
+      "tag": [
+        "award",
+        "contract"
+      ],
+      "date": "2026-10-06T18:31:55+01:00",
+      "initiationType": "tender",
+      "ocid": "ocds-h6vhtk-06e832",
+      "parties": [
+        {
+          "name": "The Education Training Collective",
+          "id": "GB-UKPRN-10006341",
+          "identifier": {
+            "scheme": "GB-UKPRN",
+            "id": "10006341"
+          },
+          "address": {
+            "streetAddress": "Stockton Riverside College",
+            "locality": "Thornaby",
+            "postalCode": "TS176FB",
+            "country": "GB",
+            "countryName": "United Kingdom",
+            "region": "UKC11"
+          },
+          "contactPoint": {
+            "name": "REDACTED",
+            "email": "REDACTED",
+            "telephone": "REDACTED"
+          },
+          "roles": [
+            "buyer"
+          ],
+          "details": {
+            "url": "http://www.the-etc.ac.uk",
+            "classifications": [
+              {
+                "scheme": "UK_CA_TYPE",
+                "id": "publicAuthoritySubCentralGovernment",
+                "description": "Public authority - sub-central government"
+              }
+            ]
+          }
+        },
+        {
+          "name": "Chess ICT",
+          "id": "GB-PPON-PVHJ-9851-QPYJ",
+          "identifier": {
+            "scheme": "GB-PPON",
+            "id": "PVHJ-9851-QPYJ"
+          },
+          "address": {
+            "streetAddress": "11s1 Mereside",
+            "locality": "Macclesfield",
+            "postalCode": "SK10 4TG",
+            "country": "GB",
+            "countryName": "United Kingdom",
+            "region": "UKD62"
+          },
+          "contactPoint": {
+            "email": "REDACTED"
+          },
+          "roles": [
+            "supplier"
+          ],
+          "details": {
+            "scale": "large",
+            "vcse": false,
+            "publicServiceMissionOrganization": false,
+            "shelteredWorkshop": false
+          }
+        }
+      ],
+      "buyer": {
+        "id": "GB-UKPRN-10006341",
+        "name": "The Education Training Collective"
+      },
+      "tender": {
+        "id": "ETCP-2026-0038-Revised",
+        "legalBasis": {
+          "id": "2023/54",
+          "scheme": "UKPGA",
+          "uri": "https://www.legislation.gov.uk/ukpga/2023/54/contents"
+        },
+        "title": "Unified Communications and Mobile Services - Revised",
+        "description": "This is a revised version of the tender ETCP-2026-0038.\nFollowing evaluation of the tender responses, it has become apparent that the original Teams Telephony specification requires significant revision to ensure that the proposed solution meets the College’s operational and user requirements.\nThe original specification identified 350 direct dial users and was primarily focused on users requiring dedicated telephony functionality. Further consideration during the evaluation process has identified a requirement to extend Teams telephony functionality to a wider user base, with approximately 700 users requiring access to telephony functionality.\nDue to this change and increased scope we felt the appropriate action was to terminate the previous tender and launch a revised version, this tender is the revised version.",
+        "status": "complete",
+        "procurementMethod": "open",
+        "procurementMethodDetails": "Open procedure",
+        "lots": [
+          {
+            "id": "1",
+            "status": "complete",
+            "description": null
+          }
+        ]
+      },
+      "bids": {
+        "statistics": [
+          {
+            "id": "1",
+            "measure": "bids",
+            "value": 15,
+            "relatedLot": "1"
+          },
+          {
+            "id": "2",
+            "measure": "finalStageBids",
+            "value": 13,
+            "relatedLot": "1"
+          },
+          {
+            "id": "3",
+            "measure": "smeFinalStageBids",
+            "value": 8,
+            "relatedLot": "1"
+          },
+          {
+            "id": "4",
+            "measure": "vcseFinalStageBids",
+            "value": 0,
+            "relatedLot": "1"
+          }
+        ]
+      },
+      "awards": [
+        {
+          "id": "1",
+          "title": "Supply of Unified Communications and Mobile Services",
+          "status": "pending",
+          "date": "2026-10-06T00:00:00+01:00",
+          "value": {
+            "amountGross": 256378.74,
+            "currency": "GBP"
+          },
+          "mainProcurementCategory": "services",
+          "aboveThreshold": true,
+          "suppliers": [
+            {
+              "id": "GB-PPON-PVHJ-9851-QPYJ",
+              "name": "Chess ICT"
+            }
+          ],
+          "items": [
+            {
+              "id": "1",
+              "additionalClassifications": [
+                {
+                  "scheme": "CPV",
+                  "id": "64200000",
+                  "description": "Telecommunications services"
+                }
+              ],
+              "relatedLot": "1"
+            }
+          ],
+          "standstillPeriod": {
+            "endDate": "2026-10-15T23:59:59+01:00"
+          },
+          "contractPeriod": {
+            "startDate": "2026-11-01T00:00:00+00:00",
+            "endDate": "2029-09-30T23:59:59+01:00",
+            "maxExtentDate": "2031-09-30T23:59:59+01:00"
+          },
+          "hasRenewal": true,
+          "renewal": {
+            "description": "2 x 12 months"
+          },
+          "relatedLots": [
+            "1"
+          ],
+          "documents": [
+            {
+              "id": "094477-2026",
+              "documentType": "awardNotice",
+              "noticeType": "UK6",
+              "description": "Contract award notice on Find a Tender",
+              "url": "https://www.find-tender.service.gov.uk/Notice/094477-2026",
+              "datePublished": "2026-10-06T18:31:55+01:00",
+              "format": "text/html"
+            }
+          ],
+          "assessmentSummariesDateSent": "2026-10-06T00:00:00+01:00",
+          "milestones": [
+            {
+              "id": "1",
+              "type": "futureSignatureDate",
+              "dueDate": "2026-10-19T23:59:59+01:00",
+              "status": "scheduled"
+            }
+          ]
+        }
+      ],
+      "language": "en"
+    },
+    {
+      "ocid": "ocds-h6vhtk-078219",
+      "id": "094476-2026",
+      "tag": [
+        "tender"
+      ],
+      "date": "2026-10-06T17:59:32+01:00",
+      "initiationType": "tender",
+      "parties": [
+        {
+          "name": "Central Bedfordshire Council",
+          "id": "GB-PPON-PVNH-1137-QJBX",
+          "identifier": {
+            "scheme": "GB-PPON",
+            "id": "PVNH-1137-QJBX"
+          },
+          "address": {
+            "streetAddress": "Priory House, Monks Walk, Chicksands",
+            "locality": "Shefford",
+            "postalCode": "SG17 5TQ",
+            "country": "GB",
+            "countryName": "United Kingdom",
+            "region": "UKH25"
+          },
+          "contactPoint": {
+            "name": "REDACTED",
+            "email": "REDACTED",
+            "telephone": "REDACTED"
+          },
+          "roles": [
+            "buyer"
+          ],
+          "details": {
+            "url": "https://in-tendhost.co.uk/centralbedfordshire/aspx/Home",
+            "classifications": [
+              {
+                "scheme": "UK_CA_TYPE",
+                "id": "publicAuthoritySubCentralGovernment",
+                "description": "Public authority - sub-central government"
+              }
+            ]
+          }
+        }
+      ],
+      "buyer": {
+        "id": "GB-PPON-PVNH-1137-QJBX",
+        "name": "Central Bedfordshire Council"
+      },
+      "tender": {
+        "id": "CBC-2074-CFP-SK",
+        "legalBasis": {
+          "id": "2023/54",
+          "scheme": "UKPGA",
+          "uri": "https://www.legislation.gov.uk/ukpga/2023/54/contents"
+        },
+        "title": "Competitive Flexible Procedure (CFP)  Aldbanks Supported Living  CBC-2074-CFP-SK",
+        "description": "Central Bedfordshire Council is seeking to appoint a suitably experienced provider to deliver supported living services at Aldbanks. The service will provide high-quality, person-centred support to adults with eligible care and support needs, enabling individuals to maximise their independence, maintain their wellbeing, and participate fully in their local community. The successful provider will work collaboratively with the Council, residents, families, health partners and other stakeholders to deliver safe, effective and outcome-focused support that promotes choice, control and independence.\nThis procurement is being conducted as a two-stage Competitive Flexible Procedure under the Procurement Act 2023. At this first stage, Suppliers are required to complete the Participation and Selection Questionnaire. Following evaluation, the four highest-scoring qualified Suppliers will be invited to participate in Stage 2 and submit a full Tender Response.\nThe Council will provide as much support and information as it can to help guide Suppliers through the tender process. Questions raised by Suppliers, together with the Council's responses, will be shared with all Suppliers through the Procurement Portal to ensure a fair and transparent process.\nIf there is anything you are unsure about or require clarification on, please use the Correspondence facility within the In-Tend electronic tendering system.\nDeadline for submission of clarification questions: Monday 26 October 2026.\nCompleted Participation and Selection Questionnaire responses and supporting attachments must be submitted electronically via the In-Tend system. Responses must be uploaded through the \"My Return\" section of the system. Responses submitted through the Correspondence facility will not be considered.\nDeadline for submission of completed Participation and Selection Questionnaire responses: Monday 2 November 2026 at 12:00 noon.",
+        "status": "active",
+        "items": [
+          {
+            "id": "1",
+            "additionalClassifications": [
+              {
+                "scheme": "CPV",
+                "id": "85311000",
+                "description": "Social work services with accommodation"
+              }
+            ],
+            "deliveryAddresses": [
+              {
+                "region": "UKH25",
+                "country": "GB",
+                "countryName": "United Kingdom"
+              }
+            ],
+            "relatedLot": "1"
+          }
+        ],
+        "value": {
+          "amountGross": 3326400,
+          "amount": 2772000,
+          "currency": "GBP"
+        },
+        "procurementMethod": "open",
+        "procurementMethodDetails": "Competitive flexible procedure",
+        "procedure": {
+          "features": "This procurement is being conducted as a two-stage Competitive Flexible Procedure under the Procurement Act 2023. Suppliers will initially be assessed against the Conditions of Participation and Shortlisting Criteria, with the four highest-scoring qualified suppliers invited to submit a full Tender Response. The contract will be awarded to the supplier submitting the Most Advantageous Tender."
+        },
+        "mainProcurementCategory": "services",
+        "specialRegime": [
+          "lightTouch"
+        ],
+        "aboveThreshold": true,
+        "submissionMethodDetails": "https://supplier.in-tend.co.uk/centralbedfordshire/home",
+        "submissionTerms": {
+          "electronicSubmissionPolicy": "allowed",
+          "languages": [
+            "en"
+          ]
+        },
+        "tenderPeriod": {
+          "endDate": "2026-11-05T12:00:00+00:00"
+        },
+        "enquiryPeriod": {
+          "endDate": "2026-10-26T17:00:00+00:00"
+        },
+        "awardPeriod": {
+          "endDate": "2027-04-08T23:59:59+01:00"
+        },
+        "lots": [
+          {
+            "id": "1",
+            "status": "active",
+            "value": {
+              "amountGross": 3326400,
+              "amount": 2772000,
+              "currency": "AED"
+            },
+            "awardCriteria": {
+              "criteria": [
+                {
+                  "type": "quality",
+                  "name": "Quality - Methodology",
+                  "description": "Tender Responses will be evaluated against the quality requirements set out in the procurement documents, including service delivery, safeguarding, mobilisation, resident outcomes and workforce arrangements. Responses will be assessed using the published scoring matrix and evaluation methodology.",
+                  "numbers": [
+                    {
+                      "number": 50,
+                      "weight": "percentageExact"
+                    }
+                  ]
+                },
+                {
+                  "type": "price",
+                  "name": "Price",
+                  "description": "Tendered prices will be evaluated in accordance with the pricing methodology set out in the procurement documents. The lowest evaluated tender will receive the highest score, with other tenders scored proportionately.",
+                  "numbers": [
+                    {
+                      "number": 40,
+                      "weight": "percentageExact"
+                    }
+                  ]
+                },
+                {
+                  "type": "quality",
+                  "name": "Social Value",
+                  "description": "Suppliers will be evaluated on their proposed social value commitments and outcomes relevant to the Contract. Responses will be assessed in accordance with the social value requirements set out in the procurement documents.",
+                  "numbers": [
+                    {
+                      "number": 10,
+                      "weight": "percentageExact"
+                    }
+                  ]
+                }
+              ]
+            },
+            "contractPeriod": {
+              "startDate": "2027-11-01T00:00:00+00:00",
+              "endDate": "2030-10-31T23:59:59+00:00",
+              "maxExtentDate": "2034-10-31T23:59:59+00:00"
+            },
+            "hasRenewal": true,
+            "renewal": {
+              "description": "Initial term of 3 years from 1 November 2027 to 31 October 2030, with the option to extend for up to a further 4 years. Maximum contract end date: 31 October 2034."
+            },
+            "description": null
+          }
+        ],
+        "documents": [
+          {
+            "id": "conflictOfInterest",
+            "documentType": "conflictOfInterest",
+            "description": "Not published"
+          },
+          {
+            "id": "094476-2026",
+            "documentType": "tenderNotice",
+            "noticeType": "UK4",
+            "description": "Tender notice on Find a Tender",
+            "url": "https://www.find-tender.service.gov.uk/Notice/094476-2026",
+            "datePublished": "2026-10-06T17:59:32+01:00",
+            "format": "text/html"
+          }
+        ]
+      },
+      "language": "en"
+    },
+    {
+      "buyerID": [],
+      "id": "094475-2026",
+      "tag": [
+        "award",
+        "contract"
+      ],
+      "date": "2026-10-06T17:48:47+01:00",
+      "initiationType": "tender",
+      "ocid": "ocds-h6vhtk-078217",
+      "parties": [
+        {
+          "name": "Durham Aged Mineworkers' Homes Association",
+          "id": "GB-PPON-PTPB-8137-MYRX",
+          "identifier": {
+            "scheme": "GB-PPON",
+            "id": "PTPB-8137-MYRX"
+          },
+          "address": {
+            "streetAddress": "PO Box 31, The Grove, 168 Front Street",
+            "locality": "Chester-le-Street",
+            "postalCode": "DH3 3YH",
+            "country": "GB",
+            "countryName": "United Kingdom",
+            "region": "UKC14"
+          },
+          "contactPoint": {
+            "name": "REDACTED",
+            "email": "REDACTED",
+            "telephone": "REDACTED"
+          },
+          "roles": [
+            "buyer"
+          ],
+          "details": {
+            "classifications": [
+              {
+                "scheme": "UK_CA_TYPE",
+                "id": "publicAuthoritySubCentralGovernment",
+                "description": "Public authority - sub-central government"
+              }
+            ]
+          }
+        },
+        {
+          "name": "BiP Solutions Ltd",
+          "id": "GB-PPON-PBTM-5917-ZXVM",
+          "identifier": {
+            "scheme": "GB-PPON",
+            "id": "PBTM-5917-ZXVM"
+          },
+          "address": {
+            "streetAddress": "Medius, 60 Pacific Quay",
+            "locality": "Glasgow",
+            "postalCode": "G51 1DZ",
+            "country": "GB",
+            "countryName": "United Kingdom",
+            "region": "UKM82"
+          },
+          "contactPoint": {
+            "name": "REDACTED",
+            "email": "REDACTED",
+            "telephone": "REDACTED"
+          },
+          "roles": [
+            "supplier"
+          ],
+          "details": {
+            "scale": "sme",
+            "vcse": false
+          }
+        }
+      ],
+      "buyer": {
+        "id": "GB-PPON-PTPB-8137-MYRX",
+        "name": "Durham Aged Mineworkers' Homes Association"
+      },
+      "tender": {
+        "id": "ocds-h6vhtk-078217",
+        "legalBasis": {
+          "id": "2023/54",
+          "scheme": "UKPGA",
+          "uri": "https://www.legislation.gov.uk/ukpga/2023/54/contents"
+        },
+        "title": "eSourcing Tendering Platform",
+        "description": "eSourcing Tendering Platform providing:\n• Unlimited number of Notices, Tenders, RFQ, RFI and SQs through Tender Manager \n• Unlimited number of Contract Records, Documents \n• Supplier Manager Search and Supplier lists",
+        "status": "complete",
+        "procurementMethod": "direct",
+        "procurementMethodDetails": "Below threshold - without competition",
+        "lots": [
+          {
+            "id": "1",
+            "status": "complete",
+            "description": null
+          }
+        ]
+      },
+      "awards": [
+        {
+          "id": "1",
+          "title": "eSourcing Tendering Platform - Durham Aged Mineworkers' Homes Association",
+          "status": "active",
+          "date": "2026-10-06T00:00:00+01:00",
+          "value": {
+            "amountGross": 38058.0,
+            "amount": 31715.0,
+            "currency": "GBP"
+          },
+          "mainProcurementCategory": "services",
+          "aboveThreshold": false,
+          "suppliers": [
+            {
+              "id": "GB-PPON-PBTM-5917-ZXVM",
+              "name": "BiP Solutions Ltd"
+            }
+          ],
+          "items": [
+            {
+              "id": "1",
+              "additionalClassifications": [
+                {
+                  "scheme": "CPV",
+                  "id": "72000000",
+                  "description": "IT services: consulting, software development, Internet and support"
+                }
+              ],
+              "deliveryAddresses": [
+                {
+                  "region": "UKC",
+                  "country": "GB",
+                  "countryName": "United Kingdom"
+                }
+              ],
+              "relatedLot": "1"
+            }
+          ],
+          "contractPeriod": {
+            "startDate": "2026-11-18T00:00:00+00:00",
+            "endDate": "2031-11-17T23:59:59+00:00"
+          },
+          "relatedLots": [
+            "1"
+          ],
+          "documents": [
+            {
+              "id": "094475-2026",
+              "documentType": "awardNotice",
+              "noticeType": "UK6",
+              "description": "Contract award notice on Find a Tender",
+              "url": "https://www.find-tender.service.gov.uk/Notice/094475-2026",
+              "datePublished": "2026-10-06T17:48:47+01:00",
+              "format": "text/html"
+            }
+          ],
+          "milestones": [
+            {
+              "id": "1",
+              "type": "futureSignatureDate",
+              "dueDate": "2026-11-02T23:59:59+00:00",
+              "status": "scheduled"
+            }
+          ]
+        }
+      ],
+      "language": "en"
+    },
+    {
+      "buyerID": [],
+      "id": "094474-2026",
+      "tag": [
+        "award",
+        "contract"
+      ],
+      "date": "2026-10-06T17:47:27+01:00",
+      "initiationType": "tender",
+      "ocid": "ocds-h6vhtk-06d285",
+      "parties": [
+        {
+          "name": "The Police and Crime Commissioner for Nottinghamshire",
+          "id": "GB-PPON-PGLQ-4189-YYPY",
+          "identifier": {
+            "scheme": "GB-PPON",
+            "id": "PGLQ-4189-YYPY"
+          },
+          "address": {
+            "streetAddress": "Sherwood Lodge",
+            "locality": "Nottingham",
+            "postalCode": "NG5 8PP",
+            "country": "GB",
+            "countryName": "United Kingdom",
+            "region": "UKF16"
+          },
+          "contactPoint": {
+            "email": "REDACTED"
+          },
+          "roles": [
+            "buyer"
+          ],
+          "details": {
+            "classifications": [
+              {
+                "scheme": "UK_CA_TYPE",
+                "id": "publicAuthoritySubCentralGovernment",
+                "description": "Public authority - sub-central government"
+              }
+            ]
+          }
+        },
+        {
+          "name": "SWITCH UP C.I.C.",
+          "id": "GB-COH-08522643",
+          "identifier": {
+            "scheme": "GB-COH",
+            "id": "08522643"
+          },
+          "additionalIdentifiers": [
+            {
+              "scheme": "GB-PPON",
+              "id": "PNXT-9936-XCTQ"
+            }
+          ],
+          "address": {
+            "streetAddress": "Switch Up Centre",
+            "locality": "Nottingham",
+            "postalCode": "NG3 1AX",
+            "country": "GB",
+            "countryName": "United Kingdom",
+            "region": "UKF14"
+          },
+          "contactPoint": {
+            "email": "REDACTED"
+          },
+          "roles": [
+            "supplier"
+          ],
+          "details": {
+            "url": "https://switchupnotts.co.uk/",
+            "scale": "large",
+            "vcse": true
+          }
+        }
+      ],
+      "buyer": {
+        "id": "GB-PPON-PGLQ-4189-YYPY",
+        "name": "The Police and Crime Commissioner for Nottinghamshire"
+      },
+      "tender": {
+        "id": "NOTTS-000509",
+        "legalBasis": {
+          "id": "2023/54",
+          "scheme": "UKPGA",
+          "uri": "https://www.legislation.gov.uk/ukpga/2023/54/contents"
+        },
+        "title": "Mentoring in Education",
+        "description": "for the delivery of Mentoring in Education within Nottingham City and Nottinghamshire County.\nThe programme is an initiative aimed at providing tailored support to children within schools and extended to the local community. It is a preventative programme to engage children who are showing first signs of disengagement from education, through to those considered at risk of exclusion and those children have been exposed to serious violence predominantly as a witness or victim.\nThe service will be based across 8 primary school settings that have been identified as having a high level of need, as well as working with children across community spaces as necessary. This project seeks to address the diverse needs of these students through a 1-2-1, trauma-aware, complex needs approach package. Mentors will equip children with the tools and resources necessary to develop positive behaviours, effective communication skills, resilience and improve educational outcomes and objectives.\nThis is a programme designed to work directly within the school setting extending to the community as required, mentors will be expected to work closely alongside the safeguarding and pastoral teams within each of the identified education establishments. The Nottingham and Nottinghamshire Violence Reduction Partnership (NNVRP) will provide support identifying schools and the initial engagement stages. There may also be a need to work beyond the remit of the school if appropriate, providing wider support to families.",
+        "status": "complete",
+        "procurementMethod": "selective",
+        "procurementMethodDetails": "Competitive flexible procedure",
+        "specialRegime": [
+          "lightTouch"
+        ],
+        "lots": [
+          {
+            "id": "1",
+            "status": "complete",
+            "description": null
+          }
+        ]
+      },
+      "bids": {
+        "statistics": [
+          {
+            "id": "1",
+            "measure": "bids",
+            "value": 13,
+            "relatedLot": "1"
+          },
+          {
+            "id": "2",
+            "measure": "finalStageBids",
+            "value": 5,
+            "relatedLot": "1"
+          },
+          {
+            "id": "3",
+            "measure": "smeFinalStageBids",
+            "value": 5,
+            "relatedLot": "1"
+          },
+          {
+            "id": "4",
+            "measure": "vcseFinalStageBids",
+            "value": 5,
+            "relatedLot": "1"
+          }
+        ]
+      },
+      "awards": [
+        {
+          "id": "1",
+          "title": "Mentoring in Education",
+          "status": "active",
+          "date": "2026-10-06T00:00:00+01:00",
+          "value": {
+            "amountGross": 253478,
+            "amount": 211232,
+            "currency": "GBP"
+          },
+          "mainProcurementCategory": "services",
+          "aboveThreshold": false,
+          "suppliers": [
+            {
+              "id": "GB-COH-08522643",
+              "name": "SWITCH UP C.I.C."
+            }
+          ],
+          "items": [
+            {
+              "id": "1",
+              "additionalClassifications": [
+                {
+                  "scheme": "CPV",
+                  "id": "85300000",
+                  "description": "Social work and related services"
+                }
+              ],
+              "deliveryAddresses": [
+                {
+                  "region": "UKF14",
+                  "country": "GB",
+                  "countryName": "United Kingdom"
+                },
+                {
+                  "region": "UKF15",
+                  "country": "GB",
+                  "countryName": "United Kingdom"
+                },
+                {
+                  "region": "UKF16",
+                  "country": "GB",
+                  "countryName": "United Kingdom"
+                }
+              ],
+              "relatedLot": "1"
+            }
+          ],
+          "contractPeriod": {
+            "startDate": "2026-11-01T00:00:00Z",
+            "endDate": "2028-03-31T23:59:59+01:00",
+            "maxExtentDate": "2030-03-31T23:59:59+01:00"
+          },
+          "hasRenewal": true,
+          "renewal": {
+            "description": "2 x 12 month optional extensions."
+          },
+          "relatedLots": [
+            "1"
+          ],
+          "documents": [
+            {
+              "id": "094474-2026",
+              "documentType": "awardNotice",
+              "noticeType": "UK6",
+              "description": "Contract award notice on Find a Tender",
+              "url": "https://www.find-tender.service.gov.uk/Notice/094474-2026",
+              "datePublished": "2026-10-06T17:47:27+01:00",
+              "format": "text/html"
+            }
+          ],
+          "assessmentSummariesDateSent": "2026-10-06T00:00:00+01:00",
+          "milestones": [
+            {
+              "id": "1",
+              "type": "futureSignatureDate",
+              "dueDate": "2026-10-09T23:59:59+01:00",
+              "status": "scheduled"
+            }
+          ]
+        }
+      ],
+      "language": "en"
+    }
+  ],
+  "links": {
+    "next": "https://www.find-tender.service.gov.uk/api/1.0/ocdsReleasePackages?updatedFrom=2026-10-06T15:44:10&updatedTo=2026-10-06T18:44:10&limit=4&cursor=dXBkYXRlZEZyb209MjAyNi0xMC0wNlQxNTo0NDoxMHx1cGRhdGVkVG89MjAyNi0xMC0wNlQxODo0NDoxMHxuZXh0Q3Vyc29yPTc0Njk3Mw=="
+  }
+}

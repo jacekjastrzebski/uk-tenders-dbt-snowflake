@@ -48,3 +48,6 @@ Thumbs.db
 
 # --- Local drafts ---
 drafts/
+
+# --- Local data samples (contain personal data) ---
+data/
