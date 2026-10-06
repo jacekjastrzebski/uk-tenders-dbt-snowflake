@@ -8,8 +8,6 @@ on:
   schedule:
     - cron: "0 */3 * * *"   # 00:00, 03:00, ... UTC; runs only from main
   workflow_dispatch:         # manual run from the Actions tab (main only)
-  push:
-    branches: [feat/scheduled-ingest]   # TEMPORARY: test from this branch; remove before merging
 
 concurrency:
   group: ingest            # never run two loads at once
