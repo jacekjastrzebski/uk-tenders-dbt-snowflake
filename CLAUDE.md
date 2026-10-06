@@ -16,3 +16,6 @@ The pre-commit hook (`uv run pre-commit install`, once per clone) and CI (`.gith
 uv run mypy
 uv run pytest
 ```
+
+## Git
+- Always show the proposed commit message and wait for confirmation before committing.
