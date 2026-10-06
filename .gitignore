@@ -1,0 +1,47 @@
+# --- dbt ---
+target/
+dbt_packages/
+dbt_modules/
+logs/
+.user.yml
+package-lock.yml
+
+# --- Python ---
+__pycache__/
+*.py[cod]
+*.egg-info/
+.eggs/
+build/
+dist/
+.venv/
+venv/
+env/
+.python-version
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.coverage
+htmlcov/
+.ipynb_checkpoints/
+
+# --- Snowflake / secrets ---
+profiles.yml
+.env
+.env.*
+!.env.example
+*.p8
+*.pem
+*.key
+connections.toml
+config.toml
+.snowsql/
+snowflake_*.log
+
+# --- Editors / OS ---
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# --- Claude Code (personal settings) ---
+.claude/settings.local.json
