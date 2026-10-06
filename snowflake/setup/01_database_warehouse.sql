@@ -1,0 +1,12 @@
+-- Use an admin role
+USE ROLE SYSADMIN;
+
+-- Create a development database and raw schema
+CREATE DATABASE IF NOT EXISTS TENDER_DB;
+CREATE SCHEMA IF NOT EXISTS TENDER_DB.RAW;
+
+-- Create a virtual warehouse for compute
+CREATE WAREHOUSE IF NOT EXISTS TENDER_WH
+  WAREHOUSE_SIZE = 'X-SMALL'
+  AUTO_SUSPEND = 60
+  AUTO_RESUME = TRUE;
