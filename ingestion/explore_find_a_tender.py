@@ -9,13 +9,14 @@ import urllib.parse
 import urllib.request
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
+from typing import Any
 
 API_URL = "https://www.find-tender.service.gov.uk/api/1.0/ocdsReleasePackages"
 DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"  # the API expects no time zone
 OUTPUT_DIR = Path("data/samples")
 
 
-def first_page_url(hours):
+def first_page_url(hours: float) -> str:
     """URL for releases updated in the last `hours` hours."""
     updated_to = datetime.now(timezone.utc)
     updated_from = updated_to - timedelta(hours=hours)
@@ -27,18 +28,19 @@ def first_page_url(hours):
     return f"{API_URL}?{urllib.parse.urlencode(params)}"
 
 
-def get_json(url):
+def get_json(url: str) -> dict[str, Any]:
     with urllib.request.urlopen(url) as response:
-        return json.load(response)
+        page: dict[str, Any] = json.load(response)
+        return page
 
 
-def save_page(page, page_number):
+def save_page(page: dict[str, Any], page_number: int) -> Path:
     path = OUTPUT_DIR / f"page_{page_number:03}.json"
     path.write_text(json.dumps(page, indent=2))
     return path
 
 
-def main():
+def main() -> None:
     hours = float(sys.argv[1]) if len(sys.argv) > 1 else 3
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 

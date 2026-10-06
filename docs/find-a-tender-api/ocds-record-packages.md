@@ -1,4 +1,4 @@
-> Source: <https://www.find-tender.service.gov.uk/apidocumentation/1.0/GET-ocdsRecordPackages>  
+> Source: <https://www.find-tender.service.gov.uk/apidocumentation/1.0/GET-ocdsRecordPackages>
 > Downloaded: 2026-10-06. Crown copyright, Open Government Licence v3.0.
 
 # GET /api/{version}/ocdsRecordPackages
@@ -9,7 +9,7 @@ This service retrieves Find a Tender procurement data as an Open Contracting Dat
 
 ## Request Information
 
-Requests can be filtered to a procurement process by appending an ID to the URI: 
+Requests can be filtered to a procurement process by appending an ID to the URI:
 
   * Procurement process IDs (ocids) are in the form ocds-h6vhtk-hhhhhh, where hhhhhh is a zero-padded hexadecimal number.
 
@@ -24,8 +24,8 @@ None.
 ### Request Formats
 
 #### application/x-www-form-urlencoded
-    
-    
+
+
     /api/1.0/ocdsRecordPackages/ocds-h6vhtk-000cb9
 
 ## Response Information
@@ -43,8 +43,8 @@ When there is a successful response the following parameters are returned:
 #### application/json, text/json
 
 **Sample:**
-    
-    
+
+
      {
         "uri": "https://www-integration.find-tender.service.gov.uk/api/1.0/ocdsRecordPackages/ocds-h6vhtk-000cb9",
         "publisher": {
@@ -207,7 +207,7 @@ When there is a successful response the following parameters are returned:
                 }
             }
         ]
-    }			
+    }
 
 #### HTTP response status code: 404
 
@@ -216,8 +216,8 @@ In case a procurement could not be found with the specified ocid.
 #### application/json, text/json
 
 **Sample:**
-    
-    
+
+
     {
         "timestamp": "2026-10-06T19:03:12",
         "status": 404,
@@ -225,7 +225,7 @@ In case a procurement could not be found with the specified ocid.
         "message": "",
         "path": "/api/1.0/ocdsRecordPackages",
         "exception": "'identifier' is not found"
-    }			
+    }
 
 #### HTTP response status code: 429
 
