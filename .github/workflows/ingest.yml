@@ -6,8 +6,11 @@ name: Ingest
 
 on:
   schedule:
-    - cron: "0 */3 * * *"   # 00:00, 03:00, ... UTC; runs only from main
+    - cron: "17 */3 * * *"  # 00:17, 03:17, ... UTC (off the busy hour mark); runs only from main
   workflow_dispatch:         # manual run from the Actions tab (main only)
+
+permissions:
+  contents: read
 
 concurrency:
   group: ingest            # never run two loads at once
@@ -30,6 +33,7 @@ jobs:
           SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
           SNOWFLAKE_PRIVATE_KEY: ${{ secrets.SNOWFLAKE_PRIVATE_KEY }}
         run: |
+          umask 077   # key and config readable by this user only
           mkdir -p ~/.snowflake
           printf '%s\n' "$SNOWFLAKE_PRIVATE_KEY" > ~/.snowflake/key.p8
           cat > ~/.snowflake/connections.toml <<TOML
@@ -42,7 +46,6 @@ jobs:
           database = "TENDER_DB"
           warehouse = "TENDER_WH"
           TOML
-          chmod 600 ~/.snowflake/key.p8 ~/.snowflake/connections.toml
 
       - name: Load releases
         run: uv run ingestion/load_find_a_tender.py

@@ -6,15 +6,24 @@ on:
   push:
     branches: [main]
 
+permissions:
+  contents: read
+
 jobs:
   checks:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
       - uses: astral-sh/setup-uv@v10.2.0
 
       - name: Install dependencies
         run: uv sync --locked   # Python version comes from .python-version
+
+      - name: File checks (pre-commit)
+        run: uv run pre-commit run --all-files
+        env:
+          SKIP: mypy,pytest   # run as separate steps below
 
       - name: Type check (strict)
         run: uv run mypy
