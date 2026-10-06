@@ -1,0 +1,31 @@
+[project]
+name = "uk-tenders-dbt-snowflake"
+version = "0.1.0"
+description = "UK public procurement data from Find a Tender, loaded into Snowflake and modelled with dbt"
+requires-python = ">=3.14"
+dependencies = [
+    "requests",
+    "snowflake-snowpark-python",
+]
+
+[dependency-groups]
+dev = [
+    "mypy>=2.4.0",
+    "pre-commit>=4.6.2",
+    "pytest>=9.1.1",
+    "types-requests>=2.33.0.20261006",
+]
+
+[tool.pytest.ini_options]
+pythonpath = ["ingestion"]
+testpaths = ["tests"]
+
+[tool.mypy]
+python_version = "3.14"
+strict = true
+files = ["ingestion", "tests"]
+mypy_path = "ingestion"
+
+[[tool.mypy.overrides]]
+module = ["snowflake.*"]
+ignore_missing_imports = true

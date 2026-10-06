@@ -1,4 +1,4 @@
-> Source: <https://www.find-tender.service.gov.uk/Developer/Documentation>  
+> Source: <https://www.find-tender.service.gov.uk/Developer/Documentation>
 > Downloaded: 2026-10-06. Crown copyright, Open Government Licence v3.0.
 
 # Data and API documentation

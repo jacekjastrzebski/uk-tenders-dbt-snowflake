@@ -1,4 +1,4 @@
-> Source: <https://www.find-tender.service.gov.uk/apidocumentation/1.0/GET-ocdsReleasePackages>  
+> Source: <https://www.find-tender.service.gov.uk/apidocumentation/1.0/GET-ocdsReleasePackages>
 > Downloaded: 2026-10-06. Crown copyright, Open Government Licence v3.0.
 
 # GET /api/{version}/ocdsReleasePackages
@@ -9,21 +9,21 @@ This service retrieves Find a Tender notice data as an Open Contracting Data Sta
 
 ## Request Information
 
-Requests can be filtered to a notice or procurement process by appending an ID to the URI: 
+Requests can be filtered to a notice or procurement process by appending an ID to the URI:
 
   * Notice IDs are in the form nnnnnn-yyyy where nnnnnn is a zero-padded decimal number and yyyy is the publication year.
   * Procurement process IDs (ocids) are in the form ocds-h6vhtk-hhhhhh, where hhhhhh is a zero-padded hexadecimal number.
 
 ### URI Parameters
 
-Name| Description| Type| Mandatory| Format| Min value| Max value| Max length| Example  
----|---|---|---|---|---|---|---|---  
-limit | Limit the number of results (default = 100) | integer | false | [0-9]* | 1 | 100 | n/a | 10  
-cursor | Where more results are available, please use this token to get the next set of results | string | false | [A-Za-z0-9=]* | n/a | n/a | 300 | MTAwM==  
-updatedFrom | Earliest date and time record was last updated | date | false | YYYY-MM-DDTHH:MM:SS | n/a | n/a | 19 | 2026-09-26T19:03:12  
-updatedTo | Latest date and time record was last updated | date | false | YYYY-MM-DDTHH:MM:SS | n/a | n/a | 19 | 2026-10-06T19:03:12  
-stages | Stage of the contracting process | string | false | planning,tender,award | n/a | n/a | n/a | tender  
-  
+Name| Description| Type| Mandatory| Format| Min value| Max value| Max length| Example
+---|---|---|---|---|---|---|---|---
+limit | Limit the number of results (default = 100) | integer | false | [0-9]* | 1 | 100 | n/a | 10
+cursor | Where more results are available, please use this token to get the next set of results | string | false | [A-Za-z0-9=]* | n/a | n/a | 300 | MTAwM==
+updatedFrom | Earliest date and time record was last updated | date | false | YYYY-MM-DDTHH:MM:SS | n/a | n/a | 19 | 2026-09-26T19:03:12
+updatedTo | Latest date and time record was last updated | date | false | YYYY-MM-DDTHH:MM:SS | n/a | n/a | 19 | 2026-10-06T19:03:12
+stages | Stage of the contracting process | string | false | planning,tender,award | n/a | n/a | n/a | tender
+
 ### Body Parameters
 
 None.
@@ -33,26 +33,26 @@ None.
 #### application/x-www-form-urlencoded
 
 **Example of filtering by date**
-    
-    
+
+
     /api/1.0/ocdsReleasePackages?updatedFrom=2020-12-31T23:00:00&updatedTo=2021-01-07T22:59:59
-    		
+
 
 #### application/x-www-form-urlencoded
 
 **Example of filtering by ocid**
-    
-    
+
+
     /api/1.0/ocdsReleasePackages/ocds-h6vhtk-0001b4
-    		
+
 
 #### application/x-www-form-urlencoded
 
 **Example of filtering by notice ID**
-    
-    
+
+
     /api/1.0/ocdsReleasePackages/000001-2021
-    		
+
 
 ## Response Information
 
@@ -69,8 +69,8 @@ When there is a successful response the following parameters are returned:
 #### application/json, text/json
 
 **Sample:**
-    
-    
+
+
      {
         "uri": "https://www-integration.find-tender.service.gov.uk/api/1.0/ocdsReleasePackages/001060-2020",
         "version": "1.1",
@@ -275,7 +275,7 @@ When there is a successful response the following parameters are returned:
                 "language": "en"
             }
         ]
-    }			
+    }
 
 #### HTTP response status code: 400
 
@@ -284,8 +284,8 @@ When the wrong parameter name is provided.
 #### application/json, text/json
 
 **Sample:**
-    
-    
+
+
     {
         "timestamp": "2026-10-06T19:03:12",
         "status": 400,
@@ -293,7 +293,7 @@ When the wrong parameter name is provided.
         "message": "Request parameters unknown",
         "path": "/api/1.0/ocdsReleasePackages",
         "exception": "Request parameter 'statuses' is not recognised, allowed parameters are: stages, limit, cursor, updatedFrom, updatedTo"
-    }			
+    }
 
 #### HTTP response status code: 429
 
