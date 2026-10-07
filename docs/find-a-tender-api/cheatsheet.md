@@ -84,6 +84,7 @@ The rate limit itself is not documented. The backfill hit it after about 1,200 r
 - Old-regime notices still appear: no `noticeType`, but CPV in `tender.classification`.
 - About 7 KB per release; a full page of 100 is about 700 KB uncompressed.
 - `ocdsRecordPackages/{ocid}` returns all releases for one procurement plus a compiled current state. Useful for checking one case, not for bulk loads.
+- **Paging can loop.** For some windows `links.next` returns the same page forever (seen for 10 December 2025, 12:00–24:00), while smaller windows over the same hours page normally. The loader spots a repeated `next` link and fetches each half of the window instead.
 
 ## 8. Try it
 

@@ -53,6 +53,7 @@ RUNS_TABLE = "RAW.FIND_A_TENDER_INGEST_RUNS"
 
 OVERLAP = timedelta(minutes=15)
 FIRST_RUN_LOOKBACK = timedelta(hours=3)
+SMALLEST_SPLIT = timedelta(hours=1)  # a window that still loops below this fails the run
 
 INCREMENTAL = "incremental"
 BACKFILL = "backfill"
@@ -75,6 +76,10 @@ class Window:
 class RunStats:
     pages: int = 0
     releases: int = 0
+
+
+class PagingLoopError(RuntimeError):
+    """The API sent a next-page link that was already followed, so paging would never end."""
 
 
 def main(session: Session) -> str:
@@ -111,7 +116,7 @@ def load_window(session: Session, run_id: str, window: Window, run_type: str) ->
     log.info("Run %s: fetching %s to %s UTC", run_id, window.start, window.end)
 
     try:
-        for page in fetch_pages(window):
+        for page in fetch_window(window):
             save_page(session, run_id, stats.pages, page)
             stats = replace(
                 stats,
@@ -189,8 +194,30 @@ def backfill_windows(start: date, stop: datetime) -> list[tuple[date, Window]]:
     return windows
 
 
+def fetch_window(window: Window) -> Iterator[Page]:
+    """Yield every page in the window; if the API's paging loops, fetch each half instead.
+
+    Some windows get a next-page link that returns the same page forever, while
+    smaller windows over the same hours page normally (seen for 10 December 2025).
+    Pages yielded before a loop is found are fetched again with the halves;
+    dbt removes the duplicates.
+    """
+    try:
+        yield from fetch_pages(window)
+    except PagingLoopError:
+        if window.end - window.start <= SMALLEST_SPLIT:
+            raise
+        middle = window.start + (window.end - window.start) / 2
+        log.warning("Paging loops for %s to %s UTC; fetching each half", window.start, window.end)
+        yield from fetch_window(Window(start=window.start, end=middle))
+        yield from fetch_window(Window(start=middle - OVERLAP, end=window.end))
+
+
 def fetch_pages(window: Window) -> Iterator[Page]:
-    """Yield each page of releases in the window, following links.next; pauses after each request."""
+    """Yield each page of releases in the window, following links.next; pauses after each request.
+
+    Raises PagingLoopError, without yielding the repeated page, if a next-page link repeats.
+    """
     http = http_session()
     url: str | None = API_URL
     updated_from, updated_to = api_dates(window)
@@ -199,14 +226,21 @@ def fetch_pages(window: Window) -> Iterator[Page]:
         "updatedTo": updated_to,
         "limit": 100,
     }
+    followed: set[str] = set()
     while url:
         response = http.get(url, params=params, timeout=60)
         response.raise_for_status()
         page = response.json()
         sleep(API_PAUSE_SECONDS)
+
+        next_url: str | None = page.get("links", {}).get("next")  # includes the cursor
+        if next_url is not None and next_url in followed:
+            raise PagingLoopError(f"API paging repeats for {window.start} to {window.end} UTC")
         yield page
 
-        url = page.get("links", {}).get("next")  # includes the cursor
+        if next_url is not None:
+            followed.add(next_url)
+        url = next_url
         params = None
 
 
