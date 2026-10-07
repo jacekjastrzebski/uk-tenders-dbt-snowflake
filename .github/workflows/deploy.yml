@@ -7,7 +7,8 @@
 #   04_failure_alert.sql             -> recreate the failure alert
 #   dbt/** or snowflake/dbt/profiles.yml -> deploy a new version of the dbt project object (ADR 0009)
 #   snowflake/dbt/01_run_dbt_task.sql    -> recreate the dbt task and its failure alert
-# A manual run (workflow_dispatch) deploys everything.
+# A manual run (workflow_dispatch) deploys everything, and so does a push that changes this
+# workflow: a change to how things deploy should reach Snowflake without a manual run.
 # One-off setup (00 and 01 in snowflake/native_ingestion/, snowflake/dbt/00_dbt_setup.sql) stays
 # manual: it needs ACCOUNTADMIN. This workflow deploys as TENDER_DEPLOY, with role TENDER_INGEST
 # for the loader and TENDER_TRANSFORM for dbt.
@@ -40,11 +41,18 @@ jobs:
           BEFORE: ${{ github.event.before }}
           AFTER: ${{ github.sha }}
         run: |
-          if [ "$EVENT" != workflow_dispatch ]; then
+          deploy_all=false
+          if [ "$EVENT" = workflow_dispatch ]; then
+            deploy_all=true
+          else
             changed_files=$(git diff --name-only "$BEFORE" "$AFTER")
+            if grep -qx '.github/workflows/deploy.yml' <<< "$changed_files"; then
+              deploy_all=true
+              echo "deploy.yml changed: deploy everything"
+            fi
           fi
           deploy_if_changed() {   # $1 = output name, $2 = file, matched as a regex (dbt/.* = the folder)
-            if [ "$EVENT" = workflow_dispatch ] || grep -qx "$2" <<< "$changed_files"; then
+            if [ "$deploy_all" = true ] || grep -qx "$2" <<< "$changed_files"; then
               echo "$1=true" >> "$GITHUB_OUTPUT"
               echo "any=true" >> "$GITHUB_OUTPUT"
               echo "deploy $2"
