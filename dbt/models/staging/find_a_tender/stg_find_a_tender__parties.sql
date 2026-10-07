@@ -1,8 +1,10 @@
 -- One row per organisation named in a notice (buyer, supplier, review body).
 -- contactPoint (names, emails, phone numbers) is personal data and left out.
+-- Keyed by position: a party id can appear more than once in a notice (one
+-- organisation in two roles, branches sharing a company number, publisher errors).
 
 SELECT
-    n.notice_id || '/' || p.value:id::STRING AS party_key,
+    n.notice_id || '/' || p.index AS party_key,
     n.notice_id,
     n.ocid,
     p.value:id::STRING AS party_id,

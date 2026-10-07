@@ -1,6 +1,7 @@
 -- One row per contract in a notice. Its award can be in an earlier notice of
 -- the same procurement (e.g. UK10, UK11), so link to awards on
 -- procurement_award_key (ocid/award_id), not on the notice. Timestamps are UTC.
+-- A few notices carry empty contract entries (no id, award, value or date): skipped.
 
 SELECT
     n.notice_id || '/' || c.value:id::STRING AS contract_key,
@@ -19,3 +20,5 @@ SELECT
 FROM
     {{ ref('stg_find_a_tender__notices') }} AS n,
     LATERAL FLATTEN(input => n.notice:contracts) AS c
+WHERE
+    c.value:id IS NOT NULL

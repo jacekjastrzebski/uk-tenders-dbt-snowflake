@@ -39,7 +39,7 @@ erDiagram
         variant notice "full JSON, contacts removed"
     }
     STG_PARTIES {
-        string party_key PK "notice_id/party_id"
+        string party_key PK "notice_id/position"
         string notice_id FK
         string party_id
         string party_name
@@ -88,4 +88,5 @@ erDiagram
 - Contracts link to awards on `procurement_award_key` (`ocid/award_id`): UK10 and UK11 notices carry a contract whose award is in an earlier notice of the procurement, which may predate our data (the test warns).
 - Timestamps are UTC; amounts come net and gross (incl. VAT), often only one of them is filled.
 - No staging table holds `contactPoint` ([ADR 0016](../adr/0016-strip-contact-details-in-staging.md)).
+- A party id can appear twice in one notice (two roles, branches sharing a company number, publisher errors), so parties are keyed by position.
 - `STG_PARTIES` to `STG_AWARD_SUPPLIERS` is a logical link (`supplier_id` = `party_id` in the same notice), not enforced by a test.

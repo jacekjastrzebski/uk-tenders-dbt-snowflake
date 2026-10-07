@@ -1,7 +1,7 @@
 version: 2
 
-# Status values follow the OCDS codelists; currencies are the ones seen so far.
-# Both are warnings: a new value should be looked at, not stop the build.
+# Status values follow the OCDS codelists; currencies must have an HMRC rate
+# (ADR 0020). Both are warnings: a new value should be looked at, not stop the build.
 
 models:
   - name: stg_find_a_tender__notices
@@ -46,11 +46,13 @@ models:
         description: Estimated value including VAT; often present when the net amount is missing.
       - name: tender_value_currency
         data_tests:
-          - accepted_values:
+          - relationships:
               arguments:
-                values: [GBP, EUR, USD]
+                to: ref('hmrc_exchange_rates')
+                field: currency_code
               config:
                 severity: warn
+                where: "tender_value_currency != 'GBP'"   # GBP is the base currency, no rate needed
       - name: tender_closing_at
         description: Deadline for bids, UTC.
       - name: cpv_code
@@ -62,6 +64,7 @@ models:
     description: One row per organisation in a notice. Contact details are left out.
     columns:
       - name: party_key
+        description: notice_id/position of the party in the notice; party_id alone is not unique within a notice.
         data_tests: [unique, not_null]
       - name: notice_id
         data_tests:
@@ -101,11 +104,13 @@ models:
         description: Award value including VAT.
       - name: award_value_currency
         data_tests:
-          - accepted_values:
+          - relationships:
               arguments:
-                values: [GBP, EUR, USD]
+                to: ref('hmrc_exchange_rates')
+                field: currency_code
               config:
                 severity: warn
+                where: "award_value_currency != 'GBP'"   # GBP is the base currency, no rate needed
 
   - name: stg_find_a_tender__award_suppliers
     description: One row per supplier on an award.
@@ -154,10 +159,12 @@ models:
         description: Contract value including VAT.
       - name: contract_value_currency
         data_tests:
-          - accepted_values:
+          - relationships:
               arguments:
-                values: [GBP, EUR, USD]
+                to: ref('hmrc_exchange_rates')
+                field: currency_code
               config:
                 severity: warn
+                where: "contract_value_currency != 'GBP'"   # GBP is the base currency, no rate needed
       - name: signed_at
         description: Date signed, UTC.

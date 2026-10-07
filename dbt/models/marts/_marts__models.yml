@@ -1,0 +1,163 @@
+version: 2
+
+models:
+  - name: dim_dates
+    description: >
+      Calendar, one row per day between the vars dim_dates_start and
+      dim_dates_end (dbt_project.yml); UK financial year April to March.
+      In Power BI: mark as the date table on calendar_date and turn off auto date/time.
+    columns:
+      - name: calendar_date
+        description: The day; key that fact date columns join to.
+        data_tests: [unique, not_null]
+      - name: calendar_year
+        description: Calendar year, e.g. 2026.
+      - name: month_number
+        description: 1-12; sort month_name by this column in Power BI.
+      - name: month_name
+        description: January-December.
+      - name: month_start
+        description: First day of the month; continuous axis for monthly trends.
+      - name: year_month
+        description: e.g. 2026-10, a label for monthly trends.
+      - name: week_start
+        description: Monday of the week.
+      - name: financial_year
+        description: UK financial year, e.g. 2026/27 (1 April 2026 to 31 March 2027); sorts correctly as text.
+      - name: financial_month_number
+        description: Month within the financial year, April = 1 to March = 12; sort months by this in financial-year visuals.
+
+  - name: dim_cpv_divisions
+    description: Sectors, one row per CPV division (first 2 digits of a CPV code).
+    columns:
+      - name: cpv_division
+        description: e.g. 72; facts join on LEFT(cpv_code, 2).
+        data_tests: [unique, not_null]
+      - name: division_name
+        description: Official CPV name, e.g. IT services.
+      - name: is_digital_and_data
+        description: True for divisions 48 (software) and 72 (IT services).
+      - name: market
+        description: Digital and data, or Other; for slicers.
+
+  - name: dim_buyers
+    description: Buyers, one row per organisation grouped by normalised name (macro normalise_org_name).
+    columns:
+      - name: buyer_key
+        description: Normalised buyer name; facts join on the same macro applied to their buyer name.
+        data_tests: [unique, not_null]
+      - name: buyer_name
+        description: Name from the buyer's most recent notice.
+      - name: buyer_ids
+        description: All organisation IDs seen for this buyer, comma-separated, for tracing back to notices.
+
+  - name: dim_suppliers
+    description: >
+      Suppliers, one row per organisation grouped by normalised name (macro
+      normalise_org_name: lot numbers removed). Names are kept, including the
+      few that may be sole traders' trading names (ADR 0021).
+    columns:
+      - name: supplier_key
+        description: Normalised supplier name; facts join on the same macro applied to their supplier name.
+        data_tests: [unique, not_null]
+      - name: supplier_name
+        description: Name from the supplier's most recent notice, lot numbers removed.
+      - name: supplier_ids
+        description: All organisation IDs seen for this supplier, comma-separated.
+      - name: is_withheld
+        description: True when the buyer withheld the supplier's name (Procurement Act section 94); leave out of supplier rankings.
+
+  - name: fct_award_suppliers
+    description: >
+      One row per supplier on an award (deduplicated across notices); award
+      value in GBP split equally between suppliers. Excludes dynamic-market
+      admissions and cancelled awards. Headline totals use is_in_headline.
+    columns:
+      - name: award_supplier_key
+        data_tests: [unique, not_null]
+      - name: award_date
+        description: UK date of the award (see date_source).
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_dates')
+                field: calendar_date
+      - name: buyer_key
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_buyers')
+                field: buyer_key
+      - name: supplier_key
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_suppliers')
+                field: supplier_key
+      - name: cpv_division
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_cpv_divisions')
+                field: cpv_division
+      - name: allocated_value_gbp
+        description: This supplier's equal share of the award value; sum this.
+      - name: is_in_headline
+        description: Counts in the headline totals - not a framework set-up, not a large value, value known.
+
+  - name: fct_procurements
+    description: >
+      One row per Procurement Act tender (a procurement with a UK4 notice), for
+      "What's open to bid?" and "How long to award?". Dates are UK dates of the
+      notices' publication. Open = closing_date from today, no award_published_date,
+      not is_cancelled (worked out in Power BI).
+    columns:
+      - name: ocid
+        data_tests: [unique, not_null]
+      - name: buyer_key
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_buyers')
+                field: buyer_key
+      - name: cpv_division
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_cpv_divisions')
+                field: cpv_division
+      - name: tender_published_date
+        description: First tender notice (UK4).
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_dates')
+                field: calendar_date
+      - name: closing_date
+        description: From the latest tender notice; the bid deadline, or the expression-of-interest deadline in two-stage procedures.
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_dates')
+                field: calendar_date
+      - name: award_published_date
+        description: First award notice (UK6), else the first contract notice (UK7) for contracts that skip it.
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_dates')
+                field: calendar_date
+      - name: contract_published_date
+        description: First contract details notice (UK7).
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_dates')
+                field: calendar_date
+      - name: days_tender_to_award
+        description: Days from tender to award notice; null when unknown or notices were published out of order.
+      - name: is_cancelled
+        description: A termination notice (UK12) and no award.

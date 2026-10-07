@@ -1,0 +1,46 @@
+cpv_division,division_name,is_digital_and_data
+03,"Agricultural, farming, fishing, forestry and related products",false
+09,"Petroleum products, fuel, electricity and other sources of energy",false
+14,"Mining, basic metals and related products",false
+15,"Food, beverages, tobacco and related products",false
+16,Agricultural machinery,false
+18,"Clothing, footwear, luggage articles and accessories",false
+19,"Leather and textile fabrics, plastic and rubber materials",false
+22,Printed matter and related products,false
+24,Chemical products,false
+30,"Office and computing machinery, equipment and supplies except furniture and software packages",false
+31,"Electrical machinery, apparatus, equipment and consumables; lighting",false
+32,"Radio, television, communication, telecommunication and related equipment",false
+33,"Medical equipments, pharmaceuticals and personal care products",false
+34,Transport equipment and auxiliary products to transportation,false
+35,"Security, fire-fighting, police and defence equipment",false
+37,"Musical instruments, sport goods, games, toys, handicraft, art materials and accessories",false
+38,"Laboratory, optical and precision equipments (excl. glasses)",false
+39,"Furniture (incl. office furniture), furnishings, domestic appliances (excl. lighting) and cleaning products",false
+41,Collected and purified water,false
+42,Industrial machinery,false
+43,"Machinery for mining, quarrying, construction equipment",false
+44,Construction structures and materials; auxiliary products to construction (except electric apparatus),false
+45,Construction work,false
+48,Software package and information systems,true
+50,Repair and maintenance services,false
+51,Installation services (except software),false
+55,"Hotel, restaurant and retail trade services",false
+60,Transport services (excl. Waste transport),false
+63,Supporting and auxiliary transport services; travel agencies services,false
+64,Postal and telecommunications services,false
+65,Public utilities,false
+66,Financial and insurance services,false
+70,Real estate services,false
+71,"Architectural, construction, engineering and inspection services",false
+72,"IT services: consulting, software development, Internet and support",true
+73,Research and development services and related consultancy services,false
+75,"Administration, defence and social security services",false
+76,Services related to the oil and gas industry,false
+77,"Agricultural, forestry, horticultural, aquacultural and apicultural services",false
+79,"Business services: law, marketing, consulting, recruitment, printing and security",false
+80,Education and training services,false
+85,Health and social work services,false
+90,"Sewage, refuse, cleaning and environmental services",false
+92,"Recreational, cultural and sporting services",false
+98,"Other community, social and personal services",false

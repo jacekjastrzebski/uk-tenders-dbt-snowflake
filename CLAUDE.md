@@ -37,3 +37,17 @@ uv run pytest
 
 ## Git
 - Always show the proposed commit message and wait for confirmation before committing.
+- Commit messages read naturally, like a short note to a colleague, and list the changes as bullet points:
+  - Subject line: plain English, imperative ("Add …", "Fix …"), at most 72 characters, no full stop.
+  - Blank line, then one bullet (`- `) per change, saying what changed and, where useful, why. Wrap at 72 characters.
+  - No jargon or filler; a one-line change can be a subject line alone.
+
+```
+Add dim_suppliers and strip lot numbers from organisation names
+
+- Group suppliers by normalised name, the same way as buyers
+- Remove framework lot numbers ("1 2 3 4", "a 1 8 b 1 8", "- Lot 1"),
+  so a supplier on several lots counts once
+- Flag suppliers whose name the buyer withheld (section 94)
+- Record the decision to keep supplier names in ADR 0021
+```

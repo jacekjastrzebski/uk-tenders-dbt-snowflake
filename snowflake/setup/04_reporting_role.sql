@@ -1,0 +1,22 @@
+-- Read-only role for Power BI: can query the marts, nothing else.
+-- Needs ACCOUNTADMIN. Run after 03_transform_role.sql.
+-- Table-level SELECT is granted by dbt on every build (+grants in
+-- dbt/dbt_project.yml), so access survives tables being rebuilt.
+USE ROLE ACCOUNTADMIN;
+
+CREATE ROLE IF NOT EXISTS TENDER_REPORTER;
+GRANT ROLE TENDER_REPORTER TO ROLE SYSADMIN;   -- admins can use and manage it
+
+GRANT USAGE ON DATABASE TENDER_DB TO ROLE TENDER_REPORTER;
+GRANT USAGE ON WAREHOUSE TENDER_WH TO ROLE TENDER_REPORTER;
+
+-- The mart schemas: created here if dbt hasn't yet, owned by the dbt role
+CREATE SCHEMA IF NOT EXISTS TENDER_DB.MARTS;
+CREATE SCHEMA IF NOT EXISTS TENDER_DB.DEV_MARTS;
+GRANT OWNERSHIP ON SCHEMA TENDER_DB.MARTS TO ROLE TENDER_TRANSFORM COPY CURRENT GRANTS;
+GRANT OWNERSHIP ON SCHEMA TENDER_DB.DEV_MARTS TO ROLE TENDER_TRANSFORM COPY CURRENT GRANTS;
+GRANT USAGE ON SCHEMA TENDER_DB.MARTS TO ROLE TENDER_REPORTER;
+GRANT USAGE ON SCHEMA TENDER_DB.DEV_MARTS TO ROLE TENDER_REPORTER;   -- for building the report against dev
+
+-- People who build or view the report; replace with your user name
+GRANT ROLE TENDER_REPORTER TO USER JACEKJ;

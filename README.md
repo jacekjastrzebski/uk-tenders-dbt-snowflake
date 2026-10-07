@@ -1,6 +1,6 @@
 # uk-tenders-dbt-snowflake
 
-UK public procurement data from Find a Tender, loaded into Snowflake and modelled with dbt, refreshed every 3 hours from 07:00 to 19:00 UK time.
+A market tracker for UK public-sector digital and data contracts: what's open to bid, who's buying, who's winning and how long to award. Built on Find a Tender with Snowflake and dbt, refreshed every 3 hours from 07:00 to 19:00 UK time.
 
 ## What it is
 
@@ -8,10 +8,10 @@ UK public procurement data from Find a Tender, loaded into Snowflake and modelle
 
 This project turns those notices into a market tracker for digital and data services, answering:
 
-- **What is open now?** Live tenders and their closing dates.
-- **Who is buying?** Spend by buyer and sector over time.
-- **Who is winning?** Suppliers, award values and market share.
-- **How long does it take?** Time from tender to award to signed contract.
+- **What's open to bid?** Live tenders and their closing dates.
+- **Who's buying?** Spend by buyer and sector over time.
+- **Who's winning?** Suppliers, award values and market share.
+- **How long to award?** Time from tender to award, and from award to signed contract.
 
 ## How it works
 
@@ -22,29 +22,30 @@ Find a Tender API  →  Python loader  →  Snowflake (raw)  →  dbt (staging, 
 ```
 
 1. **Ingest:** a Python loader, run inside Snowflake as a stored procedure by a scheduled task, fetches notices updated since the last run and stores each API page unchanged.
-2. **Transform (TO-DO):** dbt deduplicates, flattens the nested JSON and builds a star schema that follows each procurement through its notices.
+2. **Transform:** dbt deduplicates, flattens the nested JSON and builds a star schema: two facts (awards by supplier, tenders) and four dimensions ([docs/dbt.md](docs/dbt.md), [diagram](docs/diagrams/marts-erd.md)).
 3. **Report (TO-DO):** a Power BI report on top of the marts.
 
 | Step | Status |
 |---|---|
 | Ingest (Python loader into Snowflake) | Done |
 | Schedule (Snowflake tasks) | Done |
-| Transform: dbt staging, run in Snowflake 20 minutes after each load ([ADR 0009](docs/adr/0009-run-dbt-on-a-schedule-in-snowflake.md)); marts to follow | Done |
+| Transform (dbt staging and marts) | Done |
+| Run dbt in Snowflake 20 minutes after each load ([ADR 0009](docs/adr/0009-run-dbt-on-a-schedule-in-snowflake.md)) | Done |
 | Event-based failure alerts for all tasks (ingest and dbt) | TO-DO |
 | Report (Power BI) | TO-DO |
-| Historical backfill from 24 February 2025 ([ADR 0017](docs/adr/0017-backfill-from-procurement-act-start.md)) | Ready to run, see `docs/snowflake-cli.md` |
+| Historical backfill from 24 February 2025 ([ADR 0017](docs/adr/0017-backfill-from-procurement-act-start.md)) | Done (172,312 notices) |
 
 ## Repository layout
 
 | Path | Contents |
 |---|---|
 | `ingestion/` | Python loader and an API exploration script |
-| `snowflake/setup/` | Numbered SQL scripts that create the database, warehouse and raw tables |
-| `dbt/` | dbt project: staging models (marts to follow); see `docs/dbt.md` |
+| `snowflake/setup/` | Numbered SQL scripts that create the database, warehouse, raw tables and the dbt and Power BI roles |
+| `dbt/` | dbt project: staging, intermediate and mart models, seeds and tests; see `docs/dbt.md` |
 | `snowflake/native_ingestion/` | Numbered SQL scripts that run the loader as a Snowflake stored procedure on a schedule (needs a paid account) |
 | `snowflake/dbt/` | Setup, profile and scheduled task that run the dbt project inside Snowflake (ADR 0009) |
 | `tests/` | Tests for the Python code |
-| `docs/` | Procurement primer and Find a Tender API reference |
+| `docs/` | Procurement primer, glossary, API reference, EDA findings, decision records (`adr/`), plans and diagrams |
 
 ## Data and licence
 

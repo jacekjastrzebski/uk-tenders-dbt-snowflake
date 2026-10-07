@@ -13,5 +13,5 @@ Deploys first ran as the account owner's user, whose default role was ACCOUNTADM
 
 ## Consequences
 - A leaked deploy key or a dbt bug can only affect its own objects.
-- Account-level setup (`01_external_access.sql`, `03_transform_role.sql`) stays manual and needs ACCOUNTADMIN.
+- Account-level setup (`01_external_access.sql`, `03_transform_role.sql`, `04_reporting_role.sql`) stays manual and needs ACCOUNTADMIN.
 - Leftover grants to SYSADMIN from earlier versions still need revoking (DataOps review, gap 3).
