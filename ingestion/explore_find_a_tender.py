@@ -7,18 +7,19 @@ import json
 import sys
 import urllib.parse
 import urllib.request
-from datetime import datetime, timedelta, timezone
+from datetime import datetime, timedelta
 from pathlib import Path
 from typing import Any
+from zoneinfo import ZoneInfo
 
 API_URL = "https://www.find-tender.service.gov.uk/api/1.0/ocdsReleasePackages"
-DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"  # the API expects no time zone
+DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"  # no offset; the API reads it as UK local time
 OUTPUT_DIR = Path("data/samples")
 
 
 def first_page_url(hours: float) -> str:
     """URL for releases updated in the last `hours` hours."""
-    updated_to = datetime.now(timezone.utc)
+    updated_to = datetime.now(ZoneInfo("Europe/London"))
     updated_from = updated_to - timedelta(hours=hours)
     params = {
         "updatedFrom": updated_from.strftime(DATE_FORMAT),

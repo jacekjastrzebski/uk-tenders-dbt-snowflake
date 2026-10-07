@@ -20,7 +20,7 @@ Plain HTTP GET. No API key, no login.
 | `cursor` | Token for the next page; take it from `links.next`, never build it | |
 | `stages` | `planning`, `tender`, `award` | Avoid: reported to drop notices; filter in dbt instead |
 
-Dates have no time zone (`YYYY-MM-DDTHH:MM:SS`). Whether the API reads them as UTC or UK local time is not documented.
+Dates have no time zone (`YYYY-MM-DDTHH:MM:SS`). The docs don't say which one; tests show the API reads them as **UK local time** (BST in summer), so send `Europe/London` times ([ADR 0018](../adr/0018-api-dates-in-uk-local-time.md)).
 
 Single items:
 

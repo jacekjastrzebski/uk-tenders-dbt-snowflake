@@ -111,7 +111,8 @@ def test_fetch_pages_follows_next_links(fake_http: Callable[[list[Page | Excepti
 
     assert [len(p["releases"]) for p in pages] == [100, 3]
     _, first_params = http.requests[0]
-    assert first_params == {"updatedFrom": "2026-10-06T09:00:00", "updatedTo": "2026-10-06T12:00:00", "limit": 100}
+    # 09:00-12:00 UTC is 10:00-13:00 UK time (BST)
+    assert first_params == {"updatedFrom": "2026-10-06T10:00:00", "updatedTo": "2026-10-06T13:00:00", "limit": 100}
     assert http.requests[1] == ("https://api/next", None)  # cursor is already in the next URL
 
 
@@ -151,3 +152,27 @@ def test_timestamps_are_written_as_naive_utc() -> None:
     same_moment_in_local_time = datetime(2026, 10, 6, 19, 30, tzinfo=UTC).astimezone()
 
     assert loader.to_snowflake_utc(same_moment_in_local_time) == "2026-10-06 19:30:00"
+
+
+def utc(year: int, month: int, day: int, hour: int, minute: int = 0) -> datetime:
+    return datetime(year, month, day, hour, minute, tzinfo=UTC)
+
+
+def test_api_dates_are_uk_local_time_in_winter() -> None:
+    window = loader.Window(start=utc(2025, 12, 2, 10), end=utc(2025, 12, 2, 11))
+
+    assert loader.api_dates(window) == ("2025-12-02T10:00:00", "2025-12-02T11:00:00")
+
+
+def test_api_dates_start_an_hour_early_when_the_clocks_go_back() -> None:
+    # Clocks went back at 01:00 UTC on 26 October 2025: 01:00-02:00 UK time happened twice
+    window = loader.Window(start=utc(2025, 10, 26, 0, 30), end=utc(2025, 10, 26, 3))
+
+    assert loader.api_dates(window) == ("2025-10-26T00:30:00", "2025-10-26T03:00:00")
+
+
+def test_api_dates_are_not_shortened_when_the_clocks_go_forward() -> None:
+    # Clocks went forward at 01:00 UTC on 30 March 2025: 01:00 GMT became 02:00 BST
+    window = loader.Window(start=utc(2025, 3, 30, 0, 30), end=utc(2025, 3, 30, 3))
+
+    assert loader.api_dates(window) == ("2025-03-30T00:30:00", "2025-03-30T04:00:00")
