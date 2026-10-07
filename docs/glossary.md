@@ -12,9 +12,14 @@ Terms used in this project, grouped by area. Procurement background: [procuremen
 | Buyer | The public body buying (also: contracting authority) |
 | Supplier | The organisation bidding for or delivering a contract |
 | Award | The decision to give a contract to one or more suppliers |
+| Framework | A pre-approved list of suppliers that buyers can later buy from without a new competition, see [primer](procurement-primer.md#frameworks) |
+| Ceiling value | The most that could be spent under a framework; not actual spend, and repeated on every lot |
+| Call-off | A contract a buyer signs with a supplier on an existing framework: actual spend |
 | Contract | The signed agreement following an award |
 | Lot | A separately awarded part of a procurement |
-| CPV code | Common Procurement Vocabulary: standard code for what is bought |
+| CPV code | Common Procurement Vocabulary: standard 8-digit code for what is bought, see [primer](procurement-primer.md#cpv-codes) |
+| CPV division | The first 2 digits of a CPV code: one of about 45 sectors, e.g. 72 IT services |
+| Digital and data market | CPV divisions 48 (software) and 72 (IT services) |
 | Old-regime notice | A notice under the rules before the Procurement Act 2023 (24 Feb 2025); has no notice type |
 
 ## OCDS and the API
@@ -62,7 +67,9 @@ Terms used in this project, grouped by area. Procurement background: [procuremen
 | Model | A `SELECT` in a `.sql` file that dbt builds as a view or table |
 | Source | Raw data declared in YAML and referenced with `source()` |
 | Staging | First dbt layer: one cleaned, deduplicated table per entity; business names |
-| Mart | Dashboard-ready tables (facts and dimensions); next step |
+| Intermediate model | Business rules shared by marts, between staging and marts, e.g. `int_awards` |
+| Mart | Dashboard-ready tables (facts and dimensions) |
+| Grain | What one row of a table represents, e.g. one supplier on one award |
 | Medallion layers | Another name for the same layers: bronze = raw, silver = staging, gold = marts. This project uses the dbt names ([ADR 0015](adr/0015-staging-as-tables.md)) |
 | Materialisation | How a model is built: view, table, incremental |
 | Test | A query that must return no rows (e.g. `unique`, `not_null`) |

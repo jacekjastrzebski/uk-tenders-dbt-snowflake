@@ -1,3 +1,5 @@
+{{ config(severity='warn') }}   -- a warning: publishers occasionally omit the notice type (1 notice in 172,000)
+
 -- Procurement Act notices (legal basis 2023/54) have a notice type UK1-UK17;
 -- older-regime notices have none. A disagreement means one of the two
 -- derivations in stg_find_a_tender__notices is wrong.

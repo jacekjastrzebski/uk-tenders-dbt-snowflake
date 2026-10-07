@@ -8,8 +8,25 @@ model-paths: ["models"]
 macro-paths: ["macros"]
 test-paths: ["tests"]
 
+vars:
+  dim_dates_start: "1990-01-01"   # some contracts published now were signed as early as 1990
+  dim_dates_end: "2035-12-31"     # contract end dates; later dates are treated as unknown
+  large_award_gbp: 100000000      # awards at or above this are left out of headline totals (docs/eda-findings.md)
+
 models:
   uk_tenders:
     staging:
       +schema: staging        # STAGING in prod, DEV_STAGING in dev
       +materialized: table    # built once per run; marts and queries read stored, clean data
+    intermediate:
+      +schema: intermediate   # INTERMEDIATE in prod, DEV_INTERMEDIATE in dev; not for Power BI
+      +materialized: view
+    marts:
+      +schema: marts          # MARTS in prod, DEV_MARTS in dev; read by Power BI
+      +materialized: table
+      +grants:
+        select: ['TENDER_REPORTER']   # Power BI's role (snowflake/setup/04_reporting_role.sql)
+
+seeds:
+  uk_tenders:
+    +schema: staging          # reference data next to the staging models
