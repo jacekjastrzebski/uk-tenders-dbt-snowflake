@@ -5,6 +5,7 @@ from datetime import UTC, date, datetime, timedelta
 from typing import Any, cast
 
 import pytest
+from requests.adapters import HTTPAdapter
 from snowflake.snowpark import Session
 
 import load_find_a_tender as loader
@@ -89,6 +90,14 @@ class FakeHttp:
 def page(release_count: int, next_url: str | None = None) -> Page:
     links = {"next": next_url} if next_url else {}
     return {"releases": [{"id": str(i)} for i in range(release_count)], "links": links}
+
+
+@pytest.fixture(autouse=True)
+def pauses(monkeypatch: pytest.MonkeyPatch) -> list[float]:
+    """Record the loader's pauses instead of sleeping."""
+    recorded: list[float] = []
+    monkeypatch.setattr(loader, "sleep", recorded.append)
+    return recorded
 
 
 @pytest.fixture
@@ -290,3 +299,29 @@ def test_scheduled_run_leaves_run_type_to_the_column_default(
 
     [(query, _)] = [call for call in session.calls if f"INSERT INTO {loader.RUNS_TABLE}" in call[0]]
     assert "run_type" not in query
+
+
+# API politeness
+
+def test_fetch_pages_pauses_after_each_request(
+    fake_http: Callable[[list[Page | Exception]], FakeHttp], pauses: list[float]
+) -> None:
+    fake_http([page(100, next_url="https://api/next"), page(3)])
+    window = loader.Window(start=utc(2025, 12, 2, 10), end=utc(2025, 12, 2, 11))
+
+    list(loader.fetch_pages(window))
+
+    assert pauses == [loader.API_PAUSE_SECONDS] * 2
+
+
+def test_http_session_retries_rate_limits_and_server_errors() -> None:
+    http = loader.http_session()
+
+    adapter = http.get_adapter("https://www.find-tender.service.gov.uk")
+    assert isinstance(adapter, HTTPAdapter)
+    retry = adapter.max_retries
+    assert retry.total == loader.API_RETRIES
+    assert retry.respect_retry_after_header
+    assert retry.status_forcelist is not None
+    assert {429, 500, 502, 503, 504} <= set(retry.status_forcelist)
+    assert http.headers["User-Agent"] == loader.USER_AGENT
