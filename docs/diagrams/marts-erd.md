@@ -1,6 +1,6 @@
 # Marts entity-relationship diagram
 
-The star schema the Power BI report reads ([ADR 0019](../adr/0019-star-schema-for-power-bi.md)). Grows as marts are built; key and defining columns only, details in `dbt docs`. Keep in step with the models (rule in `CLAUDE.md`).
+The star schema the Power BI report reads ([ADR 0023](../adr/0023-star-schema-for-power-bi.md)). Grows as marts are built; key and defining columns only, details in `dbt docs`. Keep in step with the models (rule in `CLAUDE.md`).
 
 ```mermaid
 erDiagram

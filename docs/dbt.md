@@ -10,7 +10,7 @@ dbt turns the raw API pages in `TENDER_DB.RAW` into clean tables. The project is
 | Staging | `STAGING` / `DEV_STAGING` | tables ([ADR 0015](adr/0015-staging-as-tables.md)) | One row per notice, party, award, award supplier, contract; deduplicated, typed, no personal data |
 | Intermediate | `INTERMEDIATE` / `DEV_INTERMEDIATE` | views | Business rules shared by marts, e.g. `int_awards` (one row per award across notices); not for Power BI |
 | Seeds | `STAGING` / `DEV_STAGING` | tables, from CSV in `dbt/seeds/` | Reference data: HMRC exchange rates, CPV divisions |
-| Marts | `MARTS` / `DEV_MARTS` | tables | Star schema for Power BI ([ADR 0019](adr/0019-star-schema-for-power-bi.md)), see [Marts](#marts) |
+| Marts | `MARTS` / `DEV_MARTS` | tables | Star schema for Power BI ([ADR 0023](adr/0023-star-schema-for-power-bi.md)), see [Marts](#marts) |
 
 dbt runs as role `TENDER_TRANSFORM` (`snowflake/setup/03_transform_role.sql`): it can read `RAW` and create its own schemas, nothing else. The `dev` target writes to `DEV_*` schemas, so development never overwrites prod.
 
@@ -62,7 +62,7 @@ uv run dbt docs generate --project-dir dbt && uv run dbt docs serve --project-di
 
 ## Marts
 
-Star schema for the Power BI report ([ADR 0019](adr/0019-star-schema-for-power-bi.md), [diagram](diagrams/marts-erd.md)). Built so far:
+Star schema for the Power BI report ([ADR 0023](adr/0023-star-schema-for-power-bi.md), [diagram](diagrams/marts-erd.md)). Built so far:
 
 | Model | Grain | Used for |
 |---|---|---|

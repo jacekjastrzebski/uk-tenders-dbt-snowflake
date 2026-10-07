@@ -1,4 +1,4 @@
-# 0019. Marts as a star schema for Power BI
+# 0023. Marts as a star schema for Power BI
 
 Status: Accepted (2026-10-07). Replaces the research draft (ADR 0013 on `research/gold-powerbi`).
 
