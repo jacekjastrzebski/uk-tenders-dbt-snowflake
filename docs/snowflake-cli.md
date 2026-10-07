@@ -122,11 +122,40 @@ snow sql -c tender -q "SELECT run_id, window_from, window_to, releases, status, 
   FROM TENDER_DB.RAW.FIND_A_TENDER_INGEST_RUNS ORDER BY finished_at DESC LIMIT 5"
 ```
 
+## Backfill history (once)
+
+Loads every notice since 24 February 2025, one UTC day per run, up to where the scheduled runs began ([ADR 0017](adr/0017-backfill-from-procurement-act-start.md)). About 2,000 API pages; expect roughly an hour.
+
+The scheduled load must have succeeded at least once (see [Run and check](#run-and-check)); the backfill refuses to start otherwise.
+
+1. Add the `run_type` column (safe to re-run):
+
+   ```bash
+   snow sql -f snowflake/setup/02_raw_objects.sql -c tender
+   ```
+
+2. Run the backfill inside Snowflake as `TENDER_INGEST`, the role that owns loading (ADR 0004). The procedure is deployed with the loader (`02_ingest_procedure.sql`). If it stops, call it again: days already loaded are skipped.
+
+   ```bash
+   snow sql -c tender -q "USE ROLE TENDER_INGEST; USE WAREHOUSE TENDER_WH;
+     CALL TENDER_DB.RAW.BACKFILL_FIND_A_TENDER_RELEASES()"           # from 2025-02-24; pass a DATE for another start
+   ```
+
+   For a quick local try against a dev database, `uv run ingestion/load_find_a_tender.py --backfill` runs the same code.
+
+3. Check for failed days and weekdays with no notices, then rebuild the models:
+
+   ```bash
+   snow sql -c tender -f snowflake/checks/backfill_coverage.sql
+   uv run dbt build --project-dir dbt
+   ```
+
 ## Check scripts
 
 Read-only health checks, plus a test email for the failure alert:
 
 ```bash
 snow sql -c tender -f snowflake/checks/ingest_health.sql
+snow sql -c tender -f snowflake/checks/backfill_coverage.sql
 snow sql -c tender -f snowflake/checks/alert_email.sql -D alert_email=<you>
 ```

@@ -131,7 +131,7 @@ In the API, the notice type (UK1–UK17) appears in `documents[].noticeType`.
 | Source | Relationship |
 |---|---|
 | Contracts Finder | Lower-value contracts, mainly England; separate service |
-| Open Contracting data registry | Bulk downloads of Find a Tender data since 2021; used for the historical backfill |
+| Open Contracting data registry | Bulk downloads of Find a Tender data since 2021; not used, the backfill goes through the API (ADR 0017) |
 | data.gov.uk daily XML | The same notices as daily ZIP files of XML |
 
 ## Sources

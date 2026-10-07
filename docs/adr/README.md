@@ -18,4 +18,5 @@ One file per significant decision: the context, the decision and its consequence
 | [0012](0012-business-terms-in-staging.md) | Name models in business terms: notices, not releases | Accepted |
 | [0015](0015-staging-as-tables.md) | Staging models as tables; layers named raw → staging → marts | Accepted |
 | [0016](0016-strip-contact-details-in-staging.md) | Strip contact details from staging, including the stored JSON | Accepted |
+| [0017](0017-backfill-from-procurement-act-start.md) | Backfill from 24 February 2025, through the API | Accepted |
 | [0018](0018-api-dates-in-uk-local-time.md) | Send API window dates as UK local time | Accepted |

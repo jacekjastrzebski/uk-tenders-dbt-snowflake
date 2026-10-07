@@ -18,5 +18,10 @@ CREATE TABLE IF NOT EXISTS TENDER_DB.RAW.FIND_A_TENDER_INGEST_RUNS (
   releases       INTEGER,
   status         STRING,         -- success or failed
   error_message  STRING,
-  finished_at    TIMESTAMP_NTZ DEFAULT SYSDATE()  -- UTC
+  finished_at    TIMESTAMP_NTZ DEFAULT SYSDATE(),  -- UTC
+  run_type       STRING DEFAULT 'incremental'      -- incremental or backfill (ADR 0017)
 );
+
+-- Tables created before the backfill have no run_type; rows logged before it was added are NULL
+ALTER TABLE TENDER_DB.RAW.FIND_A_TENDER_INGEST_RUNS
+  ADD COLUMN IF NOT EXISTS run_type STRING DEFAULT 'incremental';
