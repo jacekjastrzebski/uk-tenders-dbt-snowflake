@@ -1,0 +1,24 @@
+version: 2
+
+seeds:
+  - name: hmrc_exchange_rates
+    description: >
+      HMRC monthly exchange rates (currency units per £1), from
+      ingestion/fetch_hmrc_exchange_rates.py. Convert to GBP with
+      amount / units_per_gbp, using the rate for the month of the value's date.
+    config:
+      column_types:
+        currency_code: varchar(3)
+        month_start: date
+        units_per_gbp: number(18, 6)
+    data_tests:
+      - unique:
+          arguments:
+            column_name: "currency_code || '/' || month_start"
+    columns:
+      - name: currency_code
+        data_tests: [not_null]
+      - name: month_start
+        data_tests: [not_null]
+      - name: units_per_gbp
+        data_tests: [not_null]
