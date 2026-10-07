@@ -33,27 +33,79 @@ WITH award_rows AS (
         a.notice_id = n.notice_id
 ),
 
-awards AS (
+latest_notice AS (
+    -- details from the award's most recent notice
     SELECT
         procurement_award_key,
-        ANY_VALUE(ocid) AS ocid,
-        MAX_BY(award_status, published_at) AS award_status,
-        MAX_BY(buyer_name, published_at) AS buyer_name,
-        MAX_BY(cpv_code, published_at) AS cpv_code,
-        MAX_BY(title, published_at) AS title,
-        MAX_BY(award_value_amount, IFF(award_value_amount IS NULL, NULL, published_at)) AS award_net,
-        MAX_BY(award_value_amount_gross, IFF(award_value_amount_gross IS NULL, NULL, published_at)) AS award_gross,
-        MAX_BY(award_value_currency, IFF(award_value_currency IS NULL, NULL, published_at)) AS award_currency,
+        ocid,
+        award_status,
+        buyer_name,
+        cpv_code,
+        title
+    FROM
+        award_rows
+    QUALIFY
+        ROW_NUMBER() OVER (PARTITION BY procurement_award_key ORDER BY published_at DESC) = 1
+),
+
+latest_value AS (
+    -- value from the most recent notice that has one (UK7 repeats the award
+    -- without it), preferring a notice with a net value
+    SELECT
+        procurement_award_key,
+        award_value_amount AS award_net,
+        award_value_amount_gross AS award_gross,
+        award_value_currency AS award_currency
+    FROM
+        award_rows
+    WHERE
+        award_value_amount IS NOT NULL
+        OR award_value_amount_gross IS NOT NULL
+    QUALIFY
+        ROW_NUMBER() OVER (
+            PARTITION BY procurement_award_key
+            ORDER BY award_value_amount IS NOT NULL DESC, published_at DESC
+        ) = 1
+),
+
+across_notices AS (
+    -- dates and flags that look at all notices of the award
+    SELECT
+        procurement_award_key,
         MIN(awarded_at) AS awarded_at,
         MIN(published_at) AS first_published_at,
-        BOOLAND_AGG(notice_type IS NULL) AS is_old_regime,
-        BOOLOR_AGG(COALESCE(notice_type IN ('UK14', 'UK15'), FALSE)) AS is_dynamic_market,
-        BOOLOR_AGG(COALESCE(has_framework_agreement, FALSE)) AS has_framework_agreement,
-        BOOLOR_AGG(COALESCE(is_call_off, FALSE)) AS is_call_off
+        COUNT_IF(notice_type IS NOT NULL) = 0 AS is_old_regime,
+        COUNT_IF(notice_type IN ('UK14', 'UK15')) > 0 AS is_dynamic_market,
+        COUNT_IF(has_framework_agreement) > 0 AS has_framework_agreement,
+        COUNT_IF(is_call_off) > 0 AS is_call_off
     FROM
         award_rows
     GROUP BY
         procurement_award_key
+),
+
+awards AS (
+    SELECT
+        d.*,
+        v.award_net,
+        v.award_gross,
+        v.award_currency,
+        x.awarded_at,
+        x.first_published_at,
+        x.is_old_regime,
+        x.is_dynamic_market,
+        x.has_framework_agreement,
+        x.is_call_off
+    FROM
+        latest_notice AS d
+    LEFT JOIN
+        latest_value AS v
+    ON
+        d.procurement_award_key = v.procurement_award_key
+    INNER JOIN
+        across_notices AS x
+    ON
+        d.procurement_award_key = x.procurement_award_key
 ),
 
 contracts AS (
