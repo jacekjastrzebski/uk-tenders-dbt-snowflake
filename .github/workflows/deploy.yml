@@ -97,10 +97,12 @@ jobs:
           ALERT_EMAIL: ${{ secrets.ALERT_EMAIL }}
         run: uvx --from snowflake-cli==3.28.0 snow sql -f snowflake/native_ingestion/04_failure_alert.sql -D "alert_email=$ALERT_EMAIL" -c tender
 
-      # New version of the project object; without --force, its run history is kept
+      # New version of the project object; without --force, its run history is kept.
+      # Pin dbt: the account default (1.9.4) can't compile the project. Use the newest
+      # 1.x that SYSTEM$SUPPORTED_DBT_VERSIONS() lists, close to the local dbt-core.
       - name: Deploy dbt project
         if: steps.changed.outputs.dbt == 'true'
-        run: uvx --from snowflake-cli==3.28.0 snow dbt deploy UK_TENDERS --source dbt --profiles-dir snowflake/dbt --database TENDER_DB --schema DBT --role TENDER_TRANSFORM -c tender
+        run: uvx --from snowflake-cli==3.28.0 snow dbt deploy UK_TENDERS --source dbt --profiles-dir snowflake/dbt --dbt-version 1.12.3 --database TENDER_DB --schema DBT --role TENDER_TRANSFORM -c tender
 
       - name: Create dbt task and alert
         if: steps.changed.outputs.dbt_task == 'true'

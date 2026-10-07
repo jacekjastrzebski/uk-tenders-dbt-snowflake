@@ -60,7 +60,7 @@ The project is deployed as a dbt project object and runs on a schedule inside Sn
 | :20 | `dbt source freshness`, then `dbt build --target prod` → `STAGING`, `MARTS` | task `DBT.RUN_DBT`, warehouse `TENDER_WH` |
 | :50 | Email if the dbt run failed | alert `DBT.RUN_DBT_FAILED` |
 
-- **Deploy:** merging a change under `dbt/` deploys a new version of `TENDER_DB.DBT.UK_TENDERS` (`snow dbt deploy` in `deploy.yml`, after CI). The prod profile is `snowflake/dbt/profiles.yml`.
+- **Deploy:** merging a change under `dbt/` deploys a new version of `TENDER_DB.DBT.UK_TENDERS` (`snow dbt deploy` in `deploy.yml`, after CI). The prod profile is `snowflake/dbt/profiles.yml`. dbt is pinned to 1.12.3 there, because the account default (1.9.4) can't compile the project; when upgrading local dbt, check `SELECT SYSTEM$SUPPORTED_DBT_VERSIONS();` and move the pin too.
 - **Run by hand:** `EXECUTE DBT PROJECT TENDER_DB.DBT.UK_TENDERS ARGS = 'build --target prod';`, or `EXECUTE TASK TENDER_DB.DBT.RUN_DBT;` to run the task as scheduled.
 - **Logs:** Snowsight → Monitoring → dbt projects shows each run with its output. Task runs are in `TABLE(TENDER_DB.INFORMATION_SCHEMA.TASK_HISTORY(TASK_NAME => 'RUN_DBT'))`.
 - **One-off setup:** run `snowflake/dbt/00_dbt_setup.sql` as ACCOUNTADMIN before the first deploy.
