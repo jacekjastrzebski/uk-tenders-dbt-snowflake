@@ -14,9 +14,11 @@ One file per significant decision: the context, the decision and its consequence
 | [0008](0008-dbt-environments-and-staging-views.md) | dbt: dev/prod by schema, staging as views | Accepted; views superseded by 0015 |
 | [0009](0009-run-dbt-on-a-schedule-in-snowflake.md) | Run dbt in Snowflake, 20 minutes after each load | Proposed |
 | [0010](0010-source-freshness-thresholds.md) | Source freshness: warn at 13 h (logged), error at 26 h (email) | Accepted |
-| [0011](0011-load-window-overlap.md) | Overlap each load window by 15 minutes | Accepted |
+| [0011](0011-load-window-overlap.md) | Overlap each load window by 15 minutes | Accepted; time zone risk resolved by 0018 |
 | [0012](0012-business-terms-in-staging.md) | Name models in business terms: notices, not releases | Accepted |
 | [0015](0015-staging-as-tables.md) | Staging models as tables; layers named raw → staging → marts | Accepted |
 | [0016](0016-strip-contact-details-in-staging.md) | Strip contact details from staging, including the stored JSON | Accepted |
+| [0017](0017-backfill-from-procurement-act-start.md) | Backfill from 24 February 2025, through the API | Accepted |
+| [0018](0018-api-dates-in-uk-local-time.md) | Send API window dates as UK local time | Accepted |
 | [0019](0019-star-schema-for-power-bi.md) | Marts as a star schema for Power BI | Accepted |
 | [0020](0020-convert-amounts-to-gbp-with-hmrc-rates.md) | Convert amounts to GBP with HMRC monthly rates | Accepted |
