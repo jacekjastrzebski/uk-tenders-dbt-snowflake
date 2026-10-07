@@ -1,0 +1,63 @@
+version: 2
+
+models:
+  - name: stg_find_a_tender__notices
+    description: One row per notice (OCDS release), deduplicated across loads.
+    columns:
+      - name: notice_id
+        description: Notice ID, e.g. 094475-2026.
+        data_tests: [unique, not_null]
+      - name: ocid
+        description: Procurement ID, shared by all notices of one procurement.
+        data_tests: [not_null]
+      - name: published_at
+        data_tests: [not_null]
+      - name: tags
+        description: OCDS release tags; coarse, use notice_type to classify.
+      - name: notice_type
+        description: Procurement Act notice type UK1-UK17; null for older-regime notices.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [UK1, UK2, UK3, UK4, UK5, UK6, UK7, UK8, UK9, UK10,
+                         UK11, UK12, UK13, UK14, UK15, UK16, UK17]
+      - name: cpv_code
+        description: Main CPV code, from tender.classification, else the first tender item, else the first award item.
+      - name: notice
+        description: The full notice as JSON, for the child models.
+
+  - name: stg_find_a_tender__parties
+    description: One row per organisation in a notice. Contact details are left out.
+    columns:
+      - name: party_key
+        data_tests: [unique, not_null]
+      - name: notice_id
+        data_tests: [not_null]
+
+  - name: stg_find_a_tender__awards
+    description: One row per award in a notice.
+    columns:
+      - name: award_key
+        data_tests: [unique, not_null]
+      - name: notice_id
+        data_tests: [not_null]
+
+  - name: stg_find_a_tender__award_suppliers
+    description: One row per supplier on an award.
+    columns:
+      - name: award_supplier_key
+        data_tests: [unique, not_null]
+      - name: award_key
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_find_a_tender__awards')
+                field: award_key
+
+  - name: stg_find_a_tender__contracts
+    description: One row per contract in a notice.
+    columns:
+      - name: contract_key
+        data_tests: [unique, not_null]
+      - name: notice_id
+        data_tests: [not_null]

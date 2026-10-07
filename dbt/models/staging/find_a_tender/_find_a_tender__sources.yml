@@ -1,0 +1,19 @@
+version: 2
+
+sources:
+  - name: raw
+    description: Raw Find a Tender data, loaded by the stored procedure in snowflake/native_ingestion/.
+    database: TENDER_DB
+    schema: RAW
+    config:
+      loaded_at_field: loaded_at
+      freshness:   # loads run every 3 hours by day; the overnight gap is 12 hours
+        warn_after: {count: 13, period: hour}
+        error_after: {count: 26, period: hour}
+    tables:
+      - name: find_a_tender_releases
+        description: One row per API page, stored unchanged; payload:releases holds up to 100 notices.
+      - name: find_a_tender_ingest_runs
+        description: One row per loader run, with its time window and status.
+        config:
+          loaded_at_field: finished_at

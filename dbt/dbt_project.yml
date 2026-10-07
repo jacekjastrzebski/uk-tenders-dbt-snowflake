@@ -1,0 +1,15 @@
+# dbt project: turns raw Find a Tender API pages into staging tables and marts.
+# Run from the repo root: uv run dbt build --project-dir dbt
+name: uk_tenders
+version: "1.0.0"
+profile: uk_tenders
+
+model-paths: ["models"]
+macro-paths: ["macros"]
+test-paths: ["tests"]
+
+models:
+  uk_tenders:
+    staging:
+      +schema: staging        # STAGING in prod, DEV_STAGING in dev
+      +materialized: view
