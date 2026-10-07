@@ -1,6 +1,6 @@
-# 0018. Convert amounts to GBP with HMRC monthly rates
+# 0020. Convert amounts to GBP with HMRC monthly rates
 
-Status: Accepted (2026-10-07). Numbered 0018 because 0017 is on the backfill branch.
+Status: Accepted (2026-10-07).
 
 ## Context
 Most notice values are in GBP, but some are not (2 EUR awards and 1 USD contract in the first days of data). Summing across currencies gives wrong totals. Options were filtering to GBP, a Snowflake Marketplace FX dataset, or official HMRC rates. Snowflake's own FX listing is paid after a 60-day trial; the free "Federal Exchange Rates" listing is not available in this account's Azure region.

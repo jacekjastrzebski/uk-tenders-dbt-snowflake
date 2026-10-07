@@ -11,7 +11,7 @@ The dashboard answers four questions, used as page headers: **What's open to bid
   - `fct_procurements`: one row per procurement (`ocid`): current stage, closing date, tender, award and contract dates. Answers *What's open to bid?* and *How long to award?*
   - `fct_award_suppliers`: one row per supplier on an award, deduplicated across notices (`procurement_award_key`, latest notice wins); value in GBP, split equally between joint suppliers so totals add up. Answers *Who's buying?* and *Who's winning?*
 - Dimensions: `dim_dates` (generated calendar, UK financial year), `dim_buyers`, `dim_suppliers` (grouped by normalised name plus a seed for exceptions), `dim_cpv_divisions` (sector and the digital-and-data market flag: CPV 48, 72).
-- Amounts converted to GBP ([0018](0018-convert-amounts-to-gbp-with-hmrc-rates.md)); marts materialised as tables with `+grants` for a read-only reporting role.
+- Amounts converted to GBP ([0020](0020-convert-amounts-to-gbp-with-hmrc-rates.md)); marts materialised as tables with `+grants` for a read-only reporting role.
 - Dropped from the research draft: `fct_notices` and `dim_notice_types`; no header needs them.
 
 ## Consequences
