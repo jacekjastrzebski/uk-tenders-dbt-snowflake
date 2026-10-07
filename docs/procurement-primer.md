@@ -35,6 +35,19 @@ Related terms:
 | Threshold | Contract value above which the full rules apply; thresholds are set in regulations and reviewed periodically |
 | CPV code | Common Procurement Vocabulary: a standard code for what is being bought, used to find digital and data work |
 
+### CPV codes
+
+The Common Procurement Vocabulary (CPV) codes what is being bought. It started as an EU standard and the UK still uses it. A code has 8 digits (plus a check digit, e.g. `72267000-4`), and its leading digits form a hierarchy from broad to specific:
+
+| Digits | Level | Example |
+|---|---|---|
+| `72` | Division | IT services |
+| `722` | Group | Software programming and consultancy |
+| `7226` | Class | Software-related services |
+| `72267` | Category | Software maintenance and repair |
+
+There are about 45 divisions, readable enough to chart as sectors. This project reports by division (the first 2 digits) and defines the **digital and data** market as divisions **48** (software packages and information systems) and **72** (IT services).
+
 ## 3. The Procurement Act 2023
 
 The Procurement Act 2023 replaced the previous EU-derived regulations (Public Contracts Regulations 2015 and others) and went live on **24 February 2025**. Its main changes:

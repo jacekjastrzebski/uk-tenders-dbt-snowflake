@@ -26,3 +26,16 @@ models:
         description: UK financial year, e.g. 2026/27 (1 April 2026 to 31 March 2027); sorts correctly as text.
       - name: financial_month_number
         description: Month within the financial year, April = 1 to March = 12; sort months by this in financial-year visuals.
+
+  - name: dim_cpv_divisions
+    description: Sectors, one row per CPV division (first 2 digits of a CPV code).
+    columns:
+      - name: cpv_division
+        description: e.g. 72; facts join on LEFT(cpv_code, 2).
+        data_tests: [unique, not_null]
+      - name: division_name
+        description: Official CPV name, e.g. IT services.
+      - name: is_digital_and_data
+        description: True for divisions 48 (software) and 72 (IT services).
+      - name: market
+        description: Digital and data, or Other; for slicers.

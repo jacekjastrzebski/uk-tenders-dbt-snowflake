@@ -15,8 +15,15 @@ erDiagram
         string financial_year "e.g. 2026/27"
         int financial_month_number "April = 1"
     }
+    DIM_CPV_DIVISIONS {
+        string cpv_division PK "e.g. 72; facts join on LEFT(cpv_code, 2)"
+        string division_name "e.g. IT services"
+        boolean is_digital_and_data "48 and 72"
+        string market "Digital and data or Other"
+    }
 ```
 
 ## Reading notes
 
+- Facts join their CPV division (`LEFT(cpv_code, 2)`) to `cpv_division`; notices without a CPV code have no sector.
 - Facts join their date columns (UK date, not UTC) to `calendar_date`; a fact has several dates, so in Power BI one relationship is active and the others are used with `USERELATIONSHIP`.

@@ -14,7 +14,9 @@ Terms used in this project, grouped by area. Procurement background: [procuremen
 | Award | The decision to give a contract to one or more suppliers |
 | Contract | The signed agreement following an award |
 | Lot | A separately awarded part of a procurement |
-| CPV code | Common Procurement Vocabulary: standard code for what is bought |
+| CPV code | Common Procurement Vocabulary: standard 8-digit code for what is bought, see [primer](procurement-primer.md#cpv-codes) |
+| CPV division | The first 2 digits of a CPV code: one of about 45 sectors, e.g. 72 IT services |
+| Digital and data market | CPV divisions 48 (software) and 72 (IT services) |
 | Old-regime notice | A notice under the rules before the Procurement Act 2023 (24 Feb 2025); has no notice type |
 
 ## OCDS and the API

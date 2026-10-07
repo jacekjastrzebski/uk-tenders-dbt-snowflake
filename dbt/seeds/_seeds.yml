@@ -22,3 +22,20 @@ seeds:
         data_tests: [not_null]
       - name: units_per_gbp
         data_tests: [not_null]
+
+  - name: cpv_divisions
+    description: >
+      The 45 CPV 2008 divisions (first 2 digits of a CPV code) with their official
+      names; is_digital_and_data marks the market this project tracks (48, 72).
+    config:
+      column_types:
+        cpv_division: varchar(2)   # keep the leading zero of 03 and 09
+        division_name: varchar
+        is_digital_and_data: boolean
+    columns:
+      - name: cpv_division
+        data_tests: [unique, not_null]
+      - name: division_name
+        data_tests: [not_null]
+      - name: is_digital_and_data
+        data_tests: [not_null]

@@ -8,7 +8,7 @@ dbt turns the raw API pages in `TENDER_DB.RAW` into clean tables. The project is
 |---|---|---|---|
 | Sources | `RAW` | tables, loaded by the stored procedure | One row per API page |
 | Staging | `STAGING` / `DEV_STAGING` | tables ([ADR 0015](adr/0015-staging-as-tables.md)) | One row per notice, party, award, award supplier, contract; deduplicated, typed, no personal data |
-| Seeds | `STAGING` / `DEV_STAGING` | tables, from CSV in `dbt/seeds/` | Reference data: HMRC exchange rates |
+| Seeds | `STAGING` / `DEV_STAGING` | tables, from CSV in `dbt/seeds/` | Reference data: HMRC exchange rates, CPV divisions |
 | Marts | `MARTS` / `DEV_MARTS` | tables | Star schema for Power BI ([ADR 0019](adr/0019-star-schema-for-power-bi.md)), see [Marts](#marts) |
 
 dbt runs as role `TENDER_TRANSFORM` (`snowflake/setup/03_transform_role.sql`): it can read `RAW` and create its own schemas, nothing else. The `dev` target writes to `DEV_*` schemas, so development never overwrites prod.
@@ -66,6 +66,7 @@ Star schema for the Power BI report ([ADR 0019](adr/0019-star-schema-for-power-b
 | Model | Grain | Used for |
 |---|---|---|
 | `dim_dates` | Day, 2015–2035 (vars in `dbt_project.yml`) | Date filters and trends; UK financial year |
+| `dim_cpv_divisions` | CPV division (seed `cpv_divisions`) | Sector filters; the digital and data market (48, 72) |
 
 Rules for fact date columns:
 
