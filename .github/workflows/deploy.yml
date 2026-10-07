@@ -1,6 +1,10 @@
 # Deploy the loader to Snowflake when a change to it merges to main.
-# Uploads ingestion/load_find_a_tender.py to the code stage, then recreates the
-# stored procedure, the scheduled tasks that run it and the failure alert.
+# Each step runs only if its own file changed in the push:
+#   ingestion/load_find_a_tender.py  -> upload it to the code stage
+#   02_ingest_procedure.sql          -> recreate the stored procedure
+#   03_ingest_task.sql               -> recreate the scheduled tasks
+#   04_failure_alert.sql             -> recreate the failure alert
+# A manual run (workflow_dispatch) deploys everything.
 # One-off setup (00 and 01 in snowflake/native_ingestion/) stays manual:
 # 01 needs ACCOUNTADMIN; this workflow deploys as TENDER_DEPLOY with role TENDER_INGEST.
 name: Deploy
@@ -28,7 +32,30 @@ jobs:
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0   # full history, to compare with the commit before the push
       - uses: astral-sh/setup-uv@v10.2.0
+
+      - name: Find changed files
+        id: changed
+        env:
+          EVENT: ${{ github.event_name }}
+          BEFORE: ${{ github.event.before }}
+          AFTER: ${{ github.sha }}
+        run: |
+          if [ "$EVENT" != workflow_dispatch ]; then
+            changed_files=$(git diff --name-only "$BEFORE" "$AFTER")
+          fi
+          deploy_if_changed() {   # $1 = output name, $2 = file
+            if [ "$EVENT" = workflow_dispatch ] || grep -qx "$2" <<< "$changed_files"; then
+              echo "$1=true" >> "$GITHUB_OUTPUT"
+              echo "deploy $2"
+            fi
+          }
+          deploy_if_changed loader    ingestion/load_find_a_tender.py
+          deploy_if_changed procedure snowflake/native_ingestion/02_ingest_procedure.sql
+          deploy_if_changed tasks     snowflake/native_ingestion/03_ingest_task.sql
+          deploy_if_changed alert     snowflake/native_ingestion/04_failure_alert.sql
 
       - name: Write Snowflake connection
         env:
@@ -51,15 +78,19 @@ jobs:
           TOML
 
       - name: Upload loader
+        if: steps.changed.outputs.loader == 'true'
         run: uvx --from snowflake-cli==3.28.0 snow stage copy ingestion/load_find_a_tender.py @TENDER_DB.RAW.CODE_STAGE --overwrite -c tender
 
       - name: Create procedure
+        if: steps.changed.outputs.procedure == 'true'
         run: uvx --from snowflake-cli==3.28.0 snow sql -f snowflake/native_ingestion/02_ingest_procedure.sql -c tender
 
       - name: Create tasks
+        if: steps.changed.outputs.tasks == 'true'
         run: uvx --from snowflake-cli==3.28.0 snow sql -f snowflake/native_ingestion/03_ingest_task.sql -c tender
 
       - name: Create failure alert
+        if: steps.changed.outputs.alert == 'true'
         env:
           ALERT_EMAIL: ${{ secrets.ALERT_EMAIL }}
         run: uvx --from snowflake-cli==3.28.0 snow sql -f snowflake/native_ingestion/04_failure_alert.sql -D "alert_email=$ALERT_EMAIL" -c tender
