@@ -29,3 +29,12 @@ FROM
     supplier_notices
 GROUP BY
     supplier_key
+
+UNION ALL
+
+-- Awards published without a supplier
+SELECT
+    'UNKNOWN SUPPLIER',
+    'Unknown supplier',
+    NULL,
+    FALSE

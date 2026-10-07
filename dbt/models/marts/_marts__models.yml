@@ -66,3 +66,45 @@ models:
         description: All organisation IDs seen for this supplier, comma-separated.
       - name: is_withheld
         description: True when the buyer withheld the supplier's name (Procurement Act section 94); leave out of supplier rankings.
+
+  - name: fct_award_suppliers
+    description: >
+      One row per supplier on an award (deduplicated across notices); award
+      value in GBP split equally between suppliers. Excludes dynamic-market
+      admissions and cancelled awards. Headline totals use is_in_headline.
+    columns:
+      - name: award_supplier_key
+        data_tests: [unique, not_null]
+      - name: award_date
+        description: UK date of the award (see date_source).
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_dates')
+                field: calendar_date
+      - name: buyer_key
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_buyers')
+                field: buyer_key
+      - name: supplier_key
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_suppliers')
+                field: supplier_key
+      - name: cpv_division
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_cpv_divisions')
+                field: cpv_division
+      - name: award_value_gbp
+        description: The whole award's value in GBP (repeated on each supplier row; don't sum it).
+      - name: allocated_value_gbp
+        description: This supplier's equal share of the award value; sum this.
+      - name: is_in_headline
+        description: Counts in the headline totals - not a framework set-up, not a large value, value known.

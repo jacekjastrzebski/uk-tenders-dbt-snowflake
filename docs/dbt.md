@@ -8,6 +8,7 @@ dbt turns the raw API pages in `TENDER_DB.RAW` into clean tables. The project is
 |---|---|---|---|
 | Sources | `RAW` | tables, loaded by the stored procedure | One row per API page |
 | Staging | `STAGING` / `DEV_STAGING` | tables ([ADR 0015](adr/0015-staging-as-tables.md)) | One row per notice, party, award, award supplier, contract; deduplicated, typed, no personal data |
+| Intermediate | `INTERMEDIATE` / `DEV_INTERMEDIATE` | views | Business rules shared by marts, e.g. `int_awards` (one row per award across notices); not for Power BI |
 | Seeds | `STAGING` / `DEV_STAGING` | tables, from CSV in `dbt/seeds/` | Reference data: HMRC exchange rates, CPV divisions |
 | Marts | `MARTS` / `DEV_MARTS` | tables | Star schema for Power BI ([ADR 0019](adr/0019-star-schema-for-power-bi.md)), see [Marts](#marts) |
 
@@ -65,10 +66,11 @@ Star schema for the Power BI report ([ADR 0019](adr/0019-star-schema-for-power-b
 
 | Model | Grain | Used for |
 |---|---|---|
-| `dim_dates` | Day, 2015–2035 (vars in `dbt_project.yml`) | Date filters and trends; UK financial year |
+| `dim_dates` | Day, 1990–2035 (vars in `dbt_project.yml`) | Date filters and trends; UK financial year |
 | `dim_cpv_divisions` | CPV division (seed `cpv_divisions`) | Sector filters; the digital and data market (48, 72) |
 | `dim_buyers` | Buyer organisation, grouped by normalised name | Who's buying? |
-| `dim_suppliers` | Supplier organisation, grouped by normalised name (lots removed); withheld flagged | Who's winning? |
+| `dim_suppliers` | Supplier organisation, grouped by normalised name (lots removed); withheld flagged; plus "Unknown supplier" | Who's winning? |
+| `fct_award_suppliers` | Supplier on an award, deduplicated across notices ([ADR 0022](adr/0022-award-fact-rules.md)) | Who's buying? Who's winning? Sum `allocated_value_gbp` where `is_in_headline` |
 
 Rules for fact date columns:
 

@@ -7,7 +7,7 @@ WITH days AS (
     SELECT
         DATEADD(DAY, ROW_NUMBER() OVER (ORDER BY SEQ4()) - 1, '{{ var("dim_dates_start") }}'::DATE) AS calendar_date
     FROM
-        TABLE(GENERATOR(ROWCOUNT => 10000))   -- more days than the range needs
+        TABLE(GENERATOR(ROWCOUNT => 20000))   -- more days than the range needs (about 55 years)
 )
 
 SELECT

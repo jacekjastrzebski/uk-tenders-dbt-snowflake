@@ -1,0 +1,24 @@
+version: 2
+
+models:
+  - name: int_awards
+    description: >
+      One row per distinct award across its notices, with value, date, GBP
+      conversion and flags (rules in docs/eda-findings.md, Awards).
+    columns:
+      - name: procurement_award_key
+        description: ocid/award_id.
+        data_tests: [unique, not_null]
+      - name: award_date
+        description: UK date; award date, else contract signed date, else first publication date (see date_source).
+        data_tests: [not_null]
+      - name: value_gbp
+        description: Award value in GBP; null when no value was published.
+      - name: value_basis
+        description: net or gross (incl. VAT); net is preferred.
+      - name: is_framework
+        description: Framework set-up (ceiling value), not a call-off; left out of headline totals.
+      - name: is_large_value
+        description: value_gbp at or above the var large_award_gbp; left out of headline totals, listed for review.
+      - name: is_dynamic_market
+        description: Admission to a dynamic market (UK14, UK15), not an award.
