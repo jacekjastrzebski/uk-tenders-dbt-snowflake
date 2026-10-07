@@ -54,3 +54,4 @@ uv run dbt docs generate --project-dir dbt && uv run dbt docs serve --project-di
 - Every model has a key column tested `unique` and `not_null`; child rows use `<parent>/<child>` keys (e.g. `award_key = notice_id/award_id`).
 - SQL style as in `CLAUDE.md`.
 - Personal data (`parties[].contactPoint`) never leaves `RAW`.
+- Changing models, keys or relationships means updating [`docs/diagrams/staging-erd.md`](diagrams/staging-erd.md) in the same PR.
