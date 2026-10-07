@@ -70,6 +70,7 @@ Star schema for the Power BI report ([ADR 0019](adr/0019-star-schema-for-power-b
 | `dim_cpv_divisions` | CPV division (seed `cpv_divisions`) | Sector filters; the digital and data market (48, 72) |
 | `dim_buyers` | Buyer organisation, grouped by normalised name | Who's buying? |
 | `dim_suppliers` | Supplier organisation, grouped by normalised name (lots removed); withheld flagged; plus "Unknown supplier" | Who's winning? |
+| `fct_procurements` | Procurement Act tender (`ocid` with a UK4 notice) | What's open to bid? (closing_date from today, no award, not cancelled) How long to award? (median `days_tender_to_award`) |
 | `fct_award_suppliers` | Supplier on an award, deduplicated across notices ([ADR 0022](adr/0022-award-fact-rules.md)) | Who's buying? Who's winning? Sum `allocated_value_gbp` where `is_in_headline` |
 
 Rules for fact date columns:

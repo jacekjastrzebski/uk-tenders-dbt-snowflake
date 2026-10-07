@@ -8,6 +8,23 @@ erDiagram
     FCT_AWARD_SUPPLIERS }o--|| DIM_BUYERS : "buyer_key"
     FCT_AWARD_SUPPLIERS }o--|| DIM_SUPPLIERS : "supplier_key"
     FCT_AWARD_SUPPLIERS }o--o| DIM_CPV_DIVISIONS : "cpv_division"
+    FCT_PROCUREMENTS }o--|| DIM_DATES : "tender_published_date"
+    FCT_PROCUREMENTS }o--o| DIM_BUYERS : "buyer_key"
+    FCT_PROCUREMENTS }o--o| DIM_CPV_DIVISIONS : "cpv_division"
+
+    FCT_PROCUREMENTS {
+        string ocid PK "one Procurement Act tender"
+        string buyer_key FK
+        string cpv_division FK
+        string title
+        date tender_published_date FK "first UK4"
+        date closing_date "latest UK4: bid or interest deadline"
+        date award_published_date "first UK6, else UK7"
+        date contract_published_date "first UK7"
+        int days_tender_to_award
+        int days_award_to_contract
+        boolean is_cancelled "UK12 and no award"
+    }
 
     FCT_AWARD_SUPPLIERS {
         string award_supplier_key PK "procurement_award_key/supplier_key"
@@ -54,6 +71,7 @@ erDiagram
 
 ## Reading notes
 
+- `FCT_PROCUREMENTS`: one row per tender. Open = `closing_date` from today, no `award_published_date`, not `is_cancelled`, worked out in Power BI so it never goes stale. Its other dates also join `DIM_DATES`, as inactive relationships.
 - `FCT_AWARD_SUPPLIERS`: one row per supplier on an award; sum `allocated_value_gbp`, filtered on `is_in_headline` for headline numbers. Rules in [ADR 0022](../adr/0022-award-fact-rules.md).
 - Facts join buyers on `buyer_key` and suppliers on `supplier_key`: the name normalised with the macro `normalise_org_name` (lot numbers removed, upper case, single spaces), because one organisation appears under several IDs ([ADR 0021](../adr/0021-keep-supplier-names.md)).
 - Facts join their CPV division (`LEFT(cpv_code, 2)`) to `cpv_division`; notices without a CPV code have no sector.

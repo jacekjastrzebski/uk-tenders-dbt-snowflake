@@ -106,3 +106,58 @@ models:
         description: This supplier's equal share of the award value; sum this.
       - name: is_in_headline
         description: Counts in the headline totals - not a framework set-up, not a large value, value known.
+
+  - name: fct_procurements
+    description: >
+      One row per Procurement Act tender (a procurement with a UK4 notice), for
+      "What's open to bid?" and "How long to award?". Dates are UK dates of the
+      notices' publication. Open = closing_date from today, no award_published_date,
+      not is_cancelled (worked out in Power BI).
+    columns:
+      - name: ocid
+        data_tests: [unique, not_null]
+      - name: buyer_key
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_buyers')
+                field: buyer_key
+      - name: cpv_division
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_cpv_divisions')
+                field: cpv_division
+      - name: tender_published_date
+        description: First tender notice (UK4).
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('dim_dates')
+                field: calendar_date
+      - name: closing_date
+        description: From the latest tender notice; the bid deadline, or the expression-of-interest deadline in two-stage procedures.
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_dates')
+                field: calendar_date
+      - name: award_published_date
+        description: First award notice (UK6), else the first contract notice (UK7) for contracts that skip it.
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_dates')
+                field: calendar_date
+      - name: contract_published_date
+        description: First contract details notice (UK7).
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('dim_dates')
+                field: calendar_date
+      - name: days_tender_to_award
+        description: Days from tender to award notice; null when unknown or notices were published out of order.
+      - name: is_cancelled
+        description: A termination notice (UK12) and no award.
