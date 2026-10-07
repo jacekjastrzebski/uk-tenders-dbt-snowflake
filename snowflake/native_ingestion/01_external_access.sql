@@ -1,8 +1,10 @@
--- Requires a paid Snowflake account (trial accounts block external access).
--- Production alternative to running the loader on GitHub Actions.
-
--- Allow Snowflake to call the Find a Tender API.
--- Integrations and task privileges are account-level, so this needs ACCOUNTADMIN.
+-- Account-level setup for running the loader inside Snowflake. Needs ACCOUNTADMIN.
+-- Creates:
+--   - access to the Find a Tender API and an email integration for failure alerts
+--   - role TENDER_INGEST: owns the procedure, tasks and alerts, and has only the
+--     privileges they need
+--   - service user TENDER_DEPLOY: used by GitHub Actions to deploy, with that role only
+-- Run after snowflake/setup/ and 00_code_stage.sql (it grants on their objects).
 USE ROLE ACCOUNTADMIN;
 
 -- Outbound traffic is allowed to this host only
@@ -15,6 +17,35 @@ CREATE EXTERNAL ACCESS INTEGRATION IF NOT EXISTS FIND_A_TENDER_API_ACCESS
   ALLOWED_NETWORK_RULES = (TENDER_DB.RAW.FIND_A_TENDER_API_RULE)
   ENABLED = TRUE;
 
--- SYSADMIN owns the procedure and the task
-GRANT USAGE ON INTEGRATION FIND_A_TENDER_API_ACCESS TO ROLE SYSADMIN;
-GRANT EXECUTE TASK ON ACCOUNT TO ROLE SYSADMIN;
+-- Failure emails. The recipient is set in 04_failure_alert.sql from the
+-- ALERT_EMAIL GitHub secret; it must be the verified email of a user in this account.
+CREATE NOTIFICATION INTEGRATION IF NOT EXISTS TENDER_EMAIL
+  TYPE = EMAIL
+  ENABLED = TRUE;
+
+-- Role that owns and runs the loader
+CREATE ROLE IF NOT EXISTS TENDER_INGEST;
+GRANT ROLE TENDER_INGEST TO ROLE SYSADMIN;   -- admins can use and manage its objects
+
+GRANT USAGE ON DATABASE TENDER_DB TO ROLE TENDER_INGEST;
+GRANT USAGE ON SCHEMA TENDER_DB.RAW TO ROLE TENDER_INGEST;
+GRANT USAGE ON WAREHOUSE TENDER_WH TO ROLE TENDER_INGEST;
+GRANT SELECT, INSERT ON TABLE TENDER_DB.RAW.FIND_A_TENDER_RELEASES TO ROLE TENDER_INGEST;
+GRANT SELECT, INSERT ON TABLE TENDER_DB.RAW.FIND_A_TENDER_INGEST_RUNS TO ROLE TENDER_INGEST;
+GRANT READ, WRITE ON STAGE TENDER_DB.RAW.CODE_STAGE TO ROLE TENDER_INGEST;
+GRANT CREATE PROCEDURE, CREATE TASK, CREATE ALERT ON SCHEMA TENDER_DB.RAW TO ROLE TENDER_INGEST;
+GRANT USAGE ON INTEGRATION FIND_A_TENDER_API_ACCESS TO ROLE TENDER_INGEST;
+GRANT USAGE ON INTEGRATION TENDER_EMAIL TO ROLE TENDER_INGEST;
+GRANT EXECUTE TASK, EXECUTE MANAGED TASK ON ACCOUNT TO ROLE TENDER_INGEST;
+GRANT EXECUTE ALERT, EXECUTE MANAGED ALERT ON ACCOUNT TO ROLE TENDER_INGEST;
+
+-- Service user for GitHub Actions: key-pair login only, no password
+CREATE USER IF NOT EXISTS TENDER_DEPLOY
+  TYPE = SERVICE
+  DEFAULT_ROLE = TENDER_INGEST
+  COMMENT = 'Deploys the loader from GitHub Actions';
+GRANT ROLE TENDER_INGEST TO USER TENDER_DEPLOY;
+
+-- Then set its public key (see docs/snowflake-cli.md) and store the private key
+-- in the SNOWFLAKE_PRIVATE_KEY GitHub secret:
+--   ALTER USER TENDER_DEPLOY SET RSA_PUBLIC_KEY = 'MIIB...';

@@ -1,0 +1,65 @@
+# Deploy the loader to Snowflake when a change to it merges to main.
+# Uploads ingestion/load_find_a_tender.py to the code stage, then recreates the
+# stored procedure, the scheduled tasks that run it and the failure alert.
+# One-off setup (00 and 01 in snowflake/native_ingestion/) stays manual:
+# 01 needs ACCOUNTADMIN; this workflow deploys as TENDER_DEPLOY with role TENDER_INGEST.
+name: Deploy
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - ingestion/load_find_a_tender.py
+      - snowflake/native_ingestion/02_ingest_procedure.sql
+      - snowflake/native_ingestion/03_ingest_task.sql
+      - snowflake/native_ingestion/04_failure_alert.sql
+  workflow_dispatch:         # manual run from the Actions tab (main only)
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy            # never run two deploys at once
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v7
+      - uses: astral-sh/setup-uv@v10.2.0
+
+      - name: Write Snowflake connection
+        env:
+          SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+          SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
+          SNOWFLAKE_PRIVATE_KEY: ${{ secrets.SNOWFLAKE_PRIVATE_KEY }}
+        run: |
+          umask 077   # key and config readable by this user only
+          mkdir -p ~/.snowflake
+          printf '%s\n' "$SNOWFLAKE_PRIVATE_KEY" > ~/.snowflake/key.p8
+          cat > ~/.snowflake/connections.toml <<TOML
+          [tender]
+          account = "$SNOWFLAKE_ACCOUNT"
+          user = "$SNOWFLAKE_USER"
+          authenticator = "SNOWFLAKE_JWT"
+          private_key_file = "$HOME/.snowflake/key.p8"
+          role = "TENDER_INGEST"
+          database = "TENDER_DB"
+          warehouse = "TENDER_WH"
+          TOML
+
+      - name: Upload loader
+        run: uvx --from snowflake-cli==3.28.0 snow stage copy ingestion/load_find_a_tender.py @TENDER_DB.RAW.CODE_STAGE --overwrite -c tender
+
+      - name: Create procedure
+        run: uvx --from snowflake-cli==3.28.0 snow sql -f snowflake/native_ingestion/02_ingest_procedure.sql -c tender
+
+      - name: Create tasks
+        run: uvx --from snowflake-cli==3.28.0 snow sql -f snowflake/native_ingestion/03_ingest_task.sql -c tender
+
+      - name: Create failure alert
+        env:
+          ALERT_EMAIL: ${{ secrets.ALERT_EMAIL }}
+        run: uvx --from snowflake-cli==3.28.0 snow sql -f snowflake/native_ingestion/04_failure_alert.sql -D "alert_email=$ALERT_EMAIL" -c tender
