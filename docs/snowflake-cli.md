@@ -101,3 +101,12 @@ Loader runs, with the time window and number of releases:
 snow sql -c tender -q "SELECT run_id, window_from, window_to, releases, status, error_message
   FROM TENDER_DB.RAW.FIND_A_TENDER_INGEST_RUNS ORDER BY finished_at DESC LIMIT 5"
 ```
+
+## Check scripts
+
+Read-only health checks, plus a test email for the failure alert:
+
+```bash
+snow sql -c tender -f snowflake/checks/ingest_health.sql
+snow sql -c tender -f snowflake/checks/alert_email.sql -D alert_email=<you>
+```
