@@ -7,7 +7,7 @@ CREATE OR REPLACE PROCEDURE TENDER_DB.RAW.LOAD_FIND_A_TENDER_RELEASES()
   RETURNS STRING
   LANGUAGE PYTHON
   RUNTIME_VERSION = '3.14'
-  PACKAGES = ('snowflake-snowpark-python', 'requests')
+  PACKAGES = ('snowflake-snowpark-python', 'requests', 'tzdata')  -- tzdata: UK time for API dates
   IMPORTS = ('@TENDER_DB.RAW.CODE_STAGE/load_find_a_tender.py')
   HANDLER = 'load_find_a_tender.main'
   EXTERNAL_ACCESS_INTEGRATIONS = (FIND_A_TENDER_API_ACCESS)

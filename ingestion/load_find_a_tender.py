@@ -23,6 +23,7 @@ from collections.abc import Iterator
 from dataclasses import dataclass, replace
 from datetime import UTC, datetime, timedelta
 from typing import Any
+from zoneinfo import ZoneInfo
 
 import requests
 from requests.adapters import HTTPAdapter
@@ -30,7 +31,8 @@ from snowflake.snowpark import Session
 from urllib3.util.retry import Retry
 
 API_URL = "https://www.find-tender.service.gov.uk/api/1.0/ocdsReleasePackages"
-API_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"  # no time zone; we send UTC
+API_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"  # no offset; the API reads it as UK local time
+API_TIME_ZONE = ZoneInfo("Europe/London")  # ADR 0018
 
 RELEASES_TABLE = "RAW.FIND_A_TENDER_RELEASES"
 RUNS_TABLE = "RAW.FIND_A_TENDER_INGEST_RUNS"
@@ -110,9 +112,10 @@ def fetch_pages(window: Window) -> Iterator[Page]:
     """Yield each page of releases in the window, following links.next."""
     http = http_session()
     url: str | None = API_URL
+    updated_from, updated_to = api_dates(window)
     params: dict[str, str | int] | None = {
-        "updatedFrom": window.start.strftime(API_DATE_FORMAT),
-        "updatedTo": window.end.strftime(API_DATE_FORMAT),
+        "updatedFrom": updated_from,
+        "updatedTo": updated_to,
         "limit": 100,
     }
     while url:
@@ -123,6 +126,20 @@ def fetch_pages(window: Window) -> Iterator[Page]:
 
         url = page.get("links", {}).get("next")  # includes the cursor
         params = None
+
+
+def api_dates(window: Window) -> tuple[str, str]:
+    """The window as UK local times, which the API expects.
+
+    When the clocks go back, 01:00-02:00 happens twice and the API may read a
+    time in that hour as the second one. A window that spans the change
+    therefore starts an hour earlier, so that hour is never skipped.
+    """
+    start = window.start.astimezone(API_TIME_ZONE)
+    end = window.end.astimezone(API_TIME_ZONE)
+    offset_change = (start.utcoffset() or timedelta(0)) - (end.utcoffset() or timedelta(0))
+    clocks_went_back = max(offset_change, timedelta(0))
+    return (start - clocks_went_back).strftime(API_DATE_FORMAT), end.strftime(API_DATE_FORMAT)
 
 
 def http_session() -> requests.Session:
