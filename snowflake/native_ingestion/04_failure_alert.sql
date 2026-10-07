@@ -1,5 +1,3 @@
--- Requires a paid Snowflake account (trial accounts block external access).
-
 -- Email when a scheduled load fails.
 -- Task error notifications cannot send email, so an alert checks the task history
 -- 30 minutes after each run slot (07:30, 10:30, ... 19:30 UK time, every day).

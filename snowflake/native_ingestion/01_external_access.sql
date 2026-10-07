@@ -1,5 +1,3 @@
--- Requires a paid Snowflake account (trial accounts block external access).
-
 -- Allow Snowflake to call the Find a Tender API, run serverless tasks and alerts,
 -- and send failure emails.
 -- Integrations and task privileges are account-level, so this needs ACCOUNTADMIN.

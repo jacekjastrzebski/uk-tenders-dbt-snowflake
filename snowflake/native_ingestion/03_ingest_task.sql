@@ -1,5 +1,3 @@
--- Requires a paid Snowflake account (trial accounts block external access).
-
 -- Run the loader during UK working hours (Europe/London, so it follows BST):
 --   weekdays: every 3 hours from 07:00 to 19:00
 --   weekends: 07:00 and 19:00
