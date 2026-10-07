@@ -68,6 +68,7 @@ Star schema for the Power BI report ([ADR 0019](adr/0019-star-schema-for-power-b
 | `dim_dates` | Day, 2015–2035 (vars in `dbt_project.yml`) | Date filters and trends; UK financial year |
 | `dim_cpv_divisions` | CPV division (seed `cpv_divisions`) | Sector filters; the digital and data market (48, 72) |
 | `dim_buyers` | Buyer organisation, grouped by normalised name | Who's buying? |
+| `dim_suppliers` | Supplier organisation, grouped by normalised name (lots removed); withheld flagged | Who's winning? |
 
 Rules for fact date columns:
 

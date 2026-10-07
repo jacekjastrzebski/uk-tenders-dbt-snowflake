@@ -22,3 +22,4 @@ One file per significant decision: the context, the decision and its consequence
 | [0018](0018-api-dates-in-uk-local-time.md) | Send API window dates as UK local time | Accepted |
 | [0019](0019-star-schema-for-power-bi.md) | Marts as a star schema for Power BI | Accepted |
 | [0020](0020-convert-amounts-to-gbp-with-hmrc-rates.md) | Convert amounts to GBP with HMRC monthly rates | Accepted |
+| [0021](0021-keep-supplier-names.md) | Keep supplier names, group lots, flag withheld suppliers | Accepted |

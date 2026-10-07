@@ -26,10 +26,16 @@ erDiagram
         string buyer_name "from the latest notice"
         string buyer_ids "all IDs seen, comma-separated"
     }
+    DIM_SUPPLIERS {
+        string supplier_key PK "normalised name, lots removed"
+        string supplier_name "from the latest notice"
+        string supplier_ids "all IDs seen, comma-separated"
+        boolean is_withheld "name withheld (section 94)"
+    }
 ```
 
 ## Reading notes
 
-- Facts join buyers on `buyer_key`: the buyer name normalised with the macro `normalise_org_name` (upper case, single spaces), because one organisation appears under several IDs.
+- Facts join buyers on `buyer_key` and suppliers on `supplier_key`: the name normalised with the macro `normalise_org_name` (lot numbers removed, upper case, single spaces), because one organisation appears under several IDs ([ADR 0021](../adr/0021-keep-supplier-names.md)).
 - Facts join their CPV division (`LEFT(cpv_code, 2)`) to `cpv_division`; notices without a CPV code have no sector.
 - Facts join their date columns (UK date, not UTC) to `calendar_date`; a fact has several dates, so in Power BI one relationship is active and the others are used with `USERELATIONSHIP`.

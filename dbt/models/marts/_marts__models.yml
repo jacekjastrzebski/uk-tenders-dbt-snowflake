@@ -50,3 +50,19 @@ models:
         description: Name from the buyer's most recent notice.
       - name: buyer_ids
         description: All organisation IDs seen for this buyer, comma-separated, for tracing back to notices.
+
+  - name: dim_suppliers
+    description: >
+      Suppliers, one row per organisation grouped by normalised name (macro
+      normalise_org_name: lot numbers removed). Names are kept, including the
+      few that may be sole traders' trading names (ADR 0021).
+    columns:
+      - name: supplier_key
+        description: Normalised supplier name; facts join on the same macro applied to their supplier name.
+        data_tests: [unique, not_null]
+      - name: supplier_name
+        description: Name from the supplier's most recent notice, lot numbers removed.
+      - name: supplier_ids
+        description: All organisation IDs seen for this supplier, comma-separated.
+      - name: is_withheld
+        description: True when the buyer withheld the supplier's name (Procurement Act section 94); leave out of supplier rankings.
