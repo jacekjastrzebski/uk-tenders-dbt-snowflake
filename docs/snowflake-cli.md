@@ -48,7 +48,7 @@ snow sql -f <script.sql> -c tender          # a file
 snow sql -q "<statement>" -c tender         # one statement
 ```
 
-Each script starts with `USE ROLE`, so it switches role itself. `01_external_access.sql` needs a user with ACCOUNTADMIN.
+Each script starts with `USE ROLE`, so it switches role itself: `01_external_access.sql` needs a user with ACCOUNTADMIN; `02`–`04` use `TENDER_INGEST`, which SYSADMIN inherits.
 
 ## Set up Snowflake (once)
 
@@ -65,6 +65,26 @@ Check that the procedure's Python version has the packages it needs:
 snow sql -c tender -q "SELECT package_name, MAX(version) FROM INFORMATION_SCHEMA.PACKAGES
   WHERE language = 'python' AND runtime_version = '3.14'
     AND package_name IN ('requests', 'snowflake-snowpark-python') GROUP BY package_name"
+```
+
+## Deploy user for GitHub Actions
+
+`01_external_access.sql` creates service user `TENDER_DEPLOY` with role `TENDER_INGEST` only. Give it a key pair and store the private key in GitHub:
+
+```bash
+openssl genrsa 2048 | openssl pkcs8 -topk8 -nocrypt -out deploy_key.p8
+PUB=$(openssl rsa -in deploy_key.p8 -pubout | grep -v '^-----' | tr -d '\n')
+snow sql -c tender -q "USE ROLE ACCOUNTADMIN; ALTER USER TENDER_DEPLOY SET RSA_PUBLIC_KEY = '$PUB'"
+gh secret set SNOWFLAKE_USER --body TENDER_DEPLOY
+gh secret set SNOWFLAKE_PRIVATE_KEY < deploy_key.p8
+rm deploy_key.p8
+```
+
+To run any `snow` command as the deploy user (e.g. to test a deploy), replace `-c tender` with a temporary connection:
+
+```bash
+-x --account <orgname>-<accountname> --user TENDER_DEPLOY --authenticator SNOWFLAKE_JWT \
+   --private-key-file deploy_key.p8 --role TENDER_INGEST --database TENDER_DB --warehouse TENDER_WH
 ```
 
 ## Deploy the loader

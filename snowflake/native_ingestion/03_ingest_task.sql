@@ -5,7 +5,7 @@
 -- Each run fetches everything since the last successful run, so gaps lose no data.
 -- Serverless (no WAREHOUSE), fixed at SMALL compute; billed only for the run time.
 -- Deployed by .github/workflows/deploy.yml on merge to main.
-USE ROLE SYSADMIN;
+USE ROLE TENDER_INGEST;
 
 CREATE OR REPLACE TASK TENDER_DB.RAW.INGEST_FIND_A_TENDER_WEEKDAYS
   SCHEDULE = 'USING CRON 0 7,10,13,16,19 * * MON-FRI Europe/London'

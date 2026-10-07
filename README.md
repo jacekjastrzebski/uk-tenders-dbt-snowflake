@@ -28,8 +28,9 @@ Find a Tender API  →  Python loader  →  Snowflake (raw)  →  dbt (staging, 
 | Step | Status |
 |---|---|
 | Ingest (Python loader into Snowflake) | Done |
-| Schedule (Snowflake tasks) | TO-DO |
+| Schedule (Snowflake tasks) | Done |
 | Transform (dbt) | TO-DO |
+| Event-based failure alerts for all tasks (ingest and dbt) | TO-DO |
 | Report (Power BI) | TO-DO |
 
 ## Repository layout
@@ -67,8 +68,8 @@ The loader runs inside Snowflake: a stored procedure imports `ingestion/load_fin
 One-off setup, in a Snowflake worksheet:
 
 1. Run the `snowflake/setup/` scripts in order, then `snowflake/native_ingestion/00_code_stage.sql`.
-2. Run `01_external_access.sql` as ACCOUNTADMIN.
-3. Add GitHub secrets `SNOWFLAKE_ACCOUNT`, `SNOWFLAKE_USER`, `SNOWFLAKE_PRIVATE_KEY` and `ALERT_EMAIL` (the verified email of a Snowflake user, which receives failure alerts).
+2. Run `01_external_access.sql` as ACCOUNTADMIN. It creates role `TENDER_INGEST`, which owns and runs the loader, and service user `TENDER_DEPLOY` for GitHub Actions; give that user a key pair (see `docs/snowflake-cli.md`).
+3. Add GitHub secrets `SNOWFLAKE_ACCOUNT`, `SNOWFLAKE_USER` (`TENDER_DEPLOY`), `SNOWFLAKE_PRIVATE_KEY` (its private key) and `ALERT_EMAIL` (the verified email of a Snowflake user, which receives failure alerts).
 
 After that, merging a change to the loader or to scripts `02`–`04` into `main` deploys it: `.github/workflows/deploy.yml` uploads the loader and recreates the procedure, tasks and alert. To deploy by hand:
 

@@ -2,7 +2,7 @@
 # Uploads ingestion/load_find_a_tender.py to the code stage, then recreates the
 # stored procedure, the scheduled tasks that run it and the failure alert.
 # One-off setup (00 and 01 in snowflake/native_ingestion/) stays manual:
-# 01 needs ACCOUNTADMIN, which this workflow's user does not have.
+# 01 needs ACCOUNTADMIN; this workflow deploys as TENDER_DEPLOY with role TENDER_INGEST.
 name: Deploy
 
 on:
@@ -45,7 +45,7 @@ jobs:
           user = "$SNOWFLAKE_USER"
           authenticator = "SNOWFLAKE_JWT"
           private_key_file = "$HOME/.snowflake/key.p8"
-          role = "SYSADMIN"
+          role = "TENDER_INGEST"
           database = "TENDER_DB"
           warehouse = "TENDER_WH"
           TOML

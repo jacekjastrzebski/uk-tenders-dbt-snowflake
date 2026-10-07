@@ -4,13 +4,11 @@
 -- Run with: snow sql -c tender -f snowflake/checks/alert_email.sql -D alert_email=<you>
 
 -- Send a test email the same way the alert does
-CALL SYSTEM$SEND_SNOWFLAKE_NOTIFICATION(
-  SNOWFLAKE.NOTIFICATION.TEXT_PLAIN('Test from TENDER_DB: failure alerts can reach you.'),
-  SNOWFLAKE.NOTIFICATION.EMAIL_INTEGRATION_CONFIG(
-    'TENDER_EMAIL',
-    'Find a Tender alert test',
-    ARRAY_CONSTRUCT('<% alert_email %>')
-  )
+CALL SYSTEM$SEND_EMAIL(
+  'TENDER_EMAIL',
+  '<% alert_email %>',
+  'Find a Tender alert test',
+  'Test from TENDER_DB: failure alerts can reach you.'
 );
 
 -- Recent emails and whether each was sent (status SUCCESS or FAILURE)
