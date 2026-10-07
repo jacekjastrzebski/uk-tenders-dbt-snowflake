@@ -16,7 +16,7 @@ dbt runs as role `TENDER_TRANSFORM` (`snowflake/setup/03_transform_role.sql`): i
 
 ## Set up (once)
 
-1. Run `snowflake/setup/03_transform_role.sql` as ACCOUNTADMIN (replace the user name at the end with yours).
+1. Run `snowflake/setup/03_transform_role.sql` and `04_reporting_role.sql` as ACCOUNTADMIN (replace the user name at the end of each with yours). Run 04 before the first `dbt build`: the marts grant `SELECT` to `TENDER_REPORTER`, and a build fails if that role doesn't exist.
 2. Install dbt: `uv sync --group dbt`.
 3. Create `~/.dbt/profiles.yml` (outside the repo). It reuses the key from the Snowflake CLI setup ([snowflake-cli.md](snowflake-cli.md)); use the full path, dbt does not expand `~`:
 
@@ -72,6 +72,8 @@ Star schema for the Power BI report ([ADR 0019](adr/0019-star-schema-for-power-b
 | `dim_suppliers` | Supplier organisation, grouped by normalised name (lots removed); withheld flagged; plus "Unknown supplier" | Who's winning? |
 | `fct_procurements` | Procurement Act tender (`ocid` with a UK4 notice) | What's open to bid? (closing_date from today, no award, not cancelled) How long to award? (median `days_tender_to_award`) |
 | `fct_award_suppliers` | Supplier on an award, deduplicated across notices ([ADR 0022](adr/0022-award-fact-rules.md)) | Who's buying? Who's winning? Sum `allocated_value_gbp` where `is_in_headline` |
+
+Access: Power BI reads the marts as role `TENDER_REPORTER` (`snowflake/setup/04_reporting_role.sql`), which can query `MARTS` and `DEV_MARTS` only. dbt grants `SELECT` on every mart table at each build (`+grants` in `dbt_project.yml`), so access survives rebuilds. Snowflake activates a user's other roles too (secondary roles), so for real least privilege Power BI should connect as its own user that has only `TENDER_REPORTER`; to test the role yourself, run `USE SECONDARY ROLES NONE` first.
 
 Rules for fact date columns:
 

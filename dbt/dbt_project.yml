@@ -24,6 +24,8 @@ models:
     marts:
       +schema: marts          # MARTS in prod, DEV_MARTS in dev; read by Power BI
       +materialized: table
+      +grants:
+        select: ['TENDER_REPORTER']   # Power BI's role (snowflake/setup/04_reporting_role.sql)
 
 seeds:
   uk_tenders:
