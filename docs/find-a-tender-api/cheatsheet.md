@@ -48,7 +48,7 @@ Real example with 4 releases (contact details redacted): [samples/release-packag
 | `id` | Notice ID | `094475-2026` |
 | `ocid` | Procurement ID, shared by all its notices | `ocds-h6vhtk-078217` |
 | `date` | Publication time, UK local with offset | `2026-10-06T17:48:47+01:00` |
-| `tag` | OCDS stage label | `["award", "contract"]` |
+| `tag` | OCDS stage label; coarse, so classify notices by `noticeType` instead ([EDA findings](../eda-findings.md)) | `["award", "contract"]` |
 | `parties[]` | Organisations, each with `roles` (buyer, supplier, reviewBody) | `contactPoint` holds **personal data**: name, email, telephone |
 | `buyer` | Reference to the buyer in `parties` | `{id, name}` |
 | `tender` | What is bought: title, value, lots, deadlines | |

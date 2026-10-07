@@ -22,6 +22,9 @@ ON
     t1.name = t2.name
 ```
 
+## Docs
+- When a change adds, removes or renames dbt models, keys or relationships, update the diagrams in `docs/diagrams/` in the same PR.
+
 ## Naming
 - Spell out Find a Tender as `find_a_tender` / `FIND_A_TENDER`; never abbreviate it to `fts`.
 

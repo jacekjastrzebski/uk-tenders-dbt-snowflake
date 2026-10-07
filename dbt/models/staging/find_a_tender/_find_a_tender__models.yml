@@ -1,0 +1,163 @@
+version: 2
+
+# Status values follow the OCDS codelists; currencies are the ones seen so far.
+# Both are warnings: a new value should be looked at, not stop the build.
+
+models:
+  - name: stg_find_a_tender__notices
+    description: One row per notice (OCDS release), deduplicated across loads. Contact details removed. Timestamps in UTC.
+    columns:
+      - name: notice_id
+        description: Notice ID, e.g. 094475-2026.
+        data_tests: [unique, not_null]
+      - name: ocid
+        description: Procurement ID, shared by all notices of one procurement.
+        data_tests: [not_null]
+      - name: published_at
+        description: Publication time, UTC.
+        data_tests: [not_null]
+      - name: tags
+        description: OCDS release tags; coarse, use notice_type to classify.
+      - name: notice_type
+        description: Procurement Act notice type UK1-UK17, from the notice's own document; null for older-regime notices.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [UK1, UK2, UK3, UK4, UK5, UK6, UK7, UK8, UK9, UK10,
+                         UK11, UK12, UK13, UK14, UK15, UK16, UK17]
+      - name: legal_basis
+        description: Legal basis of the procurement, e.g. 2023/54 (Procurement Act 2023) or 32014L0024 (older EU-derived rules).
+      - name: is_procurement_act
+        description: True when the legal basis is the Procurement Act 2023 (2023/54).
+      - name: buyer_id
+        description: Buyer organisation ID; from the buyer object, else the party with role buyer.
+      - name: description
+        description: Free text from the buyer; may contain contact emails, treat as possibly personal.
+      - name: tender_status
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [planning, planned, active, cancelled, unsuccessful, complete, withdrawn]
+              config:
+                severity: warn
+      - name: tender_value_amount
+        description: Estimated value, net of VAT.
+      - name: tender_value_amount_gross
+        description: Estimated value including VAT; often present when the net amount is missing.
+      - name: tender_value_currency
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [GBP, EUR, USD]
+              config:
+                severity: warn
+      - name: tender_closing_at
+        description: Deadline for bids, UTC.
+      - name: cpv_code
+        description: Main CPV code, from tender.classification, else the first tender item, else the first award item.
+      - name: notice
+        description: The full notice as JSON without parties' contactPoint, for the child models. Internal; not for marts.
+
+  - name: stg_find_a_tender__parties
+    description: One row per organisation in a notice. Contact details are left out.
+    columns:
+      - name: party_key
+        data_tests: [unique, not_null]
+      - name: notice_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_find_a_tender__notices')
+                field: notice_id
+
+  - name: stg_find_a_tender__awards
+    description: One row per award in a notice. The same award repeats in later notices of its procurement.
+    columns:
+      - name: award_key
+        description: notice_id/award_id.
+        data_tests: [unique, not_null]
+      - name: procurement_award_key
+        description: ocid/award_id; the same award across the notices of one procurement.
+      - name: notice_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_find_a_tender__notices')
+                field: notice_id
+      - name: award_status
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [pending, active, cancelled, unsuccessful]
+              config:
+                severity: warn
+      - name: awarded_at
+        description: Award date, UTC.
+      - name: award_value_amount
+        description: Award value, net of VAT.
+      - name: award_value_amount_gross
+        description: Award value including VAT.
+      - name: award_value_currency
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [GBP, EUR, USD]
+              config:
+                severity: warn
+
+  - name: stg_find_a_tender__award_suppliers
+    description: One row per supplier on an award.
+    columns:
+      - name: award_supplier_key
+        data_tests: [unique, not_null]
+      - name: award_key
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_find_a_tender__awards')
+                field: award_key
+
+  - name: stg_find_a_tender__contracts
+    description: One row per contract in a notice.
+    columns:
+      - name: contract_key
+        description: notice_id/contract_id.
+        data_tests: [unique, not_null]
+      - name: procurement_award_key
+        description: ocid/award_id of the contract's award, which can be in an earlier notice. Warns if that award isn't loaded (it may predate our data).
+        data_tests:
+          - relationships:
+              arguments:
+                to: ref('stg_find_a_tender__awards')
+                field: procurement_award_key
+              config:
+                severity: warn
+      - name: notice_id
+        data_tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_find_a_tender__notices')
+                field: notice_id
+      - name: contract_status
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [pending, active, cancelled, terminated]
+              config:
+                severity: warn
+      - name: contract_value_amount
+        description: Contract value, net of VAT.
+      - name: contract_value_amount_gross
+        description: Contract value including VAT.
+      - name: contract_value_currency
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [GBP, EUR, USD]
+              config:
+                severity: warn
+      - name: signed_at
+        description: Date signed, UTC.

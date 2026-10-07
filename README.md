@@ -39,6 +39,7 @@ Find a Tender API  →  Python loader  →  Snowflake (raw)  →  dbt (staging, 
 |---|---|
 | `ingestion/` | Python loader and an API exploration script |
 | `snowflake/setup/` | Numbered SQL scripts that create the database, warehouse and raw tables |
+| `dbt/` | dbt project: staging models (marts to follow); see `docs/dbt.md` |
 | `snowflake/native_ingestion/` | Numbered SQL scripts that run the loader as a Snowflake stored procedure on a schedule (needs a paid account) |
 | `tests/` | Tests for the Python code |
 | `docs/` | Procurement primer and Find a Tender API reference |
