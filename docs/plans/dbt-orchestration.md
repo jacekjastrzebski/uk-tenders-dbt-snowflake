@@ -4,7 +4,7 @@ Status: built (2026-10-08, ADR 0009); kept for the reasoning. Closes gap 2 of th
 
 ## Goal
 
-After each load, run `dbt build --target prod` inside Snowflake, so `STAGING` and `MARTS` reflect the latest raw data. No laptop, no GitHub Actions schedule.
+After each load, run `dbt build --target prod` inside Snowflake, so `PROD_STAGING` and `PROD_MARTS` reflect the latest raw data. No laptop, no GitHub Actions schedule.
 
 ## Design: one scheduled task, 20 minutes after each load
 
@@ -56,5 +56,5 @@ If loads become irregular or slow, trigger dbt when a load finishes instead: an 
 
 ## Verification (when built)
 
-1. After a load, task history shows `RUN_DBT` succeeded at :20 and `STAGING` row counts include the new notices.
+1. After a load, task history shows `RUN_DBT` succeeded at :20 and `PROD_STAGING` row counts include the new notices.
 2. A deliberately failing test → task FAILED and the alert email arrives.

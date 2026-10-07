@@ -23,7 +23,7 @@ Plan: a CI job on pull requests that runs `dbt build` into a temporary schema (e
 ### 2. dbt has no prod deploy or schedule
 dbt runs only from a laptop.
 
-Plan: [dbt-orchestration.md](dbt-orchestration.md). Deploy the project as a dbt Project on Snowflake from `deploy.yml` when `dbt/` changes, and run it from a task scheduled 20 minutes after each load, with the `prod` target writing to `STAGING` / `MARTS`.
+Plan: [dbt-orchestration.md](dbt-orchestration.md). Deploy the project as a dbt Project on Snowflake from `deploy.yml` when `dbt/` changes, and run it from a task scheduled 20 minutes after each load, with the `prod` target writing to `PROD_STAGING` / `PROD_MARTS`.
 
 ### 3. Setup scripts are not fully reproducible
 `snowflake/setup/` and `00`/`01` in `snowflake/native_ingestion/` are run by hand, so Snowflake can drift from the repo. Known drift: SYSADMIN still holds the grants from the earlier version of `01_external_access.sql` (USAGE on both integrations, EXECUTE [MANAGED] TASK/ALERT).

@@ -1,4 +1,5 @@
--- Role for dbt: reads the raw tables and builds its own schemas (STAGING, MARTS, ...).
+-- Role for dbt: reads the raw tables and builds its own schemas (PROD_STAGING, PROD_MARTS,
+-- DEV_STAGING, ...: <target schema>_<folder schema>).
 -- Needs ACCOUNTADMIN for the grants. Run after 01 and 02.
 USE ROLE ACCOUNTADMIN;
 
@@ -16,3 +17,8 @@ GRANT SELECT ON TABLE TENDER_DB.RAW.FIND_A_TENDER_INGEST_RUNS TO ROLE TENDER_TRA
 
 -- Developers run dbt with this role; replace with your user name
 GRANT ROLE TENDER_TRANSFORM TO USER JACEKJ;
+
+-- The prod target's own schema must exist for the dbt project in Snowflake;
+-- models go to PROD_<folder schema>, so it stays empty
+USE ROLE TENDER_TRANSFORM;
+CREATE SCHEMA IF NOT EXISTS TENDER_DB.PROD;
