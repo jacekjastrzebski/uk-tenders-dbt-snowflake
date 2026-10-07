@@ -1790,8 +1790,8 @@ requires-dist = [
 
 [package.metadata.requires-dev]
 dbt = [
-    { name = "dbt-core", specifier = ">=1.12.5" },
-    { name = "dbt-snowflake", specifier = ">=1.12.1" },
+    { name = "dbt-core", specifier = ">=1.12.5,<1.13" },
+    { name = "dbt-snowflake", specifier = ">=1.12.1,<1.13" },
 ]
 dev = [
     { name = "mypy", specifier = ">=2.4.0" },
