@@ -1,6 +1,6 @@
 # 0022. Rules for the award fact
 
-Status: Accepted (2026-10-07). Evidence: [eda-findings.md](../eda-findings.md#awards-rules-for-fct_award_suppliers) (full history, 75,155 notices).
+Status: Accepted (2026-10-07). Evidence: [eda-findings.md](../eda-findings.md#awards-rules-for-fct_award_suppliers) (complete history, 172,312 notices).
 
 ## Context
 "Who's buying?" and "Who's winning?" sum award values. The same award repeats across notices (UK5, UK6, UK7) and its value and date sit on different notices or only on the contract. Framework set-ups carry ceilings repeated per lot, some amounts are implausible (£100bn for travel services), dynamic-market notices list admissions rather than awards, and joint awards don't say how they are split.
