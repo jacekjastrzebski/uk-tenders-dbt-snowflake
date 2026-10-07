@@ -21,9 +21,15 @@ erDiagram
         boolean is_digital_and_data "48 and 72"
         string market "Digital and data or Other"
     }
+    DIM_BUYERS {
+        string buyer_key PK "normalised name"
+        string buyer_name "from the latest notice"
+        string buyer_ids "all IDs seen, comma-separated"
+    }
 ```
 
 ## Reading notes
 
+- Facts join buyers on `buyer_key`: the buyer name normalised with the macro `normalise_org_name` (upper case, single spaces), because one organisation appears under several IDs.
 - Facts join their CPV division (`LEFT(cpv_code, 2)`) to `cpv_division`; notices without a CPV code have no sector.
 - Facts join their date columns (UK date, not UTC) to `calendar_date`; a fact has several dates, so in Power BI one relationship is active and the others are used with `USERELATIONSHIP`.

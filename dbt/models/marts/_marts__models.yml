@@ -39,3 +39,14 @@ models:
         description: True for divisions 48 (software) and 72 (IT services).
       - name: market
         description: Digital and data, or Other; for slicers.
+
+  - name: dim_buyers
+    description: Buyers, one row per organisation grouped by normalised name (macro normalise_org_name).
+    columns:
+      - name: buyer_key
+        description: Normalised buyer name; facts join on the same macro applied to their buyer name.
+        data_tests: [unique, not_null]
+      - name: buyer_name
+        description: Name from the buyer's most recent notice.
+      - name: buyer_ids
+        description: All organisation IDs seen for this buyer, comma-separated, for tracing back to notices.
