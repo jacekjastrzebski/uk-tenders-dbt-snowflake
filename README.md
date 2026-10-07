@@ -1,6 +1,6 @@
 # uk-tenders-dbt-snowflake
 
-UK public procurement data from Find a Tender, loaded into Snowflake and modelled with dbt, refreshed several times a day (every 3 hours on weekdays 07:00–19:00, twice a day at weekends).
+UK public procurement data from Find a Tender, loaded into Snowflake and modelled with dbt, refreshed every 3 hours from 07:00 to 19:00 UK time.
 
 ## What it is
 
@@ -63,7 +63,7 @@ The loader uses the Snowflake connection named in `SNOWFLAKE_CONNECTION_NAME` (d
 
 ## Deploy the scheduled load
 
-The loader runs inside Snowflake: a stored procedure imports `ingestion/load_find_a_tender.py` from a stage, and two serverless tasks call it on UK time (Europe/London): every 3 hours from 07:00 to 19:00 on weekdays, and at 07:00 and 19:00 at weekends. A task suspends itself after 3 failures in a row, and an alert emails you when a run fails. Calling the Find a Tender API needs external access, which trial accounts block, so this needs a paid account.
+The loader runs inside Snowflake: a stored procedure imports `ingestion/load_find_a_tender.py` from a stage, and a serverless task calls it every 3 hours from 07:00 to 19:00 UK time (Europe/London). The task suspends itself after 3 failures in a row, and an alert emails you when a run fails. Calling the Find a Tender API needs external access, which trial accounts block, so this needs a paid account.
 
 One-off setup, in a Snowflake worksheet:
 
