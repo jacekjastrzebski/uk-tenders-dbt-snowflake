@@ -7,7 +7,7 @@ FROM TENDER_DB.RAW.FIND_A_TENDER_INGEST_RUNS
 ORDER BY finished_at DESC
 LIMIT 10;
 
--- Freshness: hours since the last successful run (under ~3.5 on weekdays 07:00-19:00, up to ~12 overnight and at weekends)
+-- Freshness: hours since the last successful run (under ~3.5 between 07:00 and 19:00, up to ~12 overnight)
 SELECT DATEDIFF('minute', MAX(finished_at), SYSDATE()) / 60 AS hours_since_success
 FROM TENDER_DB.RAW.FIND_A_TENDER_INGEST_RUNS
 WHERE status = 'success';

@@ -103,7 +103,7 @@ snow sql -f snowflake/native_ingestion/04_failure_alert.sql -D alert_email=<you>
 Run a task now instead of waiting for its schedule:
 
 ```bash
-snow sql -c tender -q "EXECUTE TASK TENDER_DB.RAW.INGEST_FIND_A_TENDER_WEEKDAYS"
+snow sql -c tender -q "EXECUTE TASK TENDER_DB.RAW.INGEST_FIND_A_TENDER"
 ```
 
 Task runs (`SUCCEEDED`, `FAILED`; the newest `SCHEDULED` row is the next run):
