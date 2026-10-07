@@ -148,12 +148,15 @@ rules AS (
         END AS value_source,
         COALESCE(a.award_net, c.contract_net, a.award_gross, c.contract_gross) AS value,
         IFF(value_source LIKE 'award%', a.award_currency, c.contract_currency) AS currency,
+        -- dates outside the calendar are typos (e.g. signed in 1961): treated as unknown
+        IFF(a.awarded_at::DATE BETWEEN '{{ var("dim_dates_start") }}' AND '{{ var("dim_dates_end") }}', a.awarded_at, NULL) AS valid_awarded_at,
+        IFF(c.signed_at::DATE BETWEEN '{{ var("dim_dates_start") }}' AND '{{ var("dim_dates_end") }}', c.signed_at, NULL) AS valid_signed_at,
         CASE
-            WHEN a.awarded_at IS NOT NULL THEN 'award date'
-            WHEN c.signed_at IS NOT NULL THEN 'signed date'
+            WHEN valid_awarded_at IS NOT NULL THEN 'award date'
+            WHEN valid_signed_at IS NOT NULL THEN 'signed date'
             ELSE 'published date'
         END AS date_source,
-        CONVERT_TIMEZONE('UTC', 'Europe/London', COALESCE(a.awarded_at, c.signed_at, a.first_published_at))::DATE AS award_date
+        CONVERT_TIMEZONE('UTC', 'Europe/London', COALESCE(valid_awarded_at, valid_signed_at, a.first_published_at))::DATE AS award_date
     FROM
         awards AS a
     LEFT JOIN
