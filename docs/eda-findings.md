@@ -53,4 +53,4 @@ The most active buyer had 7 notices (National Gallery); the rest had 3 or fewer.
 
 ## Personal data
 
-`parties[].contactPoint` holds names, emails and phone numbers. Staging models leave it out.
+`parties[].contactPoint` holds names, emails and phone numbers. Staging removes it everywhere, including from the stored notice JSON, and a test enforces this ([ADR 0016](adr/0016-strip-contact-details-in-staging.md)). Free-text fields (descriptions, submission details) can still contain email addresses: treat them as possibly personal.

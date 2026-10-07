@@ -17,3 +17,4 @@ One file per significant decision: the context, the decision and its consequence
 | [0011](0011-load-window-overlap.md) | Overlap each load window by 15 minutes | Accepted |
 | [0012](0012-business-terms-in-staging.md) | Name models in business terms: notices, not releases | Accepted |
 | [0015](0015-staging-as-tables.md) | Staging models as tables; layers named raw → staging → marts | Accepted |
+| [0016](0016-strip-contact-details-in-staging.md) | Strip contact details from staging, including the stored JSON | Accepted |

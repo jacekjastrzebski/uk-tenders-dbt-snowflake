@@ -2,9 +2,13 @@
 -- overlapping load windows load some notices twice: keep the latest load.
 -- Notices are classified by documents[].noticeType (UK1-UK17), not by tag,
 -- which is too coarse (see docs/eda-findings.md).
+-- Contact details (parties[].contactPoint) are removed from the stored JSON
+-- (docs/adr/0016-strip-contact-details-in-staging.md). Timestamps are UTC.
 
 WITH pages AS (
     SELECT
+        run_id,
+        page_number,
         payload,
         loaded_at
     FROM
@@ -19,19 +23,39 @@ releases AS (
         pages AS p,
         LATERAL FLATTEN(input => p.payload:releases) AS r
     QUALIFY
-        ROW_NUMBER() OVER (PARTITION BY r.value:id ORDER BY p.loaded_at DESC) = 1
+        ROW_NUMBER() OVER (
+            PARTITION BY r.value:id::STRING
+            ORDER BY p.loaded_at DESC, p.run_id DESC, p.page_number DESC
+        ) = 1
 ),
 
 notice_types AS (
-    -- noticeType sits on documents in planning, tender, awards or contracts
+    -- noticeType sits on the notice's own document (document id = notice id),
+    -- inside planning, tender, awards or contracts
     SELECT
         r.notice:id::STRING AS notice_id,
-        MAX(d.value:noticeType::STRING) AS notice_type
+        ANY_VALUE(d.value::STRING) AS notice_type
     FROM
         releases AS r,
         LATERAL FLATTEN(input => r.notice, recursive => TRUE) AS d
     WHERE
-        IS_OBJECT(d.value)
+        d.key = 'noticeType'
+        AND d.this:id::STRING = r.notice:id::STRING
+    GROUP BY
+        notice_id
+),
+
+parties AS (
+    -- parties without contactPoint, and the buyer party for notices that
+    -- have no buyer object (e.g. UK11, UK12)
+    SELECT
+        r.notice:id::STRING AS notice_id,
+        ARRAY_AGG(OBJECT_DELETE(p.value, 'contactPoint')) WITHIN GROUP (ORDER BY p.index) AS parties_without_contacts,
+        MAX(IFF(ARRAY_CONTAINS('buyer'::VARIANT, p.value:roles), p.value:id::STRING, NULL)) AS buyer_party_id,
+        MAX(IFF(ARRAY_CONTAINS('buyer'::VARIANT, p.value:roles), p.value:name::STRING, NULL)) AS buyer_party_name
+    FROM
+        releases AS r,
+        LATERAL FLATTEN(input => r.notice:parties) AS p
     GROUP BY
         notice_id
 )
@@ -39,28 +63,38 @@ notice_types AS (
 SELECT
     r.notice:id::STRING AS notice_id,
     r.notice:ocid::STRING AS ocid,
-    r.notice:date::TIMESTAMP_TZ AS published_at,
+    CONVERT_TIMEZONE('UTC', r.notice:date::TIMESTAMP_TZ)::TIMESTAMP_NTZ AS published_at,
     r.notice:tag AS tags,
     t.notice_type,
-    t.notice_type IS NOT NULL AS is_procurement_act,
-    r.notice:buyer.id::STRING AS buyer_id,
-    r.notice:buyer.name::STRING AS buyer_name,
+    r.notice:tender.legalBasis.id::STRING AS legal_basis,
+    r.notice:tender.legalBasis.id::STRING = '2023/54' AS is_procurement_act,
+    COALESCE(r.notice:buyer.id::STRING, pt.buyer_party_id) AS buyer_id,
+    COALESCE(r.notice:buyer.name::STRING, pt.buyer_party_name) AS buyer_name,
     r.notice:tender.title::STRING AS title,
     r.notice:tender.description::STRING AS description,
     r.notice:tender.status::STRING AS tender_status,
     r.notice:tender.value.amount::NUMBER(38, 2) AS tender_value_amount,
+    r.notice:tender.value.amountGross::NUMBER(38, 2) AS tender_value_amount_gross,
     r.notice:tender.value.currency::STRING AS tender_value_currency,
-    r.notice:tender.tenderPeriod.endDate::TIMESTAMP_TZ AS tender_closing_at,
+    CONVERT_TIMEZONE('UTC', r.notice:tender.tenderPeriod.endDate::TIMESTAMP_TZ)::TIMESTAMP_NTZ AS tender_closing_at,
     COALESCE(
         r.notice:tender.classification.id::STRING,
         r.notice:tender.items[0].additionalClassifications[0].id::STRING,
         r.notice:awards[0].items[0].additionalClassifications[0].id::STRING
     ) AS cpv_code,
     r.loaded_at,
-    r.notice
+    IFF(
+        pt.notice_id IS NULL,
+        r.notice,
+        OBJECT_INSERT(r.notice, 'parties', pt.parties_without_contacts, TRUE)
+    ) AS notice
 FROM
     releases AS r
 LEFT JOIN
     notice_types AS t
 ON
     r.notice:id::STRING = t.notice_id
+LEFT JOIN
+    parties AS pt
+ON
+    r.notice:id::STRING = pt.notice_id

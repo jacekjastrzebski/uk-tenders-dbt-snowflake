@@ -10,7 +10,7 @@ erDiagram
     STG_NOTICES ||--o{ STG_AWARDS : "contains (notice_id)"
     STG_NOTICES ||--o{ STG_CONTRACTS : "contains (notice_id)"
     STG_AWARDS ||--o{ STG_AWARD_SUPPLIERS : "won by (award_key)"
-    STG_AWARDS ||--o{ STG_CONTRACTS : "signed as (notice_id, award_id)"
+    STG_AWARDS ||--o{ STG_CONTRACTS : "signed as (procurement_award_key)"
     STG_PARTIES ||..o{ STG_AWARD_SUPPLIERS : "supplier is a party (logical)"
 
     RAW_FIND_A_TENDER_INGEST_RUNS {
@@ -30,11 +30,13 @@ erDiagram
         string notice_id PK "e.g. 094475-2026"
         string ocid "procurement"
         string notice_type "UK1-UK17"
+        string legal_basis "2023/54 = Procurement Act"
         timestamp published_at
         string buyer_id
         string cpv_code
-        number tender_value_amount
-        variant notice "full JSON"
+        number tender_value_amount "net"
+        number tender_value_amount_gross "incl. VAT"
+        variant notice "full JSON, contacts removed"
     }
     STG_PARTIES {
         string party_key PK "notice_id/party_id"
@@ -45,10 +47,12 @@ erDiagram
     }
     STG_AWARDS {
         string award_key PK "notice_id/award_id"
+        string procurement_award_key "ocid/award_id"
         string notice_id FK
         string award_id
         timestamp awarded_at
-        number award_value_amount
+        number award_value_amount "net"
+        number award_value_amount_gross "incl. VAT"
     }
     STG_AWARD_SUPPLIERS {
         string award_supplier_key PK "notice_id/award_id/supplier_id"
@@ -58,10 +62,12 @@ erDiagram
     }
     STG_CONTRACTS {
         string contract_key PK "notice_id/contract_id"
+        string procurement_award_key FK "ocid/award_id; award may be in an earlier notice"
         string notice_id FK
-        string award_id FK "award in the same notice"
+        string award_id
         timestamp signed_at
-        number contract_value_amount
+        number contract_value_amount "net"
+        number contract_value_amount_gross "incl. VAT"
     }
 ```
 
@@ -79,4 +85,7 @@ erDiagram
 
 - Staging tables are named `stg_find_a_tender__<entity>`; the `STG_` names above are shortened.
 - **The same award or contract appears in several notices** of one procurement (`ocid`), e.g. a UK6 award and the later UK7 contract details. Staging keeps one row per notice; marts must deduplicate before summing values.
+- Contracts link to awards on `procurement_award_key` (`ocid/award_id`): UK10 and UK11 notices carry a contract whose award is in an earlier notice of the procurement, which may predate our data (the test warns).
+- Timestamps are UTC; amounts come net and gross (incl. VAT), often only one of them is filled.
+- No staging table holds `contactPoint` ([ADR 0016](../adr/0016-strip-contact-details-in-staging.md)).
 - `STG_PARTIES` to `STG_AWARD_SUPPLIERS` is a logical link (`supplier_id` = `party_id` in the same notice), not enforced by a test.
