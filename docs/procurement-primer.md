@@ -48,6 +48,15 @@ The Common Procurement Vocabulary (CPV) codes what is being bought. It started a
 
 There are about 45 divisions, readable enough to chart as sectors. This project reports by division (the first 2 digits) and defines the **digital and data** market as divisions **48** (software packages and information systems) and **72** (IT services).
 
+### Frameworks
+
+A framework is a pre-approved list of suppliers that buyers can later buy from without running a full competition each time. It works in two steps:
+
+1. **Set-up.** A buyer, often a central body such as Crown Commercial Service, runs one large competition, e.g. "IT consultancy, up to £1.95bn over 4 years, 10 lots". Several suppliers win a place on each lot. The value published is a **ceiling**: the most that could be spent, by anyone, over the framework's life. No money is committed yet.
+2. **Call-offs.** Individual buyers (a council, an NHS trust) later pick a supplier from the framework and sign a real contract, e.g. £300k. That is actual spend. In the data these notices say "Award under framework".
+
+For analysis, set-up values are not spend: the ceiling may never be reached, it is repeated on every lot (10 lots × £1.95bn appear as £19.5bn), and dozens of suppliers share it. In the first data, framework set-ups totalled about £47.6bn against about £0.64bn of other awards. This project therefore reports framework ceilings separately and counts call-offs as normal awards.
+
 ## 3. The Procurement Act 2023
 
 The Procurement Act 2023 replaced the previous EU-derived regulations (Public Contracts Regulations 2015 and others) and went live on **24 February 2025**. Its main changes:

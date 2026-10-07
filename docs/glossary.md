@@ -12,6 +12,9 @@ Terms used in this project, grouped by area. Procurement background: [procuremen
 | Buyer | The public body buying (also: contracting authority) |
 | Supplier | The organisation bidding for or delivering a contract |
 | Award | The decision to give a contract to one or more suppliers |
+| Framework | A pre-approved list of suppliers that buyers can later buy from without a new competition, see [primer](procurement-primer.md#frameworks) |
+| Ceiling value | The most that could be spent under a framework; not actual spend, and repeated on every lot |
+| Call-off | A contract a buyer signs with a supplier on an existing framework: actual spend |
 | Contract | The signed agreement following an award |
 | Lot | A separately awarded part of a procurement |
 | CPV code | Common Procurement Vocabulary: standard 8-digit code for what is bought, see [primer](procurement-primer.md#cpv-codes) |
