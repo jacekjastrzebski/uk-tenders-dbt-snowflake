@@ -32,6 +32,7 @@ Find a Tender API  →  Python loader  →  Snowflake (raw)  →  dbt (staging, 
 | Transform (dbt) | TO-DO |
 | Event-based failure alerts for all tasks (ingest and dbt) | TO-DO |
 | Report (Power BI) | TO-DO |
+| Historical backfill from 24 February 2025 ([ADR 0017](docs/adr/0017-backfill-from-procurement-act-start.md)) | Ready to run, see `docs/snowflake-cli.md` |
 
 ## Repository layout
 
@@ -58,6 +59,7 @@ uv run pre-commit install                 # run checks before every commit
 uv run pytest                             # run tests (no network or Snowflake needed)
 uv run mypy                               # type check (strict; type hints are required)
 uv run ingestion/load_find_a_tender.py    # load the last window into Snowflake
+uv run ingestion/load_find_a_tender.py --backfill   # try the history load locally (prod runs it in Snowflake)
 ```
 
 The loader uses the Snowflake connection named in `SNOWFLAKE_CONNECTION_NAME` (default `tender`) from `~/.snowflake/config.toml`. The connection must set `database` (e.g. `TENDER_DB`) and `warehouse` (e.g. `TENDER_WH`); the code holds no environment-specific names.

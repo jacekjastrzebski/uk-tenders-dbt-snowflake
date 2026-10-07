@@ -1,7 +1,7 @@
 """Local tests for the loader. No network or Snowflake: both are replaced with fakes."""
 
 from collections.abc import Callable
-from datetime import UTC, datetime, timedelta
+from datetime import UTC, date, datetime, timedelta
 from typing import Any, cast
 
 import pytest
@@ -24,11 +24,19 @@ class FakeResult:
 
 
 class FakeSession:
-    """Records SQL calls; answers the watermark query with `last_end`."""
+    """Records SQL calls; answers the run-log queries from the given timestamps (naive UTC)."""
 
-    def __init__(self, last_end: datetime | None = None, database: str | None = '"TENDER_DB"') -> None:
+    def __init__(
+        self,
+        last_end: datetime | None = None,
+        database: str | None = '"TENDER_DB"',
+        first_scheduled_start: datetime | None = None,
+        backfilled_ends: list[datetime] | None = None,
+    ) -> None:
         self.last_end = last_end
         self.database = database
+        self.first_scheduled_start = first_scheduled_start
+        self.backfilled_ends = backfilled_ends or []
         self.calls: list[SqlCall] = []
 
     def get_current_database(self) -> str | None:
@@ -39,8 +47,13 @@ class FakeSession:
 
     def sql(self, query: str, params: list[Any] | None = None) -> FakeResult:
         self.calls.append((query, params))
-        rows = [{"LAST_END": self.last_end}] if query.startswith("SELECT") else []
-        return FakeResult(rows)
+        if "MIN(window_from)" in query:
+            return FakeResult([{"FIRST_START": self.first_scheduled_start}])
+        if "SELECT window_to" in query:
+            return FakeResult([{"WINDOW_TO": end} for end in self.backfilled_ends])
+        if query.startswith("SELECT"):
+            return FakeResult([{"LAST_END": self.last_end}])
+        return FakeResult([])
 
     def inserts_into(self, table: str) -> list[list[Any]]:
         return [params or [] for query, params in self.calls if f"INSERT INTO {table}" in query]
@@ -176,3 +189,104 @@ def test_api_dates_are_not_shortened_when_the_clocks_go_forward() -> None:
     window = loader.Window(start=utc(2025, 3, 30, 0, 30), end=utc(2025, 3, 30, 3))
 
     assert loader.api_dates(window) == ("2025-03-30T00:30:00", "2025-03-30T04:00:00")
+
+
+# Backfill
+
+FIRST_SCHEDULED_START = datetime(2025, 3, 3, 9, 0, 0)  # naive UTC, as Snowflake returns it
+
+
+def test_backfill_windows_cover_each_day_with_the_overlap() -> None:
+    stop = datetime(2025, 3, 3, 9, tzinfo=UTC)
+
+    windows = loader.backfill_windows(date(2025, 3, 1), stop)
+
+    assert [day for day, _ in windows] == [date(2025, 3, 1), date(2025, 3, 2), date(2025, 3, 3)]
+    _, first = windows[0]
+    assert first.start == datetime(2025, 2, 28, 23, 45, tzinfo=UTC)
+    assert first.end == datetime(2025, 3, 2, tzinfo=UTC)
+    _, last = windows[-1]
+    assert last.end == stop  # the last day stops where the scheduled runs began
+
+
+def test_backfill_windows_are_empty_when_start_is_after_stop() -> None:
+    assert loader.backfill_windows(date(2025, 3, 4), datetime(2025, 3, 3, tzinfo=UTC)) == []
+
+
+def test_backfill_stops_where_scheduled_runs_began() -> None:
+    session = FakeSession(first_scheduled_start=FIRST_SCHEDULED_START)
+
+    assert loader.backfill_stop(session.as_session()) == FIRST_SCHEDULED_START.replace(tzinfo=UTC)
+
+
+def test_backfill_refuses_to_run_before_any_scheduled_run(
+    fake_http: Callable[[list[Page | Exception]], FakeHttp],
+) -> None:
+    http = fake_http([])
+    session = FakeSession(first_scheduled_start=None)
+
+    with pytest.raises(RuntimeError, match="No successful scheduled run yet"):
+        loader.backfill(session.as_session(), date(2025, 3, 1))
+
+    assert http.requests == []
+    assert session.inserts_into(loader.RUNS_TABLE) == []
+
+
+def test_backfill_loads_each_day_and_logs_it_as_backfill(
+    fake_http: Callable[[list[Page | Exception]], FakeHttp],
+) -> None:
+    http = fake_http([page(5), page(7), page(1)])
+    session = FakeSession(first_scheduled_start=FIRST_SCHEDULED_START)
+
+    result = loader.backfill(session.as_session(), date(2025, 3, 1))
+
+    assert result == "Backfill: 13 releases in 3 pages over 3 days"
+    _, first_params = http.requests[0]
+    assert first_params is not None
+    assert first_params["updatedFrom"] == "2025-02-28T23:45:00"
+    runs = session.inserts_into(loader.RUNS_TABLE)
+    assert [run[5] for run in runs] == ["success"] * 3
+    assert [run[-1] for run in runs] == ["backfill"] * 3
+    assert runs[0][0].endswith("-20250301")  # run ID names the day
+
+
+def test_backfill_skips_days_already_loaded(
+    fake_http: Callable[[list[Page | Exception]], FakeHttp],
+) -> None:
+    http = fake_http([page(1)])
+    session = FakeSession(
+        first_scheduled_start=FIRST_SCHEDULED_START,
+        backfilled_ends=[datetime(2025, 3, 2), datetime(2025, 3, 3)],  # 1 and 2 March done
+    )
+
+    loader.backfill(session.as_session(), date(2025, 3, 1))
+
+    [(_, params)] = http.requests
+    assert params is not None
+    assert params["updatedFrom"] == "2025-03-02T23:45:00"  # only 3 March is fetched
+
+
+def test_backfill_stops_at_the_first_failed_day(
+    fake_http: Callable[[list[Page | Exception]], FakeHttp],
+) -> None:
+    http = fake_http([page(5), RuntimeError("API down"), page(1)])
+    session = FakeSession(first_scheduled_start=FIRST_SCHEDULED_START)
+
+    with pytest.raises(RuntimeError, match="API down"):
+        loader.backfill(session.as_session(), date(2025, 3, 1))
+
+    assert len(http.requests) == 2  # 3 March is never fetched
+    runs = session.inserts_into(loader.RUNS_TABLE)
+    assert [run[5] for run in runs] == ["success", "failed"]
+
+
+def test_scheduled_run_leaves_run_type_to_the_column_default(
+    fake_http: Callable[[list[Page | Exception]], FakeHttp],
+) -> None:
+    fake_http([page(1)])
+    session = FakeSession(last_end=LAST_END)
+
+    loader.main(session.as_session())
+
+    [(query, _)] = [call for call in session.calls if f"INSERT INTO {loader.RUNS_TABLE}" in call[0]]
+    assert "run_type" not in query
