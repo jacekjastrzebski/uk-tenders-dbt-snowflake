@@ -61,8 +61,9 @@ Terms used in this project, grouped by area. Procurement background: [procuremen
 |---|---|
 | Model | A `SELECT` in a `.sql` file that dbt builds as a view or table |
 | Source | Raw data declared in YAML and referenced with `source()` |
-| Staging | First layer: one cleaned, deduplicated model per entity; business names |
+| Staging | First dbt layer: one cleaned, deduplicated table per entity; business names |
 | Mart | Dashboard-ready tables (facts and dimensions); next step |
+| Medallion layers | Another name for the same layers: bronze = raw, silver = staging, gold = marts. This project uses the dbt names ([ADR 0015](adr/0015-staging-as-tables.md)) |
 | Materialisation | How a model is built: view, table, incremental |
 | Test | A query that must return no rows (e.g. `unique`, `not_null`) |
 | Freshness | Check that a source's newest `loaded_at` is recent enough |

@@ -48,7 +48,7 @@ END;
 
 ## Trade-off
 
-If a load ever takes longer than 20 minutes, dbt runs on the previous load's data and the next run catches up. Staging is views and marts are rebuilt in full, so nothing is lost.
+If a load ever takes longer than 20 minutes, dbt runs on the previous load's data and the next run catches up. Staging and marts are rebuilt in full each run, so nothing is lost.
 
 ## Later, if needed
 

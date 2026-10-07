@@ -12,4 +12,4 @@ models:
   uk_tenders:
     staging:
       +schema: staging        # STAGING in prod, DEV_STAGING in dev
-      +materialized: view
+      +materialized: table    # built once per run; marts and queries read stored, clean data

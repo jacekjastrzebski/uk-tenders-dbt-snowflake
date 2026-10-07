@@ -7,7 +7,7 @@ dbt turns the raw API pages in `TENDER_DB.RAW` into clean tables. The project is
 | Layer | Schema (prod / dev) | Materialised as | Contents |
 |---|---|---|---|
 | Sources | `RAW` | tables, loaded by the stored procedure | One row per API page |
-| Staging | `STAGING` / `DEV_STAGING` | views | One row per notice, party, award, award supplier, contract; deduplicated, typed, no personal data |
+| Staging | `STAGING` / `DEV_STAGING` | tables ([ADR 0015](adr/0015-staging-as-tables.md)) | One row per notice, party, award, award supplier, contract; deduplicated, typed, no personal data |
 | Marts | `MARTS` / `DEV_MARTS` | to decide | Dashboard tables (next step) |
 
 dbt runs as role `TENDER_TRANSFORM` (`snowflake/setup/03_transform_role.sql`): it can read `RAW` and create its own schemas, nothing else. The `dev` target writes to `DEV_*` schemas, so development never overwrites prod.
