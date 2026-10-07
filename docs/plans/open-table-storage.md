@@ -11,7 +11,7 @@ Store raw and staging as **Apache Iceberg tables** on object storage (Azure Blob
 - **Storage cost** billed by the cloud provider; Snowflake only for compute.
 
 ## What would change
-- An external volume pointing at the storage container, and Iceberg tables (`CREATE ICEBERG TABLE`) for `RAW` and `STAGING`, catalogued by Snowflake.
+- An external volume pointing at the storage container, and Iceberg tables (`CREATE ICEBERG TABLE`) for `RAW` and `PROD_STAGING`, catalogued by Snowflake.
 - The loader's inserts and dbt's table materialisation work the same; dbt models need `table_format='iceberg'` and the external volume in their config.
 - Marts can stay Snowflake tables for Power BI speed.
 

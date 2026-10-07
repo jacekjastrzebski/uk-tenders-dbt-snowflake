@@ -1,6 +1,6 @@
 # 0008. dbt: dev and prod by schema, staging as views
 
-Status: Accepted (2026-10-07); "staging as views" superseded by [0015](0015-staging-as-tables.md). Details: [dbt.md](../dbt.md).
+Status: Accepted (2026-10-07); "staging as views" superseded by [0015](0015-staging-as-tables.md), schema naming by [0024](0024-prod-schema-prefix.md). Details: [dbt.md](../dbt.md).
 
 ## Context
 dbt needs separate dev and prod outputs, and staging must stay current with raw data.

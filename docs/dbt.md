@@ -7,10 +7,10 @@ dbt turns the raw API pages in `TENDER_DB.RAW` into clean tables. The project is
 | Layer | Schema (prod / dev) | Materialised as | Contents |
 |---|---|---|---|
 | Sources | `RAW` | tables, loaded by the stored procedure | One row per API page |
-| Staging | `STAGING` / `DEV_STAGING` | tables ([ADR 0015](adr/0015-staging-as-tables.md)) | One row per notice, party, award, award supplier, contract; deduplicated, typed, no personal data |
-| Intermediate | `INTERMEDIATE` / `DEV_INTERMEDIATE` | views | Business rules shared by marts, e.g. `int_awards` (one row per award across notices); not for Power BI |
-| Seeds | `STAGING` / `DEV_STAGING` | tables, from CSV in `dbt/seeds/` | Reference data: HMRC exchange rates, CPV divisions |
-| Marts | `MARTS` / `DEV_MARTS` | tables | Star schema for Power BI ([ADR 0023](adr/0023-star-schema-for-power-bi.md)), see [Marts](#marts) |
+| Staging | `PROD_STAGING` / `DEV_STAGING` | tables ([ADR 0015](adr/0015-staging-as-tables.md)) | One row per notice, party, award, award supplier, contract; deduplicated, typed, no personal data |
+| Intermediate | `PROD_INTERMEDIATE` / `DEV_INTERMEDIATE` | views | Business rules shared by marts, e.g. `int_awards` (one row per award across notices); not for Power BI |
+| Seeds | `PROD_STAGING` / `DEV_STAGING` | tables, from CSV in `dbt/seeds/` | Reference data: HMRC exchange rates, CPV divisions |
+| Marts | `PROD_MARTS` / `DEV_MARTS` | tables | Star schema for Power BI ([ADR 0023](adr/0023-star-schema-for-power-bi.md)), see [Marts](#marts) |
 
 dbt runs as role `TENDER_TRANSFORM` (`snowflake/setup/03_transform_role.sql`): it can read `RAW` and create its own schemas, nothing else. The `dev` target writes to `DEV_*` schemas, so development never overwrites prod.
 
@@ -57,7 +57,7 @@ The project is deployed as a dbt project object and runs on a schedule inside Sn
 | When (UK time) | What | Where |
 |---|---|---|
 | :00 at 07, 10, 13, 16, 19 | Load from the API | task `RAW.INGEST_FIND_A_TENDER` |
-| :20 | `dbt source freshness`, then `dbt build --target prod` → `STAGING`, `MARTS` | task `DBT.RUN_DBT`, warehouse `TENDER_WH` |
+| :20 | `dbt source freshness`, then `dbt build --target prod` → `PROD_STAGING`, `PROD_MARTS` | task `DBT.RUN_DBT`, warehouse `TENDER_WH` |
 | :50 | Email if the dbt run failed | alert `DBT.RUN_DBT_FAILED` |
 
 - **Deploy:** merging a change under `dbt/` deploys a new version of `TENDER_DB.DBT.UK_TENDERS` (`snow dbt deploy` in `deploy.yml`, after CI). The prod profile is `snowflake/dbt/profiles.yml`. dbt is pinned to 1.12.3 there, because the account default (1.9.4) can't compile the project; local dbt is held to 1.12 in `pyproject.toml` (`<1.13`) so the two stay in step; when upgrading, check `SELECT SYSTEM$SUPPORTED_DBT_VERSIONS();` and move both pins together.
@@ -89,7 +89,7 @@ Star schema for the Power BI report ([ADR 0023](adr/0023-star-schema-for-power-b
 | `fct_procurements` | Procurement Act tender (`ocid` with a UK4 notice) | What's open to bid? (closing_date from today, no award, not cancelled) How long to award? (median `days_tender_to_award`) |
 | `fct_award_suppliers` | Supplier on an award, deduplicated across notices ([ADR 0022](adr/0022-award-fact-rules.md)) | Who's buying? Who's winning? Sum `allocated_value_gbp` where `is_in_headline` |
 
-Access: Power BI reads the marts as role `TENDER_REPORTER` (`snowflake/setup/04_reporting_role.sql`), which can query `MARTS` and `DEV_MARTS` only. dbt grants `SELECT` on every mart table at each build (`+grants` in `dbt_project.yml`), so access survives rebuilds. Snowflake activates a user's other roles too (secondary roles), so for real least privilege Power BI should connect as its own user that has only `TENDER_REPORTER`; to test the role yourself, run `USE SECONDARY ROLES NONE` first.
+Access: Power BI reads the marts as role `TENDER_REPORTER` (`snowflake/setup/04_reporting_role.sql`), which can query `PROD_MARTS` and `DEV_MARTS` only. dbt grants `SELECT` on every mart table at each build (`+grants` in `dbt_project.yml`), so access survives rebuilds. Snowflake activates a user's other roles too (secondary roles), so for real least privilege Power BI should connect as its own user that has only `TENDER_REPORTER`; to test the role yourself, run `USE SECONDARY ROLES NONE` first.
 
 Rules for fact date columns:
 

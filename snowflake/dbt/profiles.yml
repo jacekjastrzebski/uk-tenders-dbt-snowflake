@@ -11,5 +11,5 @@ uk_tenders:
       role: TENDER_TRANSFORM
       database: TENDER_DB
       warehouse: TENDER_WH
-      schema: DBT       # must exist; models go to STAGING / MARTS (dbt/macros/generate_schema_name.sql)
+      schema: PROD      # must exist (03_transform_role.sql); models go to PROD_STAGING, PROD_MARTS, ...
       threads: 4

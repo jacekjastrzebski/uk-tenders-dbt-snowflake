@@ -16,17 +16,17 @@ vars:
 models:
   uk_tenders:
     staging:
-      +schema: staging        # STAGING in prod, DEV_STAGING in dev
+      +schema: STAGING        # <target schema>_STAGING: PROD_STAGING, DEV_STAGING
       +materialized: table    # built once per run; marts and queries read stored, clean data
     intermediate:
-      +schema: intermediate   # INTERMEDIATE in prod, DEV_INTERMEDIATE in dev; not for Power BI
+      +schema: INTERMEDIATE   # PROD_INTERMEDIATE, DEV_INTERMEDIATE; not for Power BI
       +materialized: view
     marts:
-      +schema: marts          # MARTS in prod, DEV_MARTS in dev; read by Power BI
+      +schema: MARTS          # PROD_MARTS, DEV_MARTS; read by Power BI
       +materialized: table
       +grants:
         select: ['TENDER_REPORTER']   # Power BI's role (snowflake/setup/04_reporting_role.sql)
 
 seeds:
   uk_tenders:
-    +schema: staging          # reference data next to the staging models
+    +schema: STAGING          # reference data next to the staging models

@@ -76,4 +76,4 @@ Terms used in this project, grouped by area. Procurement background: [procuremen
 | Freshness | Check that a source's newest `loaded_at` is recent enough |
 | Target | A named connection in `profiles.yml` (`dev`, `prod`); decides which schemas dbt writes to |
 | Profile | Connection settings in `~/.dbt/profiles.yml`, outside the repo |
-| Macro | Reusable Jinja code, e.g. `generate_schema_name` |
+| Macro | Reusable Jinja code, e.g. `normalise_org_name` |
