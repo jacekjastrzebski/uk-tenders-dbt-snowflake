@@ -5,8 +5,8 @@
 --          without its value and date)
 --   date:  earliest award date, else contract signed date, else first
 --          publication date; as a UK date
---   GBP:   HMRC rate for the month of that date (ADR 0020); months outside
---          the rates table use the nearest month available
+--   GBP:   HMRC rate for the month of that date (ADR 0020); no GBP value
+--          when there is no rate for that month (a handful of old awards)
 --   flags: framework set-ups, large values, dynamic-market admissions, cancelled
 
 WITH award_rows AS (
@@ -164,14 +164,6 @@ rules AS (
         suppliers AS s
     ON
         a.procurement_award_key = s.procurement_award_key
-),
-
-rate_months AS (
-    SELECT
-        MIN(month_start) AS first_month,
-        MAX(month_start) AS last_month
-    FROM
-        {{ ref('hmrc_exchange_rates') }}
 )
 
 SELECT
@@ -186,7 +178,6 @@ SELECT
     r.value,
     COALESCE(r.currency, 'GBP') AS currency,
     r.value_source,
-    IFF(r.value_source LIKE '%gross', 'gross', 'net') AS value_basis,
     IFF(COALESCE(r.currency, 'GBP') = 'GBP', r.value, r.value / x.units_per_gbp) AS value_gbp,
     r.supplier_count,
     r.is_old_regime,
@@ -197,10 +188,8 @@ SELECT
     COALESCE(value_gbp >= {{ var('large_award_gbp') }}, FALSE) AS is_large_value
 FROM
     rules AS r
-CROSS JOIN
-    rate_months AS m
 LEFT JOIN
     {{ ref('hmrc_exchange_rates') }} AS x
 ON
     x.currency_code = r.currency
-    AND x.month_start = LEAST(GREATEST(DATE_TRUNC(MONTH, r.award_date), m.first_month), m.last_month)
+    AND x.month_start = DATE_TRUNC(MONTH, r.award_date)

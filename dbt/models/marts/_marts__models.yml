@@ -102,8 +102,6 @@ models:
               arguments:
                 to: ref('dim_cpv_divisions')
                 field: cpv_division
-      - name: award_value_gbp
-        description: The whole award's value in GBP (repeated on each supplier row; don't sum it).
       - name: allocated_value_gbp
         description: This supplier's equal share of the award value; sum this.
       - name: is_in_headline

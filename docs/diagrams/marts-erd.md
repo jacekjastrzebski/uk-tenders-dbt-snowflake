@@ -16,9 +16,8 @@ erDiagram
         string buyer_key FK
         string supplier_key FK "or UNKNOWN SUPPLIER"
         string cpv_division FK "may be null"
-        number award_value_gbp "whole award, repeated: don't sum"
         number allocated_value_gbp "equal share: sum this"
-        string value_basis "net or gross"
+        string value_source "award or contract, net or gross"
         boolean is_framework "ceiling, shown separately"
         boolean is_large_value "100m or more"
         boolean is_in_headline "counts in headline totals"
@@ -55,7 +54,7 @@ erDiagram
 
 ## Reading notes
 
-- `FCT_AWARD_SUPPLIERS`: one row per supplier on an award; sum `allocated_value_gbp` (filtered on `is_in_headline` for headline numbers), never `award_value_gbp`. Rules in [ADR 0022](../adr/0022-award-fact-rules.md).
+- `FCT_AWARD_SUPPLIERS`: one row per supplier on an award; sum `allocated_value_gbp`, filtered on `is_in_headline` for headline numbers. Rules in [ADR 0022](../adr/0022-award-fact-rules.md).
 - Facts join buyers on `buyer_key` and suppliers on `supplier_key`: the name normalised with the macro `normalise_org_name` (lot numbers removed, upper case, single spaces), because one organisation appears under several IDs ([ADR 0021](../adr/0021-keep-supplier-names.md)).
 - Facts join their CPV division (`LEFT(cpv_code, 2)`) to `cpv_division`; notices without a CPV code have no sector.
 - Facts join their date columns (UK date, not UTC) to `calendar_date`; a fact has several dates, so in Power BI one relationship is active and the others are used with `USERELATIONSHIP`.
