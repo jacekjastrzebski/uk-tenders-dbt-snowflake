@@ -1,4 +1,5 @@
 # Deploy the loader to Snowflake when a change to it merges to main.
+# Called by ci.yml after its checks pass on a push to main, so a failing build never deploys.
 # Each step runs only if its own file changed in the push:
 #   ingestion/load_find_a_tender.py  -> upload it to the code stage
 #   02_ingest_procedure.sql          -> recreate the stored procedure
@@ -10,26 +11,19 @@
 name: Deploy
 
 on:
-  push:
-    branches: [main]
-    paths:
-      - ingestion/load_find_a_tender.py
-      - snowflake/native_ingestion/02_ingest_procedure.sql
-      - snowflake/native_ingestion/03_ingest_task.sql
-      - snowflake/native_ingestion/04_failure_alert.sql
+  workflow_call:             # from ci.yml, after the checks pass (github.event is CI's push)
   workflow_dispatch:         # manual run from the Actions tab (main only)
 
 permissions:
   contents: read
 
-concurrency:
-  group: deploy            # never run two deploys at once
-  cancel-in-progress: false
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    concurrency:
+      group: deploy          # never run two deploys at once
+      cancel-in-progress: false
     steps:
       - uses: actions/checkout@v7
         with:
@@ -49,6 +43,7 @@ jobs:
           deploy_if_changed() {   # $1 = output name, $2 = file
             if [ "$EVENT" = workflow_dispatch ] || grep -qx "$2" <<< "$changed_files"; then
               echo "$1=true" >> "$GITHUB_OUTPUT"
+              echo "any=true" >> "$GITHUB_OUTPUT"
               echo "deploy $2"
             fi
           }
@@ -58,6 +53,7 @@ jobs:
           deploy_if_changed alert     snowflake/native_ingestion/04_failure_alert.sql
 
       - name: Write Snowflake connection
+        if: steps.changed.outputs.any == 'true'   # CI calls this on every push; most change nothing here
         env:
           SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
           SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}

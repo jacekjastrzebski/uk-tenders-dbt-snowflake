@@ -89,7 +89,7 @@ To run any `snow` command as the deploy user (e.g. to test a deploy), replace `-
 
 ## Deploy the loader
 
-Merging to `main` runs these through `.github/workflows/deploy.yml`. By hand:
+Merging to `main` runs these through `.github/workflows/deploy.yml`, after the CI checks pass (ADR 0019). By hand:
 
 ```bash
 snow stage copy ingestion/load_find_a_tender.py @TENDER_DB.RAW.CODE_STAGE --overwrite -c tender

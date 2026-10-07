@@ -1,4 +1,5 @@
-# Type check and test every pull request and every push to main
+# Type check and test every pull request and every push to main;
+# on main, deploy to Snowflake (deploy.yml) only after the checks pass
 name: CI
 
 on:
@@ -30,3 +31,9 @@ jobs:
 
       - name: Tests
         run: uv run pytest
+
+  deploy:
+    needs: checks   # deploy only what passed the checks
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    uses: ./.github/workflows/deploy.yml
+    secrets: inherit

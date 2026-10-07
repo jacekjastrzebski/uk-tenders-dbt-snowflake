@@ -8,7 +8,7 @@ One file per significant decision: the context, the decision and its consequence
 | [0002](0002-one-daily-ingest-schedule.md) | One ingest schedule: every 3 hours, 07:00–19:00 UK time, every day | Accepted |
 | [0003](0003-failure-alert-by-email.md) | Email on failure with a scheduled alert | Accepted |
 | [0004](0004-least-privilege-roles-and-deploy-user.md) | One role per job and a service user for deploys | Accepted |
-| [0005](0005-deploy-only-changed-objects.md) | Deploy on merge, only the objects whose files changed | Accepted |
+| [0005](0005-deploy-only-changed-objects.md) | Deploy on merge, only the objects whose files changed | Accepted; trigger changed by 0019 |
 | [0006](0006-loader-constants-in-code.md) | Keep loader constants in code, not a config file | Accepted |
 | [0007](0007-classify-notices-by-notice-type.md) | Classify notices by `noticeType`, not `tag` | Accepted |
 | [0008](0008-dbt-environments-and-staging-views.md) | dbt: dev/prod by schema, staging as views | Accepted; views superseded by 0015 |
@@ -20,6 +20,7 @@ One file per significant decision: the context, the decision and its consequence
 | [0016](0016-strip-contact-details-in-staging.md) | Strip contact details from staging, including the stored JSON | Accepted |
 | [0017](0017-backfill-from-procurement-act-start.md) | Backfill from 24 February 2025, through the API | Accepted |
 | [0018](0018-api-dates-in-uk-local-time.md) | Send API window dates as UK local time | Accepted |
+| [0019](0019-deploy-after-ci-checks.md) | Deploy only after the CI checks pass | Accepted |
 | [0020](0020-convert-amounts-to-gbp-with-hmrc-rates.md) | Convert amounts to GBP with HMRC monthly rates | Accepted |
 | [0021](0021-keep-supplier-names.md) | Keep supplier names, group lots, flag withheld suppliers | Accepted |
 | [0022](0022-award-fact-rules.md) | Rules for the award fact | Accepted |

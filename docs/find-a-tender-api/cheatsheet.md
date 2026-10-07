@@ -76,12 +76,15 @@ Group by `ocid`, order by `date` and notice type to build the lifecycle.
 | 429 | Too many requests | Wait `Retry-After` seconds, retry |
 | 503 | Service unavailable | Wait `Retry-After` seconds, retry |
 
+The rate limit itself is not documented. The backfill made about 1,200 requests in 35 minutes with no pause and was never refused; the 429s (with a 120-second `Retry-After`) came once it kept re-requesting a looping page (see below). The loader pauses 0.5 seconds between requests and retries up to 10 times.
+
 ## 7. Observations from real data
 
 - CPV code is usually empty in `tender.classification` for Procurement Act notices; look in `items[].additionalClassifications`.
 - Old-regime notices still appear: no `noticeType`, but CPV in `tender.classification`.
 - About 7 KB per release; a full page of 100 is about 700 KB uncompressed.
 - `ocdsRecordPackages/{ocid}` returns all releases for one procurement plus a compiled current state. Useful for checking one case, not for bulk loads.
+- **Paging can loop.** For some windows `links.next` returns the same page forever (seen for 10 December 2025, 12:00–24:00), while smaller windows over the same hours page normally. The loader spots a repeated `next` link and fetches each half of the window instead.
 
 ## 8. Try it
 

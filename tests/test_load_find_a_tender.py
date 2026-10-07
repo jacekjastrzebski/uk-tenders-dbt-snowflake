@@ -5,6 +5,7 @@ from datetime import UTC, date, datetime, timedelta
 from typing import Any, cast
 
 import pytest
+from requests.adapters import HTTPAdapter
 from snowflake.snowpark import Session
 
 import load_find_a_tender as loader
@@ -89,6 +90,14 @@ class FakeHttp:
 def page(release_count: int, next_url: str | None = None) -> Page:
     links = {"next": next_url} if next_url else {}
     return {"releases": [{"id": str(i)} for i in range(release_count)], "links": links}
+
+
+@pytest.fixture(autouse=True)
+def pauses(monkeypatch: pytest.MonkeyPatch) -> list[float]:
+    """Record the loader's pauses instead of sleeping."""
+    recorded: list[float] = []
+    monkeypatch.setattr(loader, "sleep", recorded.append)
+    return recorded
 
 
 @pytest.fixture
@@ -290,3 +299,80 @@ def test_scheduled_run_leaves_run_type_to_the_column_default(
 
     [(query, _)] = [call for call in session.calls if f"INSERT INTO {loader.RUNS_TABLE}" in call[0]]
     assert "run_type" not in query
+
+
+# API politeness
+
+def test_fetch_pages_pauses_after_each_request(
+    fake_http: Callable[[list[Page | Exception]], FakeHttp], pauses: list[float]
+) -> None:
+    fake_http([page(100, next_url="https://api/next"), page(3)])
+    window = loader.Window(start=utc(2025, 12, 2, 10), end=utc(2025, 12, 2, 11))
+
+    list(loader.fetch_pages(window))
+
+    assert pauses == [loader.API_PAUSE_SECONDS] * 2
+
+
+def test_http_session_retries_rate_limits_and_server_errors() -> None:
+    http = loader.http_session()
+
+    adapter = http.get_adapter("https://www.find-tender.service.gov.uk")
+    assert isinstance(adapter, HTTPAdapter)
+    retry = adapter.max_retries
+    assert retry.total == loader.API_RETRIES
+    assert retry.respect_retry_after_header
+    assert retry.status_forcelist is not None
+    assert {429, 500, 502, 503, 504} <= set(retry.status_forcelist)
+    assert http.headers["User-Agent"] == loader.USER_AGENT
+
+
+# Paging loops
+
+LOOPING = "https://api/next?cursor=stuck"
+
+
+def test_fetch_pages_stops_when_the_next_link_repeats(
+    fake_http: Callable[[list[Page | Exception]], FakeHttp],
+) -> None:
+    http = fake_http([page(100, next_url=LOOPING), page(100, next_url=LOOPING)])
+    window = loader.Window(start=utc(2025, 12, 10, 12), end=utc(2025, 12, 11, 0))
+
+    pages = []
+    with pytest.raises(loader.PagingLoopError):
+        for p in loader.fetch_pages(window):
+            pages.append(p)
+
+    assert len(pages) == 1  # the repeated page is not yielded
+    assert len(http.requests) == 2
+
+
+def test_fetch_window_splits_a_looping_window_in_half(
+    fake_http: Callable[[list[Page | Exception]], FakeHttp],
+) -> None:
+    http = fake_http([
+        page(100, next_url=LOOPING),
+        page(100, next_url=LOOPING),  # loop: split
+        page(3),  # first half
+        page(2),  # second half
+    ])
+    window = loader.Window(start=utc(2025, 12, 10, 12), end=utc(2025, 12, 11, 0))
+
+    pages = list(loader.fetch_window(window))
+
+    assert [len(p["releases"]) for p in pages] == [100, 3, 2]
+    halves = [params for _, params in http.requests[2:]]
+    assert halves == [  # UK time = UTC in December; the second half starts OVERLAP early
+        {"updatedFrom": "2025-12-10T12:00:00", "updatedTo": "2025-12-10T18:00:00", "limit": 100},
+        {"updatedFrom": "2025-12-10T17:45:00", "updatedTo": "2025-12-11T00:00:00", "limit": 100},
+    ]
+
+
+def test_fetch_window_gives_up_below_an_hour(
+    fake_http: Callable[[list[Page | Exception]], FakeHttp],
+) -> None:
+    fake_http([page(100, next_url=LOOPING), page(100, next_url=LOOPING)])
+    window = loader.Window(start=utc(2025, 12, 10, 12), end=utc(2025, 12, 10, 13))
+
+    with pytest.raises(loader.PagingLoopError):
+        list(loader.fetch_window(window))

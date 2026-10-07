@@ -75,7 +75,7 @@ One-off setup, in a Snowflake worksheet:
 2. Run `01_external_access.sql` as ACCOUNTADMIN. It creates role `TENDER_INGEST`, which owns and runs the loader, and service user `TENDER_DEPLOY` for GitHub Actions; give that user a key pair (see `docs/snowflake-cli.md`).
 3. Add GitHub secrets `SNOWFLAKE_ACCOUNT`, `SNOWFLAKE_USER` (`TENDER_DEPLOY`), `SNOWFLAKE_PRIVATE_KEY` (its private key) and `ALERT_EMAIL` (the verified email of a Snowflake user, which receives failure alerts).
 
-After that, merging a change to the loader or to scripts `02`–`04` into `main` deploys it: `.github/workflows/deploy.yml` uploads the loader and recreates the procedure, tasks and alert. To deploy by hand:
+After that, merging a change to the loader or to scripts `02`–`04` into `main` deploys it once the CI checks pass: `.github/workflows/deploy.yml`, called by `ci.yml`, uploads the loader and recreates the procedure, tasks and alert. To deploy by hand:
 
 ```bash
 snow stage copy ingestion/load_find_a_tender.py @TENDER_DB.RAW.CODE_STAGE --overwrite -c tender
