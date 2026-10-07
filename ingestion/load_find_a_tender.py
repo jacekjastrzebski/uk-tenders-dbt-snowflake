@@ -42,9 +42,9 @@ API_URL = "https://www.find-tender.service.gov.uk/api/1.0/ocdsReleasePackages"
 API_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"  # no offset; the API reads it as UK local time
 API_TIME_ZONE = ZoneInfo("Europe/London")  # ADR 0018
 
-# The API's rate limit is not documented; the backfill hit it after ~1,200 requests
-# in ~35 minutes and was asked to wait 120 seconds (Retry-After).
-API_PAUSE_SECONDS = 2  # between requests
+# The API's rate limit is not documented. About 1,200 requests in 35 minutes with no
+# pause were fine; the 429s (Retry-After 120 s) came from re-requesting a looping page.
+API_PAUSE_SECONDS = 0.5  # between requests
 API_RETRIES = 10  # each waits Retry-After, so a run rides out ~20 minutes of 429s
 USER_AGENT = "uk-tenders-dbt-snowflake (+https://github.com/jacekjastrzebski/uk-tenders-dbt-snowflake)"
 

@@ -76,7 +76,7 @@ Group by `ocid`, order by `date` and notice type to build the lifecycle.
 | 429 | Too many requests | Wait `Retry-After` seconds, retry |
 | 503 | Service unavailable | Wait `Retry-After` seconds, retry |
 
-The rate limit itself is not documented. The backfill hit it after about 1,200 requests in 35 minutes, and the API then asked for a 120-second wait. The loader pauses 2 seconds between requests and retries up to 10 times.
+The rate limit itself is not documented. The backfill made about 1,200 requests in 35 minutes with no pause and was never refused; the 429s (with a 120-second `Retry-After`) came once it kept re-requesting a looping page (see below). The loader pauses 0.5 seconds between requests and retries up to 10 times.
 
 ## 7. Observations from real data
 
