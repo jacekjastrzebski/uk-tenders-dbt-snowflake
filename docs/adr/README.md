@@ -19,3 +19,4 @@ One file per significant decision: the context, the decision and its consequence
 | [0015](0015-staging-as-tables.md) | Staging models as tables; layers named raw → staging → marts | Accepted |
 | [0016](0016-strip-contact-details-in-staging.md) | Strip contact details from staging, including the stored JSON | Accepted |
 | [0018](0018-convert-amounts-to-gbp-with-hmrc-rates.md) | Convert amounts to GBP with HMRC monthly rates | Accepted |
+| [0019](0019-star-schema-for-power-bi.md) | Marts as a star schema for Power BI | Accepted |
