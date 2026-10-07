@@ -29,6 +29,7 @@ import os
 from collections.abc import Iterator
 from dataclasses import dataclass, replace
 from datetime import UTC, date, datetime, time, timedelta
+from time import sleep
 from typing import Any
 from zoneinfo import ZoneInfo
 
@@ -40,6 +41,12 @@ from urllib3.util.retry import Retry
 API_URL = "https://www.find-tender.service.gov.uk/api/1.0/ocdsReleasePackages"
 API_DATE_FORMAT = "%Y-%m-%dT%H:%M:%S"  # no offset; the API reads it as UK local time
 API_TIME_ZONE = ZoneInfo("Europe/London")  # ADR 0018
+
+# The API's rate limit is not documented; the backfill hit it after ~1,200 requests
+# in ~35 minutes and was asked to wait 120 seconds (Retry-After).
+API_PAUSE_SECONDS = 2  # between requests
+API_RETRIES = 10  # each waits Retry-After, so a run rides out ~20 minutes of 429s
+USER_AGENT = "uk-tenders-dbt-snowflake (+https://github.com/jacekjastrzebski/uk-tenders-dbt-snowflake)"
 
 RELEASES_TABLE = "RAW.FIND_A_TENDER_RELEASES"
 RUNS_TABLE = "RAW.FIND_A_TENDER_INGEST_RUNS"
@@ -183,7 +190,7 @@ def backfill_windows(start: date, stop: datetime) -> list[tuple[date, Window]]:
 
 
 def fetch_pages(window: Window) -> Iterator[Page]:
-    """Yield each page of releases in the window, following links.next."""
+    """Yield each page of releases in the window, following links.next; pauses after each request."""
     http = http_session()
     url: str | None = API_URL
     updated_from, updated_to = api_dates(window)
@@ -196,6 +203,7 @@ def fetch_pages(window: Window) -> Iterator[Page]:
         response = http.get(url, params=params, timeout=60)
         response.raise_for_status()
         page = response.json()
+        sleep(API_PAUSE_SECONDS)
         yield page
 
         url = page.get("links", {}).get("next")  # includes the cursor
@@ -217,14 +225,15 @@ def api_dates(window: Window) -> tuple[str, str]:
 
 
 def http_session() -> requests.Session:
-    """HTTP session that waits for Retry-After and retries on 429 and 503."""
+    """HTTP session that waits for Retry-After on 429 and 503, and backs off on other server errors."""
     retry = Retry(
-        total=5,
-        status_forcelist=[429, 503],
+        total=API_RETRIES,
+        status_forcelist=[429, 500, 502, 503, 504],
         respect_retry_after_header=True,
         backoff_factor=2,
     )
     http = requests.Session()
+    http.headers["User-Agent"] = USER_AGENT
     http.mount("https://", HTTPAdapter(max_retries=retry))
     return http
 

@@ -76,6 +76,8 @@ Group by `ocid`, order by `date` and notice type to build the lifecycle.
 | 429 | Too many requests | Wait `Retry-After` seconds, retry |
 | 503 | Service unavailable | Wait `Retry-After` seconds, retry |
 
+The rate limit itself is not documented. The backfill hit it after about 1,200 requests in 35 minutes, and the API then asked for a 120-second wait. The loader pauses 2 seconds between requests and retries up to 10 times.
+
 ## 7. Observations from real data
 
 - CPV code is usually empty in `tender.classification` for Procurement Act notices; look in `items[].additionalClassifications`.
