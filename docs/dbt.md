@@ -8,7 +8,8 @@ dbt turns the raw API pages in `TENDER_DB.RAW` into clean tables. The project is
 |---|---|---|---|
 | Sources | `RAW` | tables, loaded by the stored procedure | One row per API page |
 | Staging | `STAGING` / `DEV_STAGING` | tables ([ADR 0015](adr/0015-staging-as-tables.md)) | One row per notice, party, award, award supplier, contract; deduplicated, typed, no personal data |
-| Marts | `MARTS` / `DEV_MARTS` | to decide | Dashboard tables (next step) |
+| Seeds | `STAGING` / `DEV_STAGING` | tables, from CSV in `dbt/seeds/` | Reference data: HMRC exchange rates |
+| Marts | `MARTS` / `DEV_MARTS` | tables | Star schema for Power BI ([ADR 0019](adr/0019-star-schema-for-power-bi.md)), see [Marts](#marts) |
 
 dbt runs as role `TENDER_TRANSFORM` (`snowflake/setup/03_transform_role.sql`): it can read `RAW` and create its own schemas, nothing else. The `dev` target writes to `DEV_*` schemas, so development never overwrites prod.
 
@@ -55,4 +56,19 @@ uv run dbt docs generate --project-dir dbt && uv run dbt docs serve --project-di
 - SQL style as in `CLAUDE.md`.
 - Personal data (`parties[].contactPoint`) never leaves `RAW`; `dbt/tests/assert_no_contact_points.sql` enforces it.
 - Staging timestamps are UTC (`TIMESTAMP_NTZ`), so date grouping doesn't depend on the session time zone.
-- Changing models, keys or relationships means updating [`docs/diagrams/staging-erd.md`](diagrams/staging-erd.md) in the same PR.
+- Mart names: `fct_<entity>` for facts and `dim_<entity>` for dimensions, plural entity (e.g. `fct_award_suppliers`, `dim_dates`).
+- Changing models, keys or relationships means updating the diagrams in [`docs/diagrams/`](diagrams/) in the same PR.
+
+## Marts
+
+Star schema for the Power BI report ([ADR 0019](adr/0019-star-schema-for-power-bi.md), [diagram](diagrams/marts-erd.md)). Built so far:
+
+| Model | Grain | Used for |
+|---|---|---|
+| `dim_dates` | Day, 2015–2035 (vars in `dbt_project.yml`) | Date filters and trends; UK financial year |
+
+Rules for fact date columns:
+
+- Take the UK date, not the UTC one: `CONVERT_TIMEZONE('UTC', 'Europe/London', <timestamp>)::DATE`.
+- Dates outside the calendar (e.g. the placeholder 2099-12-31) become NULL.
+- Test each date column with `relationships` to `dim_dates.calendar_date`.

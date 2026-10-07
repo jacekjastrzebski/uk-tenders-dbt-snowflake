@@ -1,0 +1,28 @@
+version: 2
+
+models:
+  - name: dim_dates
+    description: >
+      Calendar, one row per day between the vars dim_dates_start and
+      dim_dates_end (dbt_project.yml); UK financial year April to March.
+      In Power BI: mark as the date table on calendar_date and turn off auto date/time.
+    columns:
+      - name: calendar_date
+        description: The day; key that fact date columns join to.
+        data_tests: [unique, not_null]
+      - name: calendar_year
+        description: Calendar year, e.g. 2026.
+      - name: month_number
+        description: 1-12; sort month_name by this column in Power BI.
+      - name: month_name
+        description: January-December.
+      - name: month_start
+        description: First day of the month; continuous axis for monthly trends.
+      - name: year_month
+        description: e.g. 2026-10, a label for monthly trends.
+      - name: week_start
+        description: Monday of the week.
+      - name: financial_year
+        description: UK financial year, e.g. 2026/27 (1 April 2026 to 31 March 2027); sorts correctly as text.
+      - name: financial_month_number
+        description: Month within the financial year, April = 1 to March = 12; sort months by this in financial-year visuals.

@@ -8,11 +8,18 @@ model-paths: ["models"]
 macro-paths: ["macros"]
 test-paths: ["tests"]
 
+vars:
+  dim_dates_start: "2015-01-01"   # contracts signed since 2017
+  dim_dates_end: "2035-12-31"     # contract end dates; later dates are treated as unknown
+
 models:
   uk_tenders:
     staging:
       +schema: staging        # STAGING in prod, DEV_STAGING in dev
       +materialized: table    # built once per run; marts and queries read stored, clean data
+    marts:
+      +schema: marts          # MARTS in prod, DEV_MARTS in dev; read by Power BI
+      +materialized: table
 
 seeds:
   uk_tenders:
