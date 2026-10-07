@@ -29,8 +29,8 @@ Find a Tender API  →  Python loader  →  Snowflake (raw)  →  dbt (staging, 
 |---|---|
 | Ingest (Python loader into Snowflake) | Done |
 | Schedule (Snowflake tasks) | Done |
-| Transform (dbt staging and marts, run by hand) | Done |
-| Run dbt in Snowflake after each load ([ADR 0009](docs/adr/0009-run-dbt-on-a-schedule-in-snowflake.md)) | TO-DO |
+| Transform (dbt staging and marts) | Done |
+| Run dbt in Snowflake 20 minutes after each load ([ADR 0009](docs/adr/0009-run-dbt-on-a-schedule-in-snowflake.md)) | Done |
 | Event-based failure alerts for all tasks (ingest and dbt) | TO-DO |
 | Report (Power BI) | TO-DO |
 | Historical backfill from 24 February 2025 ([ADR 0017](docs/adr/0017-backfill-from-procurement-act-start.md)) | Done (172,312 notices) |
@@ -43,6 +43,7 @@ Find a Tender API  →  Python loader  →  Snowflake (raw)  →  dbt (staging, 
 | `snowflake/setup/` | Numbered SQL scripts that create the database, warehouse, raw tables and the dbt and Power BI roles |
 | `dbt/` | dbt project: staging, intermediate and mart models, seeds and tests; see `docs/dbt.md` |
 | `snowflake/native_ingestion/` | Numbered SQL scripts that run the loader as a Snowflake stored procedure on a schedule (needs a paid account) |
+| `snowflake/dbt/` | Setup, profile and scheduled task that run the dbt project inside Snowflake (ADR 0009) |
 | `tests/` | Tests for the Python code |
 | `docs/` | Procurement primer, glossary, API reference, EDA findings, decision records (`adr/`), plans and diagrams |
 

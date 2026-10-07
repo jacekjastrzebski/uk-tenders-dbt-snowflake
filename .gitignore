@@ -25,6 +25,8 @@ htmlcov/
 
 # --- Snowflake / secrets ---
 profiles.yml
+# credential-free prod profile for the dbt project object (ADR 0009)
+!snowflake/dbt/profiles.yml
 .env
 .env.*
 !.env.example

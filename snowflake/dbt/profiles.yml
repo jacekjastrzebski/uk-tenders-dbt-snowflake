@@ -1,0 +1,15 @@
+# dbt profile for the dbt project object in Snowflake (ADR 0009); used only by
+#   snow dbt deploy UK_TENDERS --source dbt --profiles-dir snowflake/dbt ...
+# Snowflake runs the project as the task's owner in the current account, so there is
+# no account, user or password here (a password would stop the deploy).
+# Kept outside dbt/ so local runs keep using ~/.dbt/profiles.yml (target dev).
+uk_tenders:
+  target: prod
+  outputs:
+    prod:
+      type: snowflake
+      role: TENDER_TRANSFORM
+      database: TENDER_DB
+      warehouse: TENDER_WH
+      schema: DBT       # must exist; models go to STAGING / MARTS (dbt/macros/generate_schema_name.sql)
+      threads: 4

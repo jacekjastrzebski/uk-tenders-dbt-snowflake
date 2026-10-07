@@ -5,9 +5,12 @@
 #   02_ingest_procedure.sql          -> recreate the stored procedure
 #   03_ingest_task.sql               -> recreate the scheduled tasks
 #   04_failure_alert.sql             -> recreate the failure alert
+#   dbt/** or snowflake/dbt/profiles.yml -> deploy a new version of the dbt project object (ADR 0009)
+#   snowflake/dbt/01_run_dbt_task.sql    -> recreate the dbt task and its failure alert
 # A manual run (workflow_dispatch) deploys everything.
-# One-off setup (00 and 01 in snowflake/native_ingestion/) stays manual:
-# 01 needs ACCOUNTADMIN; this workflow deploys as TENDER_DEPLOY with role TENDER_INGEST.
+# One-off setup (00 and 01 in snowflake/native_ingestion/, snowflake/dbt/00_dbt_setup.sql) stays
+# manual: it needs ACCOUNTADMIN. This workflow deploys as TENDER_DEPLOY, with role TENDER_INGEST
+# for the loader and TENDER_TRANSFORM for dbt.
 name: Deploy
 
 on:
@@ -40,7 +43,7 @@ jobs:
           if [ "$EVENT" != workflow_dispatch ]; then
             changed_files=$(git diff --name-only "$BEFORE" "$AFTER")
           fi
-          deploy_if_changed() {   # $1 = output name, $2 = file
+          deploy_if_changed() {   # $1 = output name, $2 = file, matched as a regex (dbt/.* = the folder)
             if [ "$EVENT" = workflow_dispatch ] || grep -qx "$2" <<< "$changed_files"; then
               echo "$1=true" >> "$GITHUB_OUTPUT"
               echo "any=true" >> "$GITHUB_OUTPUT"
@@ -51,6 +54,9 @@ jobs:
           deploy_if_changed procedure snowflake/native_ingestion/02_ingest_procedure.sql
           deploy_if_changed tasks     snowflake/native_ingestion/03_ingest_task.sql
           deploy_if_changed alert     snowflake/native_ingestion/04_failure_alert.sql
+          deploy_if_changed dbt       'dbt/.*'
+          deploy_if_changed dbt       snowflake/dbt/profiles.yml
+          deploy_if_changed dbt_task  snowflake/dbt/01_run_dbt_task.sql
 
       - name: Write Snowflake connection
         if: steps.changed.outputs.any == 'true'   # CI calls this on every push; most change nothing here
@@ -90,3 +96,14 @@ jobs:
         env:
           ALERT_EMAIL: ${{ secrets.ALERT_EMAIL }}
         run: uvx --from snowflake-cli==3.28.0 snow sql -f snowflake/native_ingestion/04_failure_alert.sql -D "alert_email=$ALERT_EMAIL" -c tender
+
+      # New version of the project object; without --force, its run history is kept
+      - name: Deploy dbt project
+        if: steps.changed.outputs.dbt == 'true'
+        run: uvx --from snowflake-cli==3.28.0 snow dbt deploy UK_TENDERS --source dbt --profiles-dir snowflake/dbt --database TENDER_DB --schema DBT --role TENDER_TRANSFORM -c tender
+
+      - name: Create dbt task and alert
+        if: steps.changed.outputs.dbt_task == 'true'
+        env:
+          ALERT_EMAIL: ${{ secrets.ALERT_EMAIL }}
+        run: uvx --from snowflake-cli==3.28.0 snow sql -f snowflake/dbt/01_run_dbt_task.sql -D "alert_email=$ALERT_EMAIL" -c tender
