@@ -67,7 +67,7 @@ SELECT
     r.notice:tag AS tags,
     t.notice_type,
     r.notice:tender.legalBasis.id::STRING AS legal_basis,
-    r.notice:tender.legalBasis.id::STRING = '2023/54' AS is_procurement_act,
+    COALESCE(r.notice:tender.legalBasis.id::STRING = '2023/54', FALSE) AS is_procurement_act,   -- no legal basis = not the Act
     COALESCE(r.notice:buyer.id::STRING, pt.buyer_party_id) AS buyer_id,
     COALESCE(r.notice:buyer.name::STRING, pt.buyer_party_name) AS buyer_name,
     r.notice:tender.title::STRING AS title,
