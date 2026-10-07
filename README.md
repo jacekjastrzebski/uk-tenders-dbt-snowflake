@@ -1,6 +1,6 @@
 # uk-tenders-dbt-snowflake
 
-UK public procurement data from Find a Tender, loaded into Snowflake and modelled with dbt, refreshed every 3 hours from 07:00 to 19:00 UK time.
+A market tracker for UK public-sector digital and data contracts: what's open to bid, who's buying, who's winning and how long to award. Built on Find a Tender with Snowflake and dbt, refreshed every 3 hours from 07:00 to 19:00 UK time.
 
 ## What it is
 
@@ -8,10 +8,10 @@ UK public procurement data from Find a Tender, loaded into Snowflake and modelle
 
 This project turns those notices into a market tracker for digital and data services, answering:
 
-- **What is open now?** Live tenders and their closing dates.
-- **Who is buying?** Spend by buyer and sector over time.
-- **Who is winning?** Suppliers, award values and market share.
-- **How long does it take?** Time from tender to award to signed contract.
+- **What's open to bid?** Live tenders and their closing dates.
+- **Who's buying?** Spend by buyer and sector over time.
+- **Who's winning?** Suppliers, award values and market share.
+- **How long to award?** Time from tender to award, and from award to signed contract.
 
 ## How it works
 
