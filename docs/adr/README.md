@@ -12,7 +12,7 @@ One file per significant decision: the context, the decision and its consequence
 | [0006](0006-loader-constants-in-code.md) | Keep loader constants in code, not a config file | Accepted |
 | [0007](0007-classify-notices-by-notice-type.md) | Classify notices by `noticeType`, not `tag` | Accepted |
 | [0008](0008-dbt-environments-and-staging-views.md) | dbt: dev/prod by schema, staging as views | Accepted; views superseded by 0015 |
-| [0009](0009-run-dbt-on-a-schedule-in-snowflake.md) | Run dbt in Snowflake, 20 minutes after each load | Proposed |
+| [0009](0009-run-dbt-on-a-schedule-in-snowflake.md) | Run dbt in Snowflake, 20 minutes after each load | Accepted |
 | [0010](0010-source-freshness-thresholds.md) | Source freshness: warn at 13 h (logged), error at 26 h (email) | Accepted |
 | [0011](0011-load-window-overlap.md) | Overlap each load window by 15 minutes | Accepted; time zone risk resolved by 0018 |
 | [0012](0012-business-terms-in-staging.md) | Name models in business terms: notices, not releases | Accepted |

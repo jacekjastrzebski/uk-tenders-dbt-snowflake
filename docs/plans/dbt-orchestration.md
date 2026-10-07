@@ -1,6 +1,6 @@
 # Running dbt in Snowflake after each load
 
-Status: plan, not built. Closes gap 2 of the [DataOps review](dataops-review.md).
+Status: built (2026-10-08, ADR 0009); kept for the reasoning. Closes gap 2 of the [DataOps review](dataops-review.md).
 
 ## Goal
 
