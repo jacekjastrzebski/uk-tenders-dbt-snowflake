@@ -21,7 +21,7 @@ WITH award_rows AS (
         n.notice_type,
         n.published_at,
         n.buyer_name,
-        n.cpv_code,
+        COALESCE(n.cpv_code, n.procurement_cpv_code) AS cpv_code,   -- award notices often have no CPV code
         n.title,
         n.notice:tender.techniques.hasFrameworkAgreement::BOOLEAN AS has_framework_agreement,
         n.notice:tender.procurementMethodDetails::STRING ILIKE 'Award under framework%' AS is_call_off

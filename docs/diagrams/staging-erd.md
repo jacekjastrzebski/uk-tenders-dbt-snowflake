@@ -34,6 +34,7 @@ erDiagram
         timestamp published_at
         string buyer_id
         string cpv_code
+        string procurement_cpv_code "latest in the procurement"
         number tender_value_amount "net"
         number tender_value_amount_gross "incl. VAT"
         variant notice "full JSON, contacts removed"

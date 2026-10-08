@@ -59,6 +59,8 @@ models:
         description: Deadline for bids, UTC.
       - name: cpv_code
         description: Main CPV code, from tender.classification, else the first tender item, else the first award item.
+      - name: procurement_cpv_code
+        description: Latest CPV code on any notice of the same procurement (ocid); the fallback for notices without one.
       - name: notice
         description: The full notice as JSON without parties' contactPoint, for the child models. Internal; not for marts.
 
