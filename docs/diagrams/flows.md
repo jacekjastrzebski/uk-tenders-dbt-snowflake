@@ -135,7 +135,7 @@ Whether a freshness error stops the task before the build is still to be confirm
 
 ## Change to production
 
-How a code change reaches Snowflake, one lane per owner. Only objects whose files changed are redeployed ([ADR 0005](../adr/0005-deploy-only-changed-objects.md)), and only after the checks pass ([ADR 0019](../adr/0019-deploy-after-ci-checks.md)). A manual run, or a change to `deploy.yml` itself, deploys everything. One-off setup that needs ACCOUNTADMIN stays manual.
+How a code change reaches Snowflake, one lane per owner. Only objects whose files changed are redeployed ([ADR 0005](../adr/0005-deploy-only-changed-objects.md)), and only after the checks pass ([ADR 0019](../adr/0019-deploy-after-ci-checks.md)); pull requests that change dbt also build and test it in throwaway schemas ([ADR 0030](../adr/0030-build-dbt-in-ci.md)). A manual run, or a change to `deploy.yml` itself, deploys everything. One-off setup that needs ACCOUNTADMIN stays manual.
 
 ```mermaid
 flowchart TB
@@ -144,8 +144,9 @@ flowchart TB
         D5["Merge to main"]
     end
     subgraph CI["GitHub CI (ci.yml)"]
-        C1["Checks on the PR:<br/>pre-commit, mypy strict, pytest"]
-        C2["Same checks on main"]
+        C1["Checks on the PR:<br/>pre-commit, mypy strict, pytest,<br/>dbt parse"]
+        C3["dbt build into CI_PR_&lt;n&gt;_* schemas,<br/>then drop them (PRs changing dbt/)"]
+        C2["Same checks and dbt parse on main"]
     end
     subgraph DEP["Deploy (deploy.yml)"]
         P1{"Which files changed?"}
@@ -158,8 +159,9 @@ flowchart TB
         S1["Next scheduled run<br/>uses the new version"]
     end
 
-    D3 --> C1 -->|"green"| D5 --> C2 -->|"green"| P1
-    C1 -->|"red"| D1
+    D3 --> C1 & C3
+    C1 & C3 -->|"green"| D5 --> C2 -->|"green"| P1
+    C1 & C3 -->|"red"| D1
     P1 -->|"ingestion/load_find_a_tender.py"| P2
     P1 -->|"native_ingestion/02-04"| P3
     P1 -->|"dbt/** or profiles.yml"| P4

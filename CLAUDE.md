@@ -34,6 +34,7 @@ The pre-commit hook (`uv run pre-commit install`, once per clone) and CI (`.gith
 uv run mypy
 uv run pytest
 ```
+CI also parses the dbt project and, on pull requests that change `dbt/`, builds it into temporary `CI_PR_<number>_*` schemas (ADR 0030).
 
 ## Git
 - Always show the proposed commit message and wait for confirmation before committing.

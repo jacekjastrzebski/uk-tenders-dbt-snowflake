@@ -66,6 +66,16 @@ The project is deployed as a dbt project object and runs on a schedule inside Sn
 - **One-off setup:** run `snowflake/dbt/00_dbt_setup.sql` as ACCOUNTADMIN before the first deploy.
 - **To check once after the first deploy:** that a failing dbt command fails the task, e.g. `EXECUTE DBT PROJECT TENDER_DB.DBT.UK_TENDERS ARGS = 'run-operation does_not_exist';` should raise an error. If it only returns a row with `success = FALSE`, the task body must check that flag and raise.
 
+## CI
+
+Every pull request parses the project; pull requests that change `dbt/` also build every model and run every test into temporary `CI_PR_<number>_*` schemas, which are dropped afterwards ([ADR 0030](adr/0030-build-dbt-in-ci.md)). To try the same locally against throwaway schemas:
+
+```bash
+export SNOWFLAKE_ACCOUNT=<orgname>-<accountname> SNOWFLAKE_USER=<user> SNOWFLAKE_PRIVATE_KEY_PATH=$HOME/.snowflake/key.p8 DBT_CI_SCHEMA=CI_TEST
+uv run dbt build --project-dir dbt --profiles-dir .github/dbt
+uv run dbt run-operation drop_ci_schemas --project-dir dbt --profiles-dir .github/dbt --args "{prefix: CI_TEST}"
+```
+
 ## Conventions
 
 - Model names: `stg_<source>__<entity>` (e.g. `stg_find_a_tender__awards`), plural entity.
