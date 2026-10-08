@@ -60,6 +60,14 @@ Terms used in this project, grouped by area. Procurement background: [procuremen
 | Service user | A user for automation, key-pair login only: `TENDER_DEPLOY` |
 | Integration | Account-level connection to something outside: API access, email |
 
+## Architecture
+
+| Term | Meaning |
+|---|---|
+| C4 model | A way to draw software architecture at four zoom levels: context, containers, components, code; [architecture.md](architecture.md) uses the first three plus deployment |
+| Container (C4) | Something that runs or stores data, e.g. the loader procedure or the marts schema; not a Docker container |
+| Swimlane | A diagram with one lane per actor, showing who does each step |
+
 ## dbt
 
 | Term | Meaning |

@@ -2,6 +2,8 @@
 
 | Path | Contents |
 |---|---|
+| `architecture.md` | How the system fits together: C4 diagrams, swimlanes, sequences, schedule, roles, lineage |
+| `self-hosting.md` | Run your own copy: Snowflake, GitHub, dbt and Power BI, step by step |
 | `procurement-primer.md` | UK public procurement, tenders and Procurement Act notice types |
 | `glossary.md` | Terms used in the project: procurement, OCDS, ingestion, Snowflake, dbt |
 | `find-a-tender-api/` | Find a Tender OCDS API: official specs, cheatsheet and a sample response |
