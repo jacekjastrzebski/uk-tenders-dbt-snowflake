@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "Report",
+    "displayName": "UkTenders"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "5f7997ff-87ef-4315-8ce9-88a3837322cf"
+  }
+}

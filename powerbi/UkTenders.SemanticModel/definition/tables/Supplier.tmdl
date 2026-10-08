@@ -1,27 +1,32 @@
 /// Organisations winning awards, from dim_suppliers: grouped by normalised name,
 /// lot numbers removed; includes "Unknown supplier" for awards published without one.
 table Supplier
+	lineageTag: 4312a23b-7071-42a7-90ea-6b21db3752bc
 
 	column 'Supplier Key'
 		dataType: string
 		isHidden
 		isKey
+		lineageTag: 0831898d-4f67-42bd-aab5-f691ac636bd5
 		summarizeBy: none
 		sourceColumn: SUPPLIER_KEY
 
 	column Supplier
 		dataType: string
+		lineageTag: 7fc558c5-b421-4474-8202-ae65eaf56d83
 		summarizeBy: none
 		sourceColumn: SUPPLIER_NAME
 
 	column 'Supplier IDs'
 		dataType: string
 		isHidden
+		lineageTag: bafb0ea2-e777-4087-8196-194abf38c9cf
 		summarizeBy: none
 		sourceColumn: SUPPLIER_IDS
 
 	column 'Is Withheld'
 		dataType: boolean
+		lineageTag: f9920dba-87ba-4f85-a0c2-204b3f3bc1f9
 		summarizeBy: none
 		sourceColumn: IS_WITHHELD
 
@@ -34,3 +39,4 @@ table Supplier
 				    Source
 
 	annotation PBI_ResultType = Table
+

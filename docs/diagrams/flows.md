@@ -48,10 +48,10 @@ gantt
     Freshness and build (about 70 s)  :dbt, 07:20:00, 2m
     dbt failure alert                 :milestone, 07:50:00, 0m
     section Power BI
-    Scheduled refresh (suggested)     :pbi, 08:00:00, 5m
+    Scheduled refresh                 :pbi, 08:00:00, 5m
 ```
 
-The 20-minute gap leaves room for a slow load (the ingest task times out at 15 minutes). Power BI Service schedules refreshes on the hour or half hour, so 08:00, 11:00, 14:00, 17:00 and 20:00 pick up each build.
+The 20-minute gap leaves room for a slow load (the ingest task times out at 15 minutes). Power BI Service schedules refreshes on the hour or half hour, so the refresh is set for 08:00, 11:00, 14:00, 17:00 and 20:00, picking up each build.
 
 ## One ingest run
 

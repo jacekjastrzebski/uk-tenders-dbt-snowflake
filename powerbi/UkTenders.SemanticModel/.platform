@@ -1,0 +1,11 @@
+{
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/gitIntegration/platformProperties/2.0.0/schema.json",
+  "metadata": {
+    "type": "SemanticModel",
+    "displayName": "UkTenders"
+  },
+  "config": {
+    "version": "2.0",
+    "logicalId": "30c0c4f5-eb0b-4323-88ba-b85894d64d96"
+  }
+}

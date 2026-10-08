@@ -2,10 +2,10 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
   "name": "winning-kpiAwardedValue",
   "position": {
-    "x": 648,
-    "y": 168,
+    "x": 858,
+    "y": 200,
     "z": 3,
-    "width": 300,
+    "width": 405,
     "height": 96,
     "tabOrder": 3
   },
@@ -27,7 +27,8 @@
                 }
               },
               "queryRef": "Awards.Awarded Value",
-              "nativeQueryRef": "Awarded Value"
+              "nativeQueryRef": "Awarded Value",
+              "displayName": "Awarded value"
             }
           ]
         }
@@ -82,6 +83,21 @@
         }
       ]
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "objects": {
+      "labels": [
+        {
+          "properties": {
+            "labelDisplayUnits": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
   }
 }

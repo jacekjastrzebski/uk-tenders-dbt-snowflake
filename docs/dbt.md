@@ -74,6 +74,7 @@ The project is deployed as a dbt project object and runs on a schedule inside Sn
 - Personal data (`parties[].contactPoint`) never leaves `RAW`; `dbt/tests/assert_no_contact_points.sql` enforces it.
 - Staging timestamps are UTC (`TIMESTAMP_NTZ`), so date grouping doesn't depend on the session time zone.
 - Organisation names that can't identify anyone (`[]`, `Test`, `N/A`, amounts) are replaced in staging with the same ID's usable name, else "Unnamed buyer/supplier (ID)" ([ADR 0025](adr/0025-replace-unusable-organisation-names.md)).
+- A buyer ID published under 2–5 different names gets its most-used name ([ADR 0027](adr/0027-one-name-per-buyer-id.md)).
 - Mart names: `fct_<entity>` for facts and `dim_<entity>` for dimensions, plural entity (e.g. `fct_award_suppliers`, `dim_dates`).
 - Changing models, keys or relationships means updating the diagrams in [`docs/diagrams/`](diagrams/) (ERDs, `data.md`) in the same PR.
 

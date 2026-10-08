@@ -1,0 +1,43 @@
+/// Legend groups for the market-coloured bar charts; not linked to any table.
+/// With no market chosen the charts show Digital and data and Other markets;
+/// with markets chosen, one group per chosen market (measure Awarded Value by Group).
+table 'Colour Group'
+	lineageTag: b4ba441d-dbfa-4947-9319-a0d6b4110979
+
+	column Group
+		dataType: string
+		lineageTag: 2b492e42-24c7-4bd9-8356-1651a9d9cb5b
+		summarizeBy: none
+		sourceColumn: [Group]
+		sortByColumn: Order
+
+	column Order
+		dataType: int64
+		isHidden
+		lineageTag: de3cc8b9-886f-4ec4-974f-42c658cbcadd
+		summarizeBy: none
+		sourceColumn: [Order]
+
+	partition 'Colour Group' = calculated
+		mode: import
+		source =
+				DATATABLE(
+				    "Group", STRING,
+				    "Order", INTEGER,
+				    {
+				        { "Digital and data", 1 },
+				        { "Health and social care", 2 },
+				        { "Construction and property", 3 },
+				        { "Facilities and maintenance", 4 },
+				        { "Transport", 5 },
+				        { "Professional services", 6 },
+				        { "Education, culture and community", 7 },
+				        { "Energy and utilities", 8 },
+				        { "Goods, equipment and telecoms", 9 },
+				        { "Unknown", 10 },
+				        { "Other markets", 11 }
+				    }
+				)
+
+	annotation PBI_ResultType = Table
+

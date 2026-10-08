@@ -3,9 +3,9 @@
   "name": "winning-kpiTop10Share",
   "position": {
     "x": 16,
-    "y": 168,
+    "y": 200,
     "z": 1,
-    "width": 300,
+    "width": 405,
     "height": 96,
     "tabOrder": 1
   },
@@ -27,7 +27,8 @@
                 }
               },
               "queryRef": "Awards.Top 10 Supplier Share",
-              "nativeQueryRef": "Top 10 Supplier Share"
+              "nativeQueryRef": "Top 10 Supplier Share",
+              "displayName": "Won by the top 10 suppliers"
             }
           ]
         }

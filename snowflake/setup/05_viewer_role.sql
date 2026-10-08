@@ -1,7 +1,7 @@
 -- Guest role and user: sees every schema, table, view and scheduled task,
 -- and can query RAW and the prod staging, intermediate and mart schemas on
 -- a warehouse of its own, capped at 1 credit a month. It can't query the
--- DEV_* schemas or change anything (ADR 0027).
+-- DEV_* schemas or change anything (ADR 0029).
 -- Needs ACCOUNTADMIN. Optional; run after snowflake/dbt/00_dbt_setup.sql.
 --
 -- The user name and a temporary password are passed in, so neither is

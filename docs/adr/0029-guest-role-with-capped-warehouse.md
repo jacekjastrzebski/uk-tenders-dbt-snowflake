@@ -1,4 +1,4 @@
-# 0027. A guest role with its own capped warehouse
+# 0029. A guest role with its own capped warehouse
 
 Status: Accepted (2026-10-08)
 

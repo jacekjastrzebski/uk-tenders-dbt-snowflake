@@ -6,6 +6,10 @@
 -- (docs/adr/0016-strip-contact-details-in-staging.md). Timestamps are UTC.
 -- Unusable buyer names ("[]", "Test", ...) are replaced with the same buyer
 -- ID's latest usable name (docs/adr/0025-replace-unusable-organisation-names.md).
+-- A buyer ID published under a few different names (addresses, project titles,
+-- spellings) gets its most-used name on every notice (docs/adr/0027-one-name-per-buyer-id.md).
+-- procurement_cpv_code is the latest CPV code on any notice of the same procurement,
+-- for notices that have none (award notices often leave it out).
 
 WITH pages AS (
     SELECT
@@ -114,19 +118,45 @@ usable_buyer_names AS (
         NOT {{ is_unusable_org_name('buyer_name') }}
     GROUP BY
         buyer_id
+),
+
+buyer_id_names AS (
+    -- how many different names each buyer ID uses, and the one it uses most
+    SELECT
+        buyer_id,
+        COUNT(DISTINCT {{ normalise_org_name('buyer_name') }}) AS names,
+        MODE(buyer_name) AS main_name
+    FROM
+        notices
+    WHERE
+        NOT {{ is_unusable_org_name('buyer_name') }}
+    GROUP BY
+        buyer_id
 )
 
 SELECT
     n.* REPLACE (
-        IFF(
-            {{ is_unusable_org_name('n.buyer_name') }},
-            COALESCE(u.buyer_name, 'Unnamed buyer (' || n.buyer_id || ')'),
-            n.buyer_name
-        ) AS buyer_name
-    )
+        CASE
+            -- a few names under one ID: one organisation; IDs with many names are
+            -- purchasing bodies publishing for several buyers, so they keep each name
+            WHEN m.names BETWEEN 2 AND {{ var('max_names_per_buyer_id') }} THEN m.main_name
+            WHEN {{ is_unusable_org_name('n.buyer_name') }}
+                THEN COALESCE(u.buyer_name, 'Unnamed buyer (' || n.buyer_id || ')')
+            ELSE n.buyer_name
+        END AS buyer_name
+    ),
+    LAST_VALUE(n.cpv_code) IGNORE NULLS OVER (
+        PARTITION BY n.ocid
+        ORDER BY n.published_at
+        ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+    ) AS procurement_cpv_code
 FROM
     notices AS n
 LEFT JOIN
     usable_buyer_names AS u
 ON
     n.buyer_id = u.buyer_id
+LEFT JOIN
+    buyer_id_names AS m
+ON
+    n.buyer_id = m.buyer_id
