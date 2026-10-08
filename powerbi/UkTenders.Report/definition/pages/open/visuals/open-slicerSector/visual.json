@@ -1,37 +1,52 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
-  "name": "overview-kpiAwardedValue",
+  "name": "open-slicerSector",
   "position": {
-    "x": 964,
-    "y": 168,
-    "z": 3,
-    "width": 300,
-    "height": 96,
-    "tabOrder": 3
+    "x": 437,
+    "y": 88,
+    "z": 0,
+    "width": 405,
+    "height": 72,
+    "tabOrder": 0
   },
   "visual": {
-    "visualType": "card",
+    "visualType": "slicer",
     "query": {
       "queryState": {
         "Values": {
           "projections": [
             {
               "field": {
-                "Measure": {
+                "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Awards"
+                      "Entity": "Sector"
                     }
                   },
-                  "Property": "Awarded Value"
+                  "Property": "Sector"
                 }
               },
-              "queryRef": "Awards.Awarded Value",
-              "nativeQueryRef": "Awarded Value"
+              "queryRef": "Sector.Sector",
+              "nativeQueryRef": "Sector"
             }
           ]
         }
       }
+    },
+    "objects": {
+      "data": [
+        {
+          "properties": {
+            "mode": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Dropdown'"
+                }
+              }
+            }
+          }
+        }
+      ]
     },
     "visualContainerObjects": {
       "padding": [
@@ -74,13 +89,25 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
+                  "Value": "true"
+                }
+              }
+            },
+            "text": {
+              "expr": {
+                "Literal": {
+                  "Value": "'Sector'"
                 }
               }
             }
           }
         }
       ]
+    },
+    "syncGroup": {
+      "groupName": "Sector",
+      "fieldChanges": true,
+      "filterChanges": true
     },
     "drillFilterOtherVisuals": true
   }

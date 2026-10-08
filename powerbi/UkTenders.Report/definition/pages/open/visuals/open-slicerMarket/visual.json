@@ -1,82 +1,46 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
-  "name": "overview-topBuyers",
+  "name": "open-slicerMarket",
   "position": {
-    "x": 648,
-    "y": 280,
+    "x": 16,
+    "y": 88,
     "z": 0,
-    "width": 616,
-    "height": 424,
+    "width": 405,
+    "height": 72,
     "tabOrder": 0
   },
   "visual": {
-    "visualType": "clusteredBarChart",
+    "visualType": "slicer",
     "query": {
       "queryState": {
-        "Category": {
+        "Values": {
           "projections": [
             {
               "field": {
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Buyer"
+                      "Entity": "Sector"
                     }
                   },
-                  "Property": "Buyer"
+                  "Property": "Market"
                 }
               },
-              "queryRef": "Buyer.Buyer",
-              "nativeQueryRef": "Buyer"
-            }
-          ]
-        },
-        "Y": {
-          "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Awards"
-                    }
-                  },
-                  "Property": "Awarded Value"
-                }
-              },
-              "queryRef": "Awards.Awarded Value",
-              "nativeQueryRef": "Awarded Value"
+              "queryRef": "Sector.Market",
+              "nativeQueryRef": "Market"
             }
           ]
         }
-      },
-      "sortDefinition": {
-        "sort": [
-          {
-            "field": {
-              "Measure": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "Awards"
-                  }
-                },
-                "Property": "Awarded Value"
-              }
-            },
-            "direction": "Descending"
-          }
-        ],
-        "isDefaultSort": true
       }
     },
     "objects": {
-      "labels": [
+      "data": [
         {
           "properties": {
-            "show": {
+            "mode": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "'Dropdown'"
                 }
               }
             }
@@ -132,13 +96,18 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Top buyers by awarded value'"
+                  "Value": "'Market'"
                 }
               }
             }
           }
         }
       ]
+    },
+    "syncGroup": {
+      "groupName": "Market",
+      "fieldChanges": true,
+      "filterChanges": true
     },
     "drillFilterOtherVisuals": true
   }

@@ -1,11 +1,11 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
-  "name": "overview-openTenders",
+  "name": "open-openTenders",
   "position": {
     "x": 16,
     "y": 280,
     "z": 0,
-    "width": 616,
+    "width": 1248,
     "height": 424,
     "tabOrder": 0
   },
@@ -59,6 +59,20 @@
             },
             {
               "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Procurements"
+                    }
+                  },
+                  "Property": "Closing Date"
+                }
+              },
+              "queryRef": "Procurements.Closing Date",
+              "nativeQueryRef": "Closing Date"
+            },
+            {
+              "field": {
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
@@ -70,20 +84,6 @@
               },
               "queryRef": "Procurements.Days to Close",
               "nativeQueryRef": "Days to Close"
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Procurements"
-                    }
-                  },
-                  "Property": "Tender Value"
-                }
-              },
-              "queryRef": "Procurements.Tender Value",
-              "nativeQueryRef": "Tender Value"
             }
           ]
         }
@@ -104,7 +104,7 @@
             "direction": "Ascending"
           }
         ],
-        "isDefaultSort": true
+        "isDefaultSort": false
       }
     },
     "visualContainerObjects": {
@@ -163,6 +163,93 @@
         }
       ]
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "objects": {
+      "total": [
+        {
+          "properties": {
+            "totals": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "columnWidth": [
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "500D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Procurements.Title"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "300D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Buyer.Buyer"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "180D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Sector.Sector"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "110D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Procurements.Closing Date"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "100D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Procurements.Days to Close"
+          }
+        }
+      ]
+    }
   }
 }

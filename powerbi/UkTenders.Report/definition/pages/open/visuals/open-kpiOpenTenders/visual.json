@@ -1,13 +1,13 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
-  "name": "overview-kpiNotices",
+  "name": "open-kpiOpenTenders",
   "position": {
-    "x": 648,
+    "x": 16,
     "y": 168,
-    "z": 2,
+    "z": 0,
     "width": 300,
     "height": 96,
-    "tabOrder": 2
+    "tabOrder": 0
   },
   "visual": {
     "visualType": "card",
@@ -20,14 +20,14 @@
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Notices"
+                      "Entity": "Procurements"
                     }
                   },
-                  "Property": "Notices"
+                  "Property": "Open Tenders"
                 }
               },
-              "queryRef": "Notices.Notices",
-              "nativeQueryRef": "Notices"
+              "queryRef": "Procurements.Open Tenders",
+              "nativeQueryRef": "Open Tenders"
             }
           ]
         }

@@ -1,12 +1,12 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
-  "name": "overview-slicerSector",
+  "name": "open-slicerBuyer",
   "position": {
-    "x": 437,
+    "x": 858,
     "y": 88,
     "z": 0,
     "width": 405,
-    "height": 64,
+    "height": 72,
     "tabOrder": 0
   },
   "visual": {
@@ -20,14 +20,14 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Sector"
+                      "Entity": "Buyer"
                     }
                   },
-                  "Property": "Sector"
+                  "Property": "Buyer"
                 }
               },
-              "queryRef": "Sector.Sector",
-              "nativeQueryRef": "Sector"
+              "queryRef": "Buyer.Buyer",
+              "nativeQueryRef": "Buyer"
             }
           ]
         }
@@ -96,7 +96,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Sector'"
+                  "Value": "'Buyer'"
                 }
               }
             }
@@ -105,7 +105,7 @@
       ]
     },
     "syncGroup": {
-      "groupName": "Sector",
+      "groupName": "Buyer",
       "fieldChanges": true,
       "filterChanges": true
     },

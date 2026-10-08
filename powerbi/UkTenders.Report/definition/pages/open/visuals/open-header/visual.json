@@ -1,6 +1,6 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
-  "name": "overview-header",
+  "name": "open-header",
   "position": {
     "x": 0,
     "y": 0,
@@ -31,7 +31,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "What is open, and who is buying?  ",
+                    "value": "What's open to bid?  ",
                     "textStyle": {
                       "fontFamily": "'DM Sans', 'Segoe UI Semibold', wf_segoe-ui_semibold, helvetica, arial, sans-serif",
                       "fontSize": "11pt",
@@ -39,7 +39,7 @@
                     }
                   },
                   {
-                    "value": "Live tenders, notices published and awarded value by buyer",
+                    "value": "Live tenders and their closing dates",
                     "textStyle": {
                       "fontFamily": "'DM Sans', 'Segoe UI', wf_segoe-ui_normal, helvetica, arial, sans-serif",
                       "fontSize": "11pt",
