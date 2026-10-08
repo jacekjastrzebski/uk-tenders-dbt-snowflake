@@ -159,7 +159,7 @@ git update-index --skip-worktree powerbi/UkTenders.SemanticModel/definition/expr
 1. *Home > Publish*, pick a workspace.
 2. In Power BI Service: workspace → semantic model `UkTenders` → *Settings*.
    - *Data source credentials > Edit credentials*: key-pair authentication, user `TENDER_POWERBI`, upload `powerbi_key.p8`. No gateway: Power BI Service reaches Snowflake directly.
-   - *Refresh*: on, time zone *(UTC+00:00) Dublin, Edinburgh, Lisbon, London*, times 08:00, 11:00, 14:00, 17:00, 20:00 (after each dbt build; Pro allows 8 a day). Add a failure notification email.
+   - *Refresh*: on, time zone *(UTC+00:00) Dublin, Edinburgh, Lisbon, London*, times 08:00, 11:00, 14:00, 17:00, 20:00 (after each dbt build; Pro allows 8 a day). Power BI only emails failures to addresses in its own tenant, so the Snowflake alert `POWERBI_REFRESH_MISSED` emails the alert recipient when a scheduled refresh doesn't read the marts ([ADR 0031](adr/0031-alert-when-power-bi-stops-refreshing.md)).
 3. Share the report or publish it as an app. Viewers need Pro too, unless the workspace is on a Fabric capacity.
 
 ### Troubleshooting

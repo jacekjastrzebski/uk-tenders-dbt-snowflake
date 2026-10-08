@@ -32,3 +32,4 @@ One file per significant decision: the context, the decision and its consequence
 | [0028](0028-report-navigation-and-market-colours.md) | Report navigation and market colours | Accepted |
 | [0029](0029-guest-role-with-capped-warehouse.md) | A guest role with its own capped warehouse | Accepted |
 | [0030](0030-build-dbt-in-ci.md) | Build and test dbt on pull requests | Accepted |
+| [0031](0031-alert-when-power-bi-stops-refreshing.md) | Alert from Snowflake when Power BI stops refreshing | Accepted |
