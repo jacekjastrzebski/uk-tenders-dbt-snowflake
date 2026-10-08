@@ -1,6 +1,6 @@
 # uk-tenders-dbt-snowflake
 
-A market tracker for UK public-sector digital and data contracts: what's open to bid, who's buying, who's winning and how long to award. Built on Find a Tender with Snowflake and dbt, refreshed every 3 hours from 07:00 to 19:00 UK time.
+A market tracker for UK public-sector contracts, with a focus on digital and data: what's open to bid, who's buying, who's winning and how long to award. Built on Find a Tender with Snowflake, dbt and Power BI, refreshed every 3 hours from 07:00 to 19:00 UK time.
 
 **[Open the live report](https://app.powerbi.com/view?r=eyJrIjoiMmU5NTM2YWItNjYzMy00ZTFhLTkwNGUtMjZhZWU2ODRlNzk0IiwidCI6Ijc5ZDViMTQwLTkwY2MtNDBhNC1hN2M4LTY2ZDM1MTdiYTk3MiJ9)** (Power BI, public, no sign-in needed; refreshed at 08:00, 11:00, 14:00, 17:00 and 20:00 UK time).
 
@@ -8,7 +8,7 @@ A market tracker for UK public-sector digital and data contracts: what's open to
 
 [Find a Tender](https://www.find-tender.service.gov.uk) is the UK government's official service for publishing public procurement notices. Since the Procurement Act 2023 came into force on 24 February 2025, public bodies publish a notice at every stage of a procurement: planned, open for bids, awarded, contract signed, changed and ended.
 
-This project turns those notices into a market tracker for digital and data services, answering:
+This project turns those notices into a market tracker across nine markets, with digital and data highlighted, answering:
 
 - **What's open to bid?** Live tenders and their closing dates.
 - **Who's buying?** Spend by buyer and sector over time.
@@ -37,6 +37,8 @@ Architecture overview and every diagram (C4, flows, data, roles, lifecycles): [d
 | Run dbt in Snowflake 20 minutes after each load ([ADR 0009](docs/adr/0009-run-dbt-on-a-schedule-in-snowflake.md)) | Done |
 | Event-based failure alerts for all tasks (ingest and dbt) | TO-DO |
 | Report (Power BI) | Done |
+| dbt build and tests on pull requests that change dbt ([ADR 0030](docs/adr/0030-build-dbt-in-ci.md)) | Done |
+| Email when the Power BI report stops refreshing ([ADR 0031](docs/adr/0031-alert-when-power-bi-stops-refreshing.md)) | Done |
 | Historical backfill from 24 February 2025 ([ADR 0017](docs/adr/0017-backfill-from-procurement-act-start.md)) | Done (172,312 notices) |
 
 ## Repository layout
@@ -48,6 +50,9 @@ Architecture overview and every diagram (C4, flows, data, roles, lifecycles): [d
 | `dbt/` | dbt project: staging, intermediate and mart models, seeds and tests; see `docs/dbt.md` |
 | `snowflake/native_ingestion/` | Numbered SQL scripts that run the loader as a Snowflake stored procedure on a schedule (needs a paid account) |
 | `snowflake/dbt/` | Setup, profile and scheduled task that run the dbt project inside Snowflake (ADR 0009) |
+| `powerbi/` | The Power BI report as a Power BI Project: model in TMDL, report in PBIR; see `docs/powerbi.md` |
+| `snowflake/powerbi/` | Alert that emails when the Power BI report stops refreshing (ADR 0031) |
+| `.github/` | CI (Python checks, dbt parse and build) and deploy workflows, and the CI dbt profile |
 | `tests/` | Tests for the Python code |
 | `docs/` | Procurement primer, glossary, API reference, EDA findings, decision records (`adr/`), plans and diagrams |
 
@@ -55,9 +60,12 @@ Architecture overview and every diagram (C4, flows, data, roles, lifecycles): [d
 
 The repository is open: fork it and run the pipeline on your own Snowflake account and GitHub with [docs/self-hosting.md](docs/self-hosting.md), then the Power BI report with [docs/powerbi.md](docs/powerbi.md).
 
-## Data and licence
+## Licence
 
-Contains public sector information licensed under the [Open Government Licence v3.0](https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/). Buyer contact details (names, emails, phone numbers) are personal data; they are not committed to this repository, and the first dbt model will drop them.
+- **Code:** [MIT](LICENSE).
+- **Data:** contains public sector information licensed under the [Open Government Licence v3.0](https://www.nationalarchives.gov.uk/doc/open-government-licence/version/3/), from [Find a Tender](https://www.find-tender.service.gov.uk).
+
+Buyer contact details (names, emails, phone numbers) are personal data. They are never committed to this repository and never leave the raw layer: staging strips them ([ADR 0016](docs/adr/0016-strip-contact-details-in-staging.md)) and a dbt test checks it.
 
 ## Local development
 
