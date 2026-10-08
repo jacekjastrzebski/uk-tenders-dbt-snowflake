@@ -7,6 +7,7 @@
 WITH notices AS (
     SELECT
         ocid,
+        notice_id,
         notice_type,
         published_at,
         buyer_name,
@@ -36,7 +37,7 @@ latest_tender AS (
     WHERE
         notice_type = 'UK4'
     QUALIFY
-        ROW_NUMBER() OVER (PARTITION BY ocid ORDER BY published_at DESC) = 1
+        ROW_NUMBER() OVER (PARTITION BY ocid ORDER BY published_at DESC, notice_id DESC) = 1
 ),
 
 milestones AS (
@@ -62,6 +63,7 @@ dates AS (
         CONVERT_TIMEZONE('UTC', 'Europe/London', m.tender_published_at)::DATE AS tender_published_date,
         -- award notice, or the contract notice for below-threshold contracts that skip it
         CONVERT_TIMEZONE('UTC', 'Europe/London', COALESCE(m.award_notice_published_at, m.contract_published_at))::DATE AS award_published_date,
+        CONVERT_TIMEZONE('UTC', 'Europe/London', m.award_notice_published_at)::DATE AS award_notice_date,
         CONVERT_TIMEZONE('UTC', 'Europe/London', m.contract_published_at)::DATE AS contract_published_date,
         m.has_termination_notice
     FROM
@@ -83,7 +85,9 @@ SELECT
     contract_published_date,
     -- notices published out of order would give negative durations: unknown instead
     IFF(DATEDIFF(DAY, tender_published_date, award_published_date) >= 0, DATEDIFF(DAY, tender_published_date, award_published_date), NULL) AS days_tender_to_award,
-    IFF(DATEDIFF(DAY, award_published_date, contract_published_date) >= 0, DATEDIFF(DAY, award_published_date, contract_published_date), NULL) AS days_award_to_contract,
+    -- only with a real award notice: without one, award_published_date is the contract
+    -- notice's own date, which would count as 0 days
+    IFF(DATEDIFF(DAY, award_notice_date, contract_published_date) >= 0, DATEDIFF(DAY, award_notice_date, contract_published_date), NULL) AS days_award_to_contract,
     -- a termination notice after an award is about a lot, not the whole procurement
     has_termination_notice AND award_published_date IS NULL AS is_cancelled
 FROM

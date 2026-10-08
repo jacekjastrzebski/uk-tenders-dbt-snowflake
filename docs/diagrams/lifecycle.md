@@ -25,7 +25,7 @@ stateDiagram-v2
 
 - A later UK4 for the same procurement updates `closing_date`; the latest one wins.
 - "Open" is decided in Power BI at query time (closing date from today, no award, not cancelled), so it never goes stale between refreshes.
-- `days_tender_to_award` and `days_award_to_contract` are the gaps between these dates.
+- `days_tender_to_award` and `days_award_to_contract` are the gaps between these dates; `days_award_to_contract` only when there is a UK6 award notice, so a UK7 without one doesn't count as 0 days.
 - A UK7's contract value is used for the award's value only when the award has none (`int_awards`).
 - Awards without a UK4 (direct awards through UK5, framework call-offs) appear in `FCT_AWARD_SUPPLIERS` but not in `FCT_PROCUREMENTS`.
 

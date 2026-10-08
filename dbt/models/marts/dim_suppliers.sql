@@ -24,6 +24,8 @@ SELECT
     supplier_key,
     MAX_BY(supplier_name, published_at) AS supplier_name,
     ARRAY_TO_STRING(ARRAY_AGG(DISTINCT supplier_id) WITHIN GROUP (ORDER BY supplier_id), ', ') AS supplier_ids,
+    -- a substring match on purpose: buyers spell the placeholder many ways, e.g.
+    -- "Withheld Section94 supplier", "Details Withheld for security reasons"
     supplier_key ILIKE '%WITHHELD%' AS is_withheld
 FROM
     supplier_notices

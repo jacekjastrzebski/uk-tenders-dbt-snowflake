@@ -120,18 +120,33 @@ usable_buyer_names AS (
         buyer_id
 ),
 
-buyer_id_names AS (
-    -- how many different names each buyer ID uses, and the one it uses most
+buyer_id_name_counts AS (
+    -- how many notices each buyer ID published under each usable name
     SELECT
         buyer_id,
-        COUNT(DISTINCT {{ normalise_org_name('buyer_name') }}) AS names,
-        MODE(buyer_name) AS main_name
+        buyer_name,
+        COUNT(*) AS notices,
+        MAX(published_at) AS last_published_at
     FROM
         notices
     WHERE
         NOT {{ is_unusable_org_name('buyer_name') }}
     GROUP BY
-        buyer_id
+        buyer_id,
+        buyer_name
+),
+
+buyer_id_names AS (
+    -- how many different names each buyer ID uses, and the one it uses most;
+    -- a tie goes to the name used most recently, so every run picks the same one
+    SELECT
+        buyer_id,
+        COUNT(DISTINCT {{ normalise_org_name('buyer_name') }}) OVER (PARTITION BY buyer_id) AS names,
+        buyer_name AS main_name
+    FROM
+        buyer_id_name_counts
+    QUALIFY
+        ROW_NUMBER() OVER (PARTITION BY buyer_id ORDER BY notices DESC, last_published_at DESC, buyer_name) = 1
 )
 
 SELECT
@@ -141,7 +156,7 @@ SELECT
             -- purchasing bodies publishing for several buyers, so they keep each name
             WHEN m.names BETWEEN 2 AND {{ var('max_names_per_buyer_id') }} THEN m.main_name
             WHEN {{ is_unusable_org_name('n.buyer_name') }}
-                THEN COALESCE(u.buyer_name, 'Unnamed buyer (' || n.buyer_id || ')')
+                THEN COALESCE(u.buyer_name, 'Unnamed buyer (' || COALESCE(n.buyer_id, 'no ID') || ')')
             ELSE n.buyer_name
         END AS buyer_name
     ),

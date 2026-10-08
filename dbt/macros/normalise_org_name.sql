@@ -2,11 +2,12 @@
   Organisation names as published can carry framework lots at the end:
   "Pinsent Masons 1 2 3 4 5 6 7 8", "Kajima Partnerships a 1 8 b 1 8 h 8",
   "Liberate UK Limited - Lot 1". strip_lot_numbers removes a trailing
-  "- Lot ..." or a trailing run of single letters and 1-2 digit numbers,
-  so a supplier on several lots stays one supplier.
+  "- Lot ..." or a trailing run of two or more single letters and 1-2 digit
+  numbers, so a supplier on several lots stays one supplier. A single
+  trailing letter or number is part of the name: "Channel 4", "Plan B" (ADR 0034).
 #}
 {% macro strip_lot_numbers(column) -%}
-    REGEXP_REPLACE(TRIM({{ column }}), '(\\s*-\\s*[Ll][Oo][Tt]\\s.*|(\\s+([A-Za-z]|[0-9]{1,2}))+)$', '')
+    REGEXP_REPLACE(TRIM({{ column }}), '(\\s*-\\s*[Ll][Oo][Tt]\\s.*|(\\s+([A-Za-z]|[0-9]{1,2})){2,})$', '')
 {%- endmacro %}
 
 {#
