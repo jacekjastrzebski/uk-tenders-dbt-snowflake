@@ -15,20 +15,20 @@ Not committed (`.gitignore`): `.pbi/cache.abf` (the imported data) and `.pbi/loc
 
 ## Pages
 
-One page per question the tracker answers. Every page has the same header, a "data as of" card and Market / Sector / Buyer slicers, synced across pages.
+One page per question the tracker answers. Every page has the same header, a "data as of" card and Market / Sector / Buyer slicers, synced across pages. The last three pages are filtered to the last 12 complete months (a page filter on `Date`), so a part-month never drags a trend down.
 
 | Page | Cards | Visuals |
 |---|---|---|
-| What's open to bid? | Open Tenders, Closing in 14 Days | Open tenders, soonest closing first |
-| Who's buying? | Awarded Value, Awards (last 12 complete months) | Top buyers; awarded value by month |
-| Who's winning? | Top 10 Supplier Share, Suppliers Awarded, Awarded Value | Top suppliers; value by sector; supplier table with market share |
-| How long to award? | Median days tender → award, award → contract | Median days by award month; tenders with their durations |
+| What's open to bid? | Open Tenders, Closing in 14 Days | Open tenders with closing date, soonest first |
+| Who's buying? | Awarded Value, Awards | Top buyers; awarded value by month |
+| Who's winning? | Top 10 Supplier Share, Suppliers Awarded, Awarded Value | Supplier league table with market share (without "Unknown supplier"); value by sector |
+| How long to award? | Median days tender → award, award → contract, Tenders Awarded | Median days by award month; awarded tenders, longest wait first |
 
-Headline values exclude framework ceilings and awards of £100m or more ([ADR 0022](adr/0022-award-fact-rules.md)).
+Headline values exclude framework ceilings and single awards of £100m or more ([ADR 0022](adr/0022-award-fact-rules.md)); frameworks are not shown at all, as their ceilings are not spend. Line charts start at 0 and end 15% above their highest month (the hidden `… Axis Max` measures).
 
 ## Model
 
-Import mode: each table reads one mart table, so the report is fast and Snowflake is only queried at refresh.
+Import mode: each table reads one mart table, so the report is fast and Snowflake is only queried at refresh. Business rules (deduplication, GBP values, headline flags, durations) live in dbt; DAX only adds up, counts and filters, so the numbers can be checked with plain SQL on the marts.
 
 ```mermaid
 erDiagram
@@ -44,12 +44,12 @@ erDiagram
 
 | Table | Mart | Measures |
 |---|---|---|
-| `Awards` | `FCT_AWARD_SUPPLIERS` | Awarded Value, Awards, Suppliers Awarded, Market Share, Top 10 Supplier Share, Framework Ceiling Value, Large Awards |
-| `Procurements` | `FCT_PROCUREMENTS` | Tenders, Open Tenders, Closing in 14 Days, Days to Close, Median Days Tender to Award (also by award month, through the inactive relationship), Median Days Award to Contract, Data As Of |
+| `Awards` | `FCT_AWARD_SUPPLIERS` | Awarded Value, Awards, Suppliers Awarded, Market Share, Top 10 Supplier Share, Framework Ceiling Value, Large Awards, Monthly Trend Axis Max (hidden) |
+| `Procurements` | `FCT_PROCUREMENTS` | Tenders, Open Tenders, Closing in 14 Days, Days to Close, Median Days Tender to Award, Median Days Award to Contract, Tenders Awarded, Median Trend Axis Max (hidden), Data As Of |
 | `Date` | `DIM_DATES` | |
 | `Buyer`, `Supplier`, `Sector` | `DIM_BUYERS`, `DIM_SUPPLIERS`, `DIM_CPV_DIVISIONS` | |
 
-"Open" is worked out at query time (closing date from today, no award, not cancelled), so it stays right between refreshes. Relationships are single direction, dimension to fact.
+"Open" is worked out at query time (closing date from today, no award, not cancelled), so it stays right between refreshes. Timing measures (medians, Tenders Awarded) date procurements by award, through the inactive Award Published Date relationship (`USERELATIONSHIP`); everything else uses the tender date. Relationships are single direction, dimension to fact.
 
 ## Set up your own
 
