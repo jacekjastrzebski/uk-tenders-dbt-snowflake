@@ -23,7 +23,7 @@ ON
 ```
 
 ## Docs
-- When a change adds, removes or renames dbt models, keys or relationships, update the diagrams in `docs/diagrams/` in the same PR.
+- When a change alters what a diagram in `docs/diagrams/` shows (dbt models, keys or relationships, Snowflake objects, roles, schedules, deploy steps), update that diagram in the same PR.
 
 ## Naming
 - Spell out Find a Tender as `find_a_tender` / `FIND_A_TENDER`; never abbreviate it to `fts`.
