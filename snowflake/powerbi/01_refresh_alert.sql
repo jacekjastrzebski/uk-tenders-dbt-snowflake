@@ -10,15 +10,20 @@ USE ROLE TENDER_TRANSFORM;
 
 CREATE OR REPLACE ALERT TENDER_DB.DBT.POWERBI_REFRESH_MISSED
   SCHEDULE = 'USING CRON 30 9,12,15,18,21 * * * Europe/London'
-  IF (NOT EXISTS (
+  -- alerts only accept IF (EXISTS (...)): a row comes back when Power BI ran no queries
+  IF (EXISTS (
     SELECT 1
-    FROM TABLE(TENDER_DB.INFORMATION_SCHEMA.QUERY_HISTORY_BY_WAREHOUSE(
-      WAREHOUSE_NAME => 'TENDER_WH',
-      END_TIME_RANGE_START => DATEADD('minute', -100, CURRENT_TIMESTAMP()),
-      RESULT_LIMIT => 10000))
-    WHERE user_name = 'TENDER_POWERBI'
-      AND execution_status = 'SUCCESS'
-      AND query_text NOT ILIKE 'SHOW%'
+    FROM (
+      SELECT COUNT(*) AS powerbi_queries
+      FROM TABLE(TENDER_DB.INFORMATION_SCHEMA.QUERY_HISTORY_BY_WAREHOUSE(
+        WAREHOUSE_NAME => 'TENDER_WH',
+        END_TIME_RANGE_START => DATEADD('minute', -100, CURRENT_TIMESTAMP()),
+        RESULT_LIMIT => 10000))
+      WHERE user_name = 'TENDER_POWERBI'
+        AND execution_status = 'SUCCESS'
+        AND query_text NOT ILIKE 'SHOW%'
+    )
+    WHERE powerbi_queries = 0
   ))
   THEN
     CALL SYSTEM$SEND_EMAIL(
