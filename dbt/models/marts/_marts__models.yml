@@ -47,7 +47,7 @@ models:
         description: Normalised buyer name; facts join on the same macro applied to their buyer name.
         data_tests: [unique, not_null]
       - name: buyer_name
-        description: Name from the buyer's most recent notice.
+        description: Name from the buyer's most recent notice; never an unusable name like "[]" (ADR 0025).
       - name: buyer_ids
         description: All organisation IDs seen for this buyer, comma-separated, for tracing back to notices.
 
@@ -61,7 +61,7 @@ models:
         description: Normalised supplier name; facts join on the same macro applied to their supplier name.
         data_tests: [unique, not_null]
       - name: supplier_name
-        description: Name from the supplier's most recent notice, lot numbers removed.
+        description: Name from the supplier's most recent notice, lot numbers removed; never an unusable name like "N/A" (ADR 0025).
       - name: supplier_ids
         description: All organisation IDs seen for this supplier, comma-separated.
       - name: is_withheld

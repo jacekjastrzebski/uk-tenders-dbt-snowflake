@@ -4,6 +4,8 @@
 -- which is too coarse (see docs/eda-findings.md).
 -- Contact details (parties[].contactPoint) are removed from the stored JSON
 -- (docs/adr/0016-strip-contact-details-in-staging.md). Timestamps are UTC.
+-- Unusable buyer names ("[]", "Test", ...) are replaced with the same buyer
+-- ID's latest usable name (docs/adr/0025-replace-unusable-organisation-names.md).
 
 WITH pages AS (
     SELECT
@@ -58,43 +60,73 @@ parties AS (
         LATERAL FLATTEN(input => r.notice:parties) AS p
     GROUP BY
         notice_id
+),
+
+notices AS (
+    SELECT
+        r.notice:id::STRING AS notice_id,
+        r.notice:ocid::STRING AS ocid,
+        CONVERT_TIMEZONE('UTC', r.notice:date::TIMESTAMP_TZ)::TIMESTAMP_NTZ AS published_at,
+        r.notice:tag AS tags,
+        t.notice_type,
+        r.notice:tender.legalBasis.id::STRING AS legal_basis,
+        COALESCE(r.notice:tender.legalBasis.id::STRING = '2023/54', FALSE) AS is_procurement_act,   -- no legal basis = not the Act
+        COALESCE(r.notice:buyer.id::STRING, pt.buyer_party_id) AS buyer_id,
+        COALESCE(r.notice:buyer.name::STRING, pt.buyer_party_name) AS buyer_name,
+        r.notice:tender.title::STRING AS title,
+        r.notice:tender.description::STRING AS description,
+        r.notice:tender.status::STRING AS tender_status,
+        r.notice:tender.value.amount::NUMBER(38, 2) AS tender_value_amount,
+        r.notice:tender.value.amountGross::NUMBER(38, 2) AS tender_value_amount_gross,
+        r.notice:tender.value.currency::STRING AS tender_value_currency,
+        CONVERT_TIMEZONE('UTC', r.notice:tender.tenderPeriod.endDate::TIMESTAMP_TZ)::TIMESTAMP_NTZ AS tender_closing_at,
+        COALESCE(
+            r.notice:tender.classification.id::STRING,
+            r.notice:tender.items[0].additionalClassifications[0].id::STRING,
+            r.notice:awards[0].items[0].additionalClassifications[0].id::STRING
+        ) AS cpv_code,
+        r.loaded_at,
+        IFF(
+            pt.notice_id IS NULL,
+            r.notice,
+            OBJECT_INSERT(r.notice, 'parties', pt.parties_without_contacts, TRUE)
+        ) AS notice
+    FROM
+        releases AS r
+    LEFT JOIN
+        notice_types AS t
+    ON
+        r.notice:id::STRING = t.notice_id
+    LEFT JOIN
+        parties AS pt
+    ON
+        r.notice:id::STRING = pt.notice_id
+),
+
+usable_buyer_names AS (
+    -- each buyer ID's latest name that can identify it
+    SELECT
+        buyer_id,
+        MAX_BY(buyer_name, published_at) AS buyer_name
+    FROM
+        notices
+    WHERE
+        NOT {{ is_unusable_org_name('buyer_name') }}
+    GROUP BY
+        buyer_id
 )
 
 SELECT
-    r.notice:id::STRING AS notice_id,
-    r.notice:ocid::STRING AS ocid,
-    CONVERT_TIMEZONE('UTC', r.notice:date::TIMESTAMP_TZ)::TIMESTAMP_NTZ AS published_at,
-    r.notice:tag AS tags,
-    t.notice_type,
-    r.notice:tender.legalBasis.id::STRING AS legal_basis,
-    COALESCE(r.notice:tender.legalBasis.id::STRING = '2023/54', FALSE) AS is_procurement_act,   -- no legal basis = not the Act
-    COALESCE(r.notice:buyer.id::STRING, pt.buyer_party_id) AS buyer_id,
-    COALESCE(r.notice:buyer.name::STRING, pt.buyer_party_name) AS buyer_name,
-    r.notice:tender.title::STRING AS title,
-    r.notice:tender.description::STRING AS description,
-    r.notice:tender.status::STRING AS tender_status,
-    r.notice:tender.value.amount::NUMBER(38, 2) AS tender_value_amount,
-    r.notice:tender.value.amountGross::NUMBER(38, 2) AS tender_value_amount_gross,
-    r.notice:tender.value.currency::STRING AS tender_value_currency,
-    CONVERT_TIMEZONE('UTC', r.notice:tender.tenderPeriod.endDate::TIMESTAMP_TZ)::TIMESTAMP_NTZ AS tender_closing_at,
-    COALESCE(
-        r.notice:tender.classification.id::STRING,
-        r.notice:tender.items[0].additionalClassifications[0].id::STRING,
-        r.notice:awards[0].items[0].additionalClassifications[0].id::STRING
-    ) AS cpv_code,
-    r.loaded_at,
-    IFF(
-        pt.notice_id IS NULL,
-        r.notice,
-        OBJECT_INSERT(r.notice, 'parties', pt.parties_without_contacts, TRUE)
-    ) AS notice
+    n.* REPLACE (
+        IFF(
+            {{ is_unusable_org_name('n.buyer_name') }},
+            COALESCE(u.buyer_name, 'Unnamed buyer (' || n.buyer_id || ')'),
+            n.buyer_name
+        ) AS buyer_name
+    )
 FROM
-    releases AS r
+    notices AS n
 LEFT JOIN
-    notice_types AS t
+    usable_buyer_names AS u
 ON
-    r.notice:id::STRING = t.notice_id
-LEFT JOIN
-    parties AS pt
-ON
-    r.notice:id::STRING = pt.notice_id
+    n.buyer_id = u.buyer_id

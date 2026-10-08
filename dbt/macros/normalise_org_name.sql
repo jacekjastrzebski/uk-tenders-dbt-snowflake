@@ -18,3 +18,18 @@
 {% macro normalise_org_name(column) -%}
     UPPER(TRIM(REGEXP_REPLACE({{ strip_lot_numbers(column) }}, '\\s+', ' ')))
 {%- endmacro %}
+
+{#
+  Names that can't identify an organisation: only digits, punctuation and
+  spaces ("[]", "1", "384441.61"), test entries ("Test", "[test]589b35c8B",
+  "Anglian Water (TEST)") and placeholders ("No", "N/A"). Acronyms such as
+  "YPO" or "HS2" are real names and stay. Staging replaces these names with
+  the same organisation's name from its other notices (ADR 0025).
+#}
+{% macro is_unusable_org_name(column) -%}
+    (
+        REGEXP_LIKE({{ column }}, '[0-9[:punct:][:space:]£€$]*')
+        OR REGEXP_LIKE(TRIM({{ column }}), 'test|.*(\\[|\\()test(\\]|\\)).*', 'i')
+        OR UPPER(TRIM({{ column }})) IN ('NO', 'N/A', 'NA', 'NONE', 'UNKNOWN', 'TBC')
+    )
+{%- endmacro %}
