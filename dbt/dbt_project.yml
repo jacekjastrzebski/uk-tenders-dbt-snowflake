@@ -12,6 +12,7 @@ vars:
   dim_dates_start: "1990-01-01"   # some contracts published now were signed as early as 1990
   dim_dates_end: "2035-12-31"     # contract end dates; later dates are treated as unknown
   large_award_gbp: 100000000      # awards at or above this are left out of headline totals (docs/eda-findings.md)
+  max_names_per_buyer_id: 5       # an ID with this many names or fewer is one buyer (ADR 0027)
 
 models:
   uk_tenders:
