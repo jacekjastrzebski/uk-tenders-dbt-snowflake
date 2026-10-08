@@ -6,6 +6,8 @@
 -- (docs/adr/0016-strip-contact-details-in-staging.md). Timestamps are UTC.
 -- Unusable buyer names ("[]", "Test", ...) are replaced with the same buyer
 -- ID's latest usable name (docs/adr/0025-replace-unusable-organisation-names.md).
+-- procurement_cpv_code is the latest CPV code on any notice of the same procurement,
+-- for notices that have none (award notices often leave it out).
 
 WITH pages AS (
     SELECT
@@ -123,7 +125,12 @@ SELECT
             COALESCE(u.buyer_name, 'Unnamed buyer (' || n.buyer_id || ')'),
             n.buyer_name
         ) AS buyer_name
-    )
+    ),
+    LAST_VALUE(n.cpv_code) IGNORE NULLS OVER (
+        PARTITION BY n.ocid
+        ORDER BY n.published_at
+        ROWS BETWEEN UNBOUNDED PRECEDING AND UNBOUNDED FOLLOWING
+    ) AS procurement_cpv_code
 FROM
     notices AS n
 LEFT JOIN

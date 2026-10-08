@@ -10,7 +10,7 @@ WITH notices AS (
         notice_type,
         published_at,
         buyer_name,
-        cpv_code,
+        COALESCE(cpv_code, procurement_cpv_code) AS cpv_code,
         title,
         -- bid deadline, or the expression-of-interest deadline in two-stage procedures
         COALESCE(
