@@ -1,13 +1,13 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
-  "name": "buying-note",
+  "name": "winning-note",
   "position": {
-    "x": 648,
+    "x": 964,
     "y": 168,
-    "z": 3,
-    "width": 616,
+    "z": 4,
+    "width": 300,
     "height": 96,
-    "tabOrder": 3
+    "tabOrder": 4
   },
   "visual": {
     "visualType": "textbox",

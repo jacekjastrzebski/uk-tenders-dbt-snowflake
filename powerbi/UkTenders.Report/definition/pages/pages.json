@@ -3,7 +3,7 @@
   "pageOrder": [
     "open",
     "buying",
-    "suppliers",
+    "winning",
     "pipeline"
   ],
   "activePageName": "open"

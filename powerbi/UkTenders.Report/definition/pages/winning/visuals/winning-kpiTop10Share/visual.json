@@ -1,8 +1,8 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
-  "name": "suppliers-kpiAwards",
+  "name": "winning-kpiTop10Share",
   "position": {
-    "x": 332,
+    "x": 16,
     "y": 168,
     "z": 1,
     "width": 300,
@@ -23,11 +23,11 @@
                       "Entity": "Awards"
                     }
                   },
-                  "Property": "Awards"
+                  "Property": "Top 10 Supplier Share"
                 }
               },
-              "queryRef": "Awards.Awards",
-              "nativeQueryRef": "Awards"
+              "queryRef": "Awards.Top 10 Supplier Share",
+              "nativeQueryRef": "Top 10 Supplier Share"
             }
           ]
         }

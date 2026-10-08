@@ -1,13 +1,13 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
-  "name": "suppliers-kpiAverageAward",
+  "name": "winning-kpiSuppliers",
   "position": {
-    "x": 964,
+    "x": 332,
     "y": 168,
-    "z": 3,
+    "z": 2,
     "width": 300,
     "height": 96,
-    "tabOrder": 3
+    "tabOrder": 2
   },
   "visual": {
     "visualType": "card",
@@ -23,11 +23,11 @@
                       "Entity": "Awards"
                     }
                   },
-                  "Property": "Average Award Value"
+                  "Property": "Suppliers Awarded"
                 }
               },
-              "queryRef": "Awards.Average Award Value",
-              "nativeQueryRef": "Average Award Value"
+              "queryRef": "Awards.Suppliers Awarded",
+              "nativeQueryRef": "Suppliers Awarded"
             }
           ]
         }

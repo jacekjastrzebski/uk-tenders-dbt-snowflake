@@ -1,12 +1,12 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
-  "name": "suppliers-slicerSector",
+  "name": "winning-slicerSector",
   "position": {
     "x": 437,
     "y": 88,
     "z": 0,
     "width": 405,
-    "height": 64,
+    "height": 72,
     "tabOrder": 0
   },
   "visual": {

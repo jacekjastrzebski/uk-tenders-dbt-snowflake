@@ -1,6 +1,6 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
-  "name": "suppliers-header",
+  "name": "winning-header",
   "position": {
     "x": 0,
     "y": 0,
@@ -31,7 +31,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "Who is winning?  ",
+                    "value": "Who's winning?  ",
                     "textStyle": {
                       "fontFamily": "'DM Sans', 'Segoe UI Semibold', wf_segoe-ui_semibold, helvetica, arial, sans-serif",
                       "fontSize": "11pt",
@@ -39,7 +39,7 @@
                     }
                   },
                   {
-                    "value": "Awarded value by supplier and sector; joint awards split equally",
+                    "value": "Suppliers' share of awarded value over the last 12 complete months",
                     "textStyle": {
                       "fontFamily": "'DM Sans', 'Segoe UI', wf_segoe-ui_normal, helvetica, arial, sans-serif",
                       "fontSize": "11pt",

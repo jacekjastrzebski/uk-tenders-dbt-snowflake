@@ -1,82 +1,46 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
-  "name": "suppliers-topSuppliers",
+  "name": "winning-slicerBuyer",
   "position": {
-    "x": 16,
-    "y": 280,
+    "x": 858,
+    "y": 88,
     "z": 0,
     "width": 405,
-    "height": 424,
+    "height": 72,
     "tabOrder": 0
   },
   "visual": {
-    "visualType": "clusteredBarChart",
+    "visualType": "slicer",
     "query": {
       "queryState": {
-        "Category": {
+        "Values": {
           "projections": [
             {
               "field": {
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Supplier"
+                      "Entity": "Buyer"
                     }
                   },
-                  "Property": "Supplier"
+                  "Property": "Buyer"
                 }
               },
-              "queryRef": "Supplier.Supplier",
-              "nativeQueryRef": "Supplier"
-            }
-          ]
-        },
-        "Y": {
-          "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Awards"
-                    }
-                  },
-                  "Property": "Awarded Value"
-                }
-              },
-              "queryRef": "Awards.Awarded Value",
-              "nativeQueryRef": "Awarded Value"
+              "queryRef": "Buyer.Buyer",
+              "nativeQueryRef": "Buyer"
             }
           ]
         }
-      },
-      "sortDefinition": {
-        "sort": [
-          {
-            "field": {
-              "Measure": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "Awards"
-                  }
-                },
-                "Property": "Awarded Value"
-              }
-            },
-            "direction": "Descending"
-          }
-        ],
-        "isDefaultSort": true
       }
     },
     "objects": {
-      "labels": [
+      "data": [
         {
           "properties": {
-            "show": {
+            "mode": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "'Dropdown'"
                 }
               }
             }
@@ -132,13 +96,18 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Top suppliers by awarded value'"
+                  "Value": "'Buyer'"
                 }
               }
             }
           }
         }
       ]
+    },
+    "syncGroup": {
+      "groupName": "Buyer",
+      "fieldChanges": true,
+      "filterChanges": true
     },
     "drillFilterOtherVisuals": true
   }

@@ -1,52 +1,37 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
-  "name": "suppliers-slicerBuyer",
+  "name": "winning-kpiAwardedValue",
   "position": {
-    "x": 858,
-    "y": 88,
-    "z": 0,
-    "width": 405,
-    "height": 64,
-    "tabOrder": 0
+    "x": 648,
+    "y": 168,
+    "z": 3,
+    "width": 300,
+    "height": 96,
+    "tabOrder": 3
   },
   "visual": {
-    "visualType": "slicer",
+    "visualType": "card",
     "query": {
       "queryState": {
         "Values": {
           "projections": [
             {
               "field": {
-                "Column": {
+                "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Buyer"
+                      "Entity": "Awards"
                     }
                   },
-                  "Property": "Buyer"
+                  "Property": "Awarded Value"
                 }
               },
-              "queryRef": "Buyer.Buyer",
-              "nativeQueryRef": "Buyer"
+              "queryRef": "Awards.Awarded Value",
+              "nativeQueryRef": "Awarded Value"
             }
           ]
         }
       }
-    },
-    "objects": {
-      "data": [
-        {
-          "properties": {
-            "mode": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Dropdown'"
-                }
-              }
-            }
-          }
-        }
-      ]
     },
     "visualContainerObjects": {
       "padding": [
@@ -89,25 +74,13 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
-                }
-              }
-            },
-            "text": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Buyer'"
+                  "Value": "false"
                 }
               }
             }
           }
         }
       ]
-    },
-    "syncGroup": {
-      "groupName": "Buyer",
-      "fieldChanges": true,
-      "filterChanges": true
     },
     "drillFilterOtherVisuals": true
   }
