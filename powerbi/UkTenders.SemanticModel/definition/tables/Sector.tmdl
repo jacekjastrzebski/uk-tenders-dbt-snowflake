@@ -1,26 +1,39 @@
 /// What is bought: the 45 CPV divisions, from dim_cpv_divisions.
 table Sector
+	lineageTag: e375f825-4fef-4cf4-b2f2-5c6e104f5832
 
 	column 'CPV Division'
 		dataType: string
 		isKey
+		lineageTag: f06ae7f4-2154-481e-b963-5b3cd1cb35a6
 		summarizeBy: none
 		sourceColumn: CPV_DIVISION
 
 	column Sector
 		dataType: string
+		lineageTag: cfd80f52-4de1-43ee-8424-38276f769919
 		summarizeBy: none
 		sourceColumn: DIVISION_NAME
+
+	/// Copy of Sector for chart axes, so a chart's own bars never look like a Sector slicer selection
+	column 'Sector Name'
+		dataType: string
+		isHidden
+		lineageTag: c918476c-4dd9-4624-b1f8-683cc2e05520
+		summarizeBy: none
+		sourceColumn: SECTOR_NAME_FOR_CHARTS
 
 	column 'Is Digital and Data'
 		dataType: boolean
 		isHidden
+		lineageTag: 3fe96fff-fad6-4cd4-b815-e0265d6131a4
 		summarizeBy: none
 		sourceColumn: IS_DIGITAL_AND_DATA
 
-	/// Digital and data (CPV 48 software, 72 IT services) or Other
+	/// One of 9 markets, e.g. Digital and data (CPV 48 software, 72 IT services), Health and social care; or Unknown
 	column Market
 		dataType: string
+		lineageTag: 50faaf71-ad14-4233-b656-4c1cb3eefebf
 		summarizeBy: none
 		sourceColumn: MARKET
 
@@ -28,8 +41,10 @@ table Sector
 		mode: import
 		source =
 				let
-				    Source = Marts{[Name = "DIM_CPV_DIVISIONS", Kind = "Table"]}[Data]
+				    Source = Marts{[Name = "DIM_CPV_DIVISIONS", Kind = "Table"]}[Data],
+				    ForCharts = Table.AddColumn(Source, "SECTOR_NAME_FOR_CHARTS", each [DIVISION_NAME], type text)
 				in
-				    Source
+				    ForCharts
 
 	annotation PBI_ResultType = Table
+

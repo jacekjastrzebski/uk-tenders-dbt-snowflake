@@ -1,23 +1,45 @@
 /// Public bodies buying, from dim_buyers: one row per organisation, grouped by
 /// normalised name; the name shown is from its latest notice.
 table Buyer
+	lineageTag: 892ac4c4-434c-447c-868d-51f9c29f63a8
 
 	column 'Buyer Key'
 		dataType: string
 		isHidden
 		isKey
+		lineageTag: 1402bcee-d29f-4cbf-8872-402cb90ca090
 		summarizeBy: none
 		sourceColumn: BUYER_KEY
 
 	column Buyer
 		dataType: string
+		lineageTag: 25291594-1335-49c4-a4a7-04a375cf394d
 		summarizeBy: none
 		sourceColumn: BUYER_NAME
+		sortByColumn: 'Buyer Sort'
+
+	/// Sorts the Buyer list: names starting with a letter first, names starting with a digit (addresses, codes) last.
+	/// Built in Power Query: a sort column calculated from Buyer itself would be circular.
+	/// Copy of Buyer for chart axes, so a chart's own bars never look like a Buyer slicer selection
+	column 'Buyer Name'
+		dataType: string
+		isHidden
+		lineageTag: ba5fe2cf-9f1f-4589-bb87-052badbed78d
+		summarizeBy: none
+		sourceColumn: BUYER_NAME_FOR_CHARTS
+
+	column 'Buyer Sort'
+		dataType: string
+		isHidden
+		lineageTag: 51dd25d9-cdae-4f84-bbeb-3f4a707fc535
+		summarizeBy: none
+		sourceColumn: BUYER_SORT
 
 	/// All organisation IDs seen for this buyer, for tracing back to notices
 	column 'Buyer IDs'
 		dataType: string
 		isHidden
+		lineageTag: c5e7dbe6-729b-42cc-8610-0a87858ddab5
 		summarizeBy: none
 		sourceColumn: BUYER_IDS
 
@@ -25,8 +47,16 @@ table Buyer
 		mode: import
 		source =
 				let
-				    Source = Marts{[Name = "DIM_BUYERS", Kind = "Table"]}[Data]
+				    Source = Marts{[Name = "DIM_BUYERS", Kind = "Table"]}[Data],
+				    WithSort = Table.AddColumn(
+				        Source,
+				        "BUYER_SORT",
+				        each if Text.Start([BUYER_NAME], 1) >= "0" and Text.Start([BUYER_NAME], 1) <= "9" then "zzzz " & [BUYER_NAME] else [BUYER_NAME],
+				        type text
+				    ),
+				    ForCharts = Table.AddColumn(WithSort, "BUYER_NAME_FOR_CHARTS", each [BUYER_NAME], type text)
 				in
-				    Source
+				    ForCharts
 
 	annotation PBI_ResultType = Table
+

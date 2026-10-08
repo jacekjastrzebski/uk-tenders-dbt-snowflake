@@ -1,29 +1,40 @@
 /// One row per day, from dim_dates; mark as date table. UK financial year April to March.
-table 'Date'
+table Date
+	lineageTag: 2246d23e-77f8-4ab1-a71f-8b88e611c9e8
 	dataCategory: Time
 
-	column 'Date'
+	column Date
 		dataType: dateTime
 		isKey
 		formatString: dd mmm yyyy
+		lineageTag: 4ef9b1b9-6b1d-4a3b-b1bb-ef57694e7285
 		summarizeBy: none
 		sourceColumn: CALENDAR_DATE
 
+		annotation UnderlyingDateTimeDataType = Date
+
 	column Year
-		dataType: int64
+		dataType: double
 		formatString: 0
-		summarizeBy: none
+		lineageTag: bd55c43c-b65e-4d0b-9945-b5c6ae97450d
+		summarizeBy: sum
 		sourceColumn: CALENDAR_YEAR
 
+		annotation SummarizationSetBy = Automatic
+
 	column 'Month Number'
-		dataType: int64
+		dataType: double
 		isHidden
 		formatString: 0
-		summarizeBy: none
+		lineageTag: a222e2c4-0174-4adb-a23d-4e7e93cb677c
+		summarizeBy: sum
 		sourceColumn: MONTH_NUMBER
+
+		annotation SummarizationSetBy = Automatic
 
 	column Month
 		dataType: string
+		lineageTag: 5a8f0c3f-8e8b-4498-a014-83d282d91926
 		summarizeBy: none
 		sourceColumn: MONTH_NAME
 		sortByColumn: 'Month Number'
@@ -31,33 +42,44 @@ table 'Date'
 	column 'Month Start'
 		dataType: dateTime
 		formatString: mmm yyyy
+		lineageTag: 90510a76-ddca-4151-ade0-41a6744ef6a6
 		summarizeBy: none
 		sourceColumn: MONTH_START
 
+		annotation UnderlyingDateTimeDataType = Date
+
 	column 'Year Month'
 		dataType: string
+		lineageTag: 71e11bf6-2af2-4468-8194-d7c40548db52
 		summarizeBy: none
 		sourceColumn: YEAR_MONTH
 
 	column 'Week Start'
 		dataType: dateTime
 		formatString: dd mmm yyyy
+		lineageTag: 05f41a5e-dbe8-44b0-a0d5-eef772e191c6
 		summarizeBy: none
 		sourceColumn: WEEK_START
 
+		annotation UnderlyingDateTimeDataType = Date
+
 	column 'Financial Year'
 		dataType: string
+		lineageTag: 29a14231-5be7-4bb9-b765-ecfc6885295a
 		summarizeBy: none
 		sourceColumn: FINANCIAL_YEAR
 
 	column 'Financial Month Number'
-		dataType: int64
+		dataType: double
 		isHidden
 		formatString: 0
-		summarizeBy: none
+		lineageTag: 4de5efeb-95f5-47d9-9861-955717991556
+		summarizeBy: sum
 		sourceColumn: FINANCIAL_MONTH_NUMBER
 
-	partition 'Date' = m
+		annotation SummarizationSetBy = Automatic
+
+	partition Date = m
 		mode: import
 		source =
 				let
@@ -66,3 +88,4 @@ table 'Date'
 				    Source
 
 	annotation PBI_ResultType = Table
+

@@ -7,13 +7,26 @@ model Model
 		legacyRedirects
 		returnErrorValuesAsNull
 
+queryGroup Parameters
+
+	annotation PBI_QueryGroupOrder = 0
+
 annotation __PBI_TimeIntelligenceEnabled = 0
 
-annotation PBI_QueryOrder = ["SnowflakeServer","SnowflakeWarehouse","SnowflakeRole","SnowflakeDatabase","SnowflakeSchema","Marts","Date","Buyer","Supplier","Sector","Awards","Procurements"]
+annotation PBI_QueryOrder = ["SnowflakeServer","SnowflakeWarehouse","SnowflakeRole","SnowflakeDatabase","SnowflakeSchema","Marts","Date","Buyer","Supplier","Sector","Awards","Procurements","Data Freshness"]
 
-ref table 'Date'
+annotation PBI_ProTooling = ["DevMode"]
+
+ref table Date
 ref table Buyer
 ref table Supplier
 ref table Sector
 ref table Awards
 ref table Procurements
+ref table 'Data Freshness'
+ref table Navigation
+ref table 'Closing Window'
+ref table 'Colour Group'
+
+ref cultureInfo en-GB
+

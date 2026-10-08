@@ -1,0 +1,43 @@
+/// Choices for the "Closes within" slicer on What's open to bid?; not linked to any table.
+/// Open Tenders keeps tenders closing within the chosen number of days from today.
+table 'Closing Window'
+	lineageTag: c2bae42e-8ae8-445a-9985-677403658f9f
+
+	/// Days chosen in the slicer; any time (100 years) when nothing is chosen
+	measure 'Window Days' = SELECTEDVALUE('Closing Window'[Days], 36500)
+		formatString: 0
+		isHidden
+		lineageTag: 5e34381a-6ff6-4ab7-8a75-12727e027075
+
+	/// Shown in the slicer
+	column 'Closes Within'
+		dataType: string
+		lineageTag: a7297dd0-3164-46e5-b3db-dcb068431f06
+		summarizeBy: none
+		sourceColumn: [Closes Within]
+		sortByColumn: Days
+
+	column Days
+		dataType: int64
+		isHidden
+		lineageTag: 19f5db0d-2ec3-4273-80e7-ee0f329b2c17
+		summarizeBy: none
+		sourceColumn: [Days]
+
+	partition 'Closing Window' = calculated
+		mode: import
+		source =
+				DATATABLE(
+				    "Closes Within", STRING,
+				    "Days", INTEGER,
+				    {
+				        { "Today", 0 },
+				        { "Within 7 days", 7 },
+				        { "Within 14 days", 14 },
+				        { "Within 30 days", 30 },
+				        { "Any time", 36500 }
+				    }
+				)
+
+	annotation PBI_ResultType = Table
+

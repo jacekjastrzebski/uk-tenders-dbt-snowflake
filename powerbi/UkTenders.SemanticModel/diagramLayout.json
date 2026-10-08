@@ -1,0 +1,152 @@
+{
+  "version": "1.1.0",
+  "diagrams": [
+    {
+      "ordinal": 0,
+      "scrollPosition": {
+        "x": 0,
+        "y": 0
+      },
+      "nodes": [
+        {
+          "location": {
+            "x": 1073.5870954688239,
+            "y": 402.78183239258613
+          },
+          "nodeIndex": "Data Freshness",
+          "nodeLineageTag": "8f53433e-1efa-4a87-ad9a-c055a8b28e6b",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 555.35267832302088,
+            "y": 202.78188655966517
+          },
+          "nodeIndex": "Awards",
+          "nodeLineageTag": "b913a7a2-2701-4a58-bc62-ae1890146386",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 216.11387005365998,
+            "y": -50
+          },
+          "nodeIndex": "Buyer",
+          "nodeLineageTag": "892ac4c4-434c-447c-868d-51f9c29f63a8",
+          "size": {
+            "height": 224,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1357.5870954688239,
+            "y": 390.78183239258613
+          },
+          "nodeIndex": "Closing Window",
+          "nodeLineageTag": "c2bae42e-8ae8-445a-9985-677403658f9f",
+          "size": {
+            "height": 152,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1641.5870954688239,
+            "y": 402.78183239258613
+          },
+          "nodeIndex": "Colour Group",
+          "nodeLineageTag": "b4ba441d-dbfa-4947-9319-a0d6b4110979",
+          "size": {
+            "height": 128,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 180.36431801814717,
+            "y": 587.56366478517225
+          },
+          "nodeIndex": "Date",
+          "nodeLineageTag": "2246d23e-77f8-4ab1-a71f-8b88e611c9e8",
+          "size": {
+            "height": 296,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 1925.5870954688239,
+            "y": 378.78183239258613
+          },
+          "nodeIndex": "Navigation",
+          "nodeLineageTag": "5bf23369-507a-44f9-9ae0-d7512b224fba",
+          "size": {
+            "height": 176,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 50,
+            "y": 230.45440495084318
+          },
+          "nodeIndex": "Procurements",
+          "nodeLineageTag": "1d64a086-5142-44d2-99c0-7b983d8db144",
+          "size": {
+            "height": 300,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 469.57893281355717,
+            "y": 558.9871092188182
+          },
+          "nodeIndex": "Sector",
+          "nodeLineageTag": "e375f825-4fef-4cf4-b2f2-5c6e104f5832",
+          "size": {
+            "height": 200,
+            "width": 234
+          },
+          "zIndex": 0
+        },
+        {
+          "location": {
+            "x": 839.58709546882392,
+            "y": 145.07546388505784
+          },
+          "nodeIndex": "Supplier",
+          "nodeLineageTag": "4312a23b-7071-42a7-90ea-6b21db3752bc",
+          "size": {
+            "height": 176,
+            "width": 234
+          },
+          "zIndex": 0
+        }
+      ],
+      "name": "All tables",
+      "zoomValue": 100,
+      "pinKeyFieldsToTop": false,
+      "showExtraHeaderInfo": false,
+      "hideKeyFieldsWhenCollapsed": false,
+      "tablesLocked": false
+    }
+  ],
+  "selectedDiagram": "All tables",
+  "defaultDiagram": "All tables"
+}

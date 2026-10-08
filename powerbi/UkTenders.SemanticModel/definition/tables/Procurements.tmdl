@@ -1,41 +1,79 @@
 /// One row per Procurement Act tender (a procurement with a UK4 notice), from
 /// fct_procurements. Open = Closing Date from today, no award, not cancelled.
 table Procurements
+	lineageTag: 1d64a086-5142-44d2-99c0-7b983d8db144
 
 	measure Tenders = COUNTROWS(Procurements)
 		formatString: #,0
+		lineageTag: ff30c2e0-8f86-4d89-a946-5c6820001565
 
-	/// Closing date from today, no award published, not cancelled; ignores the date slicer
+	/// Closing date from today, no award published, not cancelled; ignores the date slicer.
+	/// Only tenders closing within the "Closes within" slicer's window (any time when nothing is chosen).
 	measure 'Open Tenders' =
-			CALCULATE(
-			    COUNTROWS(Procurements),
-			    REMOVEFILTERS('Date'),
-			    KEEPFILTERS(Procurements[Closing Date] >= TODAY()),
-			    KEEPFILTERS(Procurements[Award Published Date] = BLANK()),
-			    KEEPFILTERS(Procurements[Is Cancelled] = FALSE())
-			)
+			VAR LastClosingDate = TODAY() + [Window Days]
+			RETURN
+			    CALCULATE(
+			        COUNTROWS(Procurements),
+			        REMOVEFILTERS('Date'),
+			        KEEPFILTERS(Procurements[Closing Date] >= TODAY()),
+			        KEEPFILTERS(Procurements[Closing Date] <= LastClosingDate),
+			        KEEPFILTERS(Procurements[Award Published Date] = BLANK()),
+			        KEEPFILTERS(Procurements[Is Cancelled] = FALSE())
+			    )
 		formatString: #,0
 		displayFolder: Open tenders
+		lineageTag: f4a14c49-bf22-4039-8885-27dde8ff43f4
 
-	measure 'Closing in 14 Days' = CALCULATE([Open Tenders], KEEPFILTERS(Procurements[Closing Date] < TODAY() + 14))
+	/// All open tenders, whatever the "Closes within" slicer says
+	measure 'All Open Tenders' = CALCULATE([Open Tenders], REMOVEFILTERS('Closing Window')) + 0   // 0, not (Blank), when nothing matches
 		formatString: #,0
 		displayFolder: Open tenders
+		lineageTag: 9d91024b-7967-4597-99b7-68e4bb7b457f
+
+	/// Open tenders closing within the slicer's window; 14 days when nothing is chosen
+	measure 'Closing Soon' =
+			VAR LastClosingDate = TODAY() + SELECTEDVALUE('Closing Window'[Days], 14)
+			RETURN
+			    CALCULATE(
+			        [Open Tenders],
+			        REMOVEFILTERS('Closing Window'),
+			        KEEPFILTERS(Procurements[Closing Date] <= LastClosingDate)
+			    ) + 0   // 0, not (Blank), when nothing matches
+		formatString: #,0
+		displayFolder: Open tenders
+		lineageTag: 56fd6412-d4ed-43a0-ad73-c29f7e9f1717
+
+	/// Label under Closing Soon, e.g. "Close within 7 days"
+	measure 'Closing Soon Label' =
+			VAR WindowDays = SELECTEDVALUE('Closing Window'[Days], 14)
+			RETURN
+			    SWITCH(
+			        TRUE(),
+			        WindowDays = 0, "Close today",
+			        WindowDays >= 36500, "Open, any closing date",
+			        "Close within " & WindowDays & " days"
+			    )
+		displayFolder: Open tenders
+		lineageTag: a67e081f-249e-4648-a2e6-59822989e2b7
 
 	/// Blank unless open, so tables show open tenders only
+	/// Shown as Today, 1 day or n days; still a number, so tables sort by it
 	measure 'Days to Close' = IF([Open Tenders] > 0, INT(MAX(Procurements[Closing Date]) - TODAY()))
-		formatString: 0
 		displayFolder: Open tenders
+		lineageTag: 113d80a2-7f0c-444b-a099-99ebc925ca82
+
+		formatStringDefinition = SWITCH(SELECTEDMEASURE(), 0, """Today""", 1, """1 day""", "0 ""days""")
 
 	/// Timings are dated by award: date filters and axes apply to the award date, not the tender date
-	measure 'Median Days Tender to Award' =
-			CALCULATE(MEDIAN(Procurements[Days Tender to Award]), USERELATIONSHIP(Procurements[Award Published Date], 'Date'[Date]))
+	measure 'Median Days Tender to Award' = CALCULATE(MEDIAN(Procurements[Days Tender to Award]), USERELATIONSHIP(Procurements[Award Published Date], 'Date'[Date]))
 		formatString: 0
 		displayFolder: Timings
+		lineageTag: 88b20e99-956c-48a4-90e3-f7cfa7bb0bdb
 
-	measure 'Median Days Award to Contract' =
-			CALCULATE(MEDIAN(Procurements[Days Award to Contract]), USERELATIONSHIP(Procurements[Award Published Date], 'Date'[Date]))
+	measure 'Median Days Award to Contract' = CALCULATE(MEDIAN(Procurements[Days Award to Contract]), USERELATIONSHIP(Procurements[Award Published Date], 'Date'[Date]))
 		formatString: 0
 		displayFolder: Timings
+		lineageTag: 23b78e08-8560-453b-93cf-79a79e7efce1
 
 	/// Tenders with an award published, dated by the award
 	measure 'Tenders Awarded' =
@@ -46,78 +84,125 @@ table Procurements
 			)
 		formatString: #,0
 		displayFolder: Timings
+		lineageTag: 7b92cdb9-161f-4648-bb09-19728a5a4db1
 
-	/// Top of the monthly median's value axis: the highest month plus 15% headroom
-	measure 'Median Trend Axis Max' = MAXX(VALUES('Date'[Month Start]), [Median Days Tender to Award]) * 1.15
+	/// Median days tender to award per legend group (table Colour Group): Digital and data / Other
+	/// markets when no market is chosen, otherwise one line per chosen market
+	measure 'Median Days to Award by Group' =
+			VAR GroupName = SELECTEDVALUE('Colour Group'[Group])
+			// colour by market once a Market, Sector or Buyer slicer is used. Only those slicers filter
+			// these columns: charts group by the copies (Sector Name, Buyer Name) and run Top N on keys
+			VAR MarketChosen =
+			    ISFILTERED(Sector[Market]) || ISFILTERED(Sector[Sector]) || ISFILTERED(Buyer[Buyer])
+			RETURN
+			    SWITCH(
+			        TRUE(),
+			        NOT MarketChosen && GroupName = "Digital and data",
+			            CALCULATE([Median Days Tender to Award], KEEPFILTERS(Sector[Market] = "Digital and data")),
+			        NOT MarketChosen && GroupName = "Other markets",
+			            CALCULATE([Median Days Tender to Award], KEEPFILTERS(Sector[Market] <> "Digital and data")),
+			        NOT MarketChosen || GroupName = "Other markets", BLANK(),
+			        CALCULATE([Median Days Tender to Award], KEEPFILTERS(Sector[Market] = GroupName))
+			    )
 		formatString: 0
 		displayFolder: Timings
-		isHidden
+		lineageTag: c88f9000-211d-4ab3-ba8d-167542f2d330
 
-	/// Latest tender in the data, ignoring all filters
-	measure 'Data As Of' = CALCULATE(MAX(Procurements[Tender Published Date]), REMOVEFILTERS())
-		formatString: dd mmm yyyy
+	/// Top of the monthly median's value axis: the highest line in any month plus 20% headroom
+	measure 'Median Trend Axis Max' =
+			MAXX(
+			    CROSSJOIN(VALUES('Date'[Month Start]), VALUES('Colour Group'[Group])),
+			    [Median Days to Award by Group]
+			) * 1.2
+		formatString: 0
+		isHidden
+		displayFolder: Timings
+		lineageTag: cfbbeef3-13b9-42e0-bc77-021040c52287
 
 	column OCID
 		dataType: string
 		isKey
+		lineageTag: 8112226c-942f-40bb-a31d-15a0b7fadab8
 		summarizeBy: none
 		sourceColumn: OCID
 
 	column Title
 		dataType: string
+		lineageTag: 9f111f73-f0f1-4255-8241-13ac40c2867f
 		summarizeBy: none
 		sourceColumn: TITLE
 
 	column 'Buyer Key'
 		dataType: string
 		isHidden
+		lineageTag: 8766d470-560a-4369-9048-78d5ee4c0dc0
 		summarizeBy: none
 		sourceColumn: BUYER_KEY
 
 	column 'CPV Division'
 		dataType: string
 		isHidden
+		lineageTag: fa304be0-68bd-4b49-8346-71c139f53096
 		summarizeBy: none
 		sourceColumn: CPV_DIVISION
 
 	column 'Tender Published Date'
 		dataType: dateTime
 		formatString: dd mmm yyyy
+		lineageTag: 576799ee-76a5-4d80-aa04-9482e9961fd6
 		summarizeBy: none
 		sourceColumn: TENDER_PUBLISHED_DATE
+
+		annotation UnderlyingDateTimeDataType = Date
 
 	column 'Closing Date'
 		dataType: dateTime
 		formatString: dd mmm yyyy
+		lineageTag: 938a993f-2162-4a13-8c83-5753160c79d1
 		summarizeBy: none
 		sourceColumn: CLOSING_DATE
+
+		annotation UnderlyingDateTimeDataType = Date
 
 	column 'Award Published Date'
 		dataType: dateTime
 		formatString: dd mmm yyyy
+		lineageTag: 6c6616c5-9660-4705-802b-48e896b86589
 		summarizeBy: none
 		sourceColumn: AWARD_PUBLISHED_DATE
+
+		annotation UnderlyingDateTimeDataType = Date
 
 	column 'Contract Published Date'
 		dataType: dateTime
 		formatString: dd mmm yyyy
+		lineageTag: 605a46c1-e505-4b70-ac7e-49cf5fe87f66
 		summarizeBy: none
 		sourceColumn: CONTRACT_PUBLISHED_DATE
 
+		annotation UnderlyingDateTimeDataType = Date
+
 	column 'Days Tender to Award'
-		dataType: int64
+		dataType: double
 		formatString: 0
-		summarizeBy: none
+		lineageTag: 5c84fc82-3b7f-458d-b664-4b9367c70ada
+		summarizeBy: sum
 		sourceColumn: DAYS_TENDER_TO_AWARD
 
+		annotation SummarizationSetBy = Automatic
+
 	column 'Days Award to Contract'
-		dataType: int64
+		dataType: double
 		formatString: 0
-		summarizeBy: none
+		lineageTag: 86b3b6a3-c019-4398-8e4a-cfcd4769aa16
+		summarizeBy: sum
 		sourceColumn: DAYS_AWARD_TO_CONTRACT
+
+		annotation SummarizationSetBy = Automatic
 
 	column 'Is Cancelled'
 		dataType: boolean
+		lineageTag: 99569fd8-c9d6-4aeb-9ab0-0f08af88cf99
 		summarizeBy: none
 		sourceColumn: IS_CANCELLED
 
@@ -130,3 +215,4 @@ table Procurements
 				    Source
 
 	annotation PBI_ResultType = Table
+

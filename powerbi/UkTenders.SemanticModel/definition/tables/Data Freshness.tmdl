@@ -1,0 +1,27 @@
+/// One row: when the data was last loaded from Find a Tender, from dim_data_freshness.
+table 'Data Freshness'
+	lineageTag: 8f53433e-1efa-4a87-ad9a-c055a8b28e6b
+
+	/// Latest load time, UK time; shown in every page header
+	measure 'Data Loaded' = MAX('Data Freshness'[Last Loaded At])
+		formatString: dd mmm yyyy, hh:nn
+		lineageTag: 36c9dee4-a466-45dd-acaf-3cc43ff25274
+
+	column 'Last Loaded At'
+		dataType: dateTime
+		isHidden
+		formatString: dd mmm yyyy, hh:nn
+		lineageTag: c176d29c-eb16-496c-9e71-296d29716dfa
+		summarizeBy: none
+		sourceColumn: LAST_LOADED_AT
+
+	partition 'Data Freshness' = m
+		mode: import
+		source =
+				let
+				    Source = Marts{[Name = "DIM_DATA_FRESHNESS", Kind = "Table"]}[Data]
+				in
+				    Source
+
+	annotation PBI_ResultType = Table
+

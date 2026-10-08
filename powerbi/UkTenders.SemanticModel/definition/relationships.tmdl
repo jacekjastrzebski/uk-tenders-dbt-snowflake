@@ -1,6 +1,6 @@
 relationship awards_award_date
 	fromColumn: Awards.'Award Date'
-	toColumn: 'Date'.'Date'
+	toColumn: Date.Date
 
 relationship awards_buyer_key
 	fromColumn: Awards.'Buyer Key'
@@ -16,12 +16,12 @@ relationship awards_cpv_division
 
 relationship procurements_tender_published_date
 	fromColumn: Procurements.'Tender Published Date'
-	toColumn: 'Date'.'Date'
+	toColumn: Date.Date
 
 relationship procurements_award_published_date
 	isActive: false
 	fromColumn: Procurements.'Award Published Date'
-	toColumn: 'Date'.'Date'
+	toColumn: Date.Date
 
 relationship procurements_buyer_key
 	fromColumn: Procurements.'Buyer Key'
@@ -30,3 +30,4 @@ relationship procurements_buyer_key
 relationship procurements_cpv_division
 	fromColumn: Procurements.'CPV Division'
 	toColumn: Sector.'CPV Division'
+

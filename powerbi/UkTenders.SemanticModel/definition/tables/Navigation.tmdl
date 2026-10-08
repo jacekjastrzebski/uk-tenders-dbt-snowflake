@@ -1,0 +1,49 @@
+/// Pages for the "Navigate to" dropdown in each page header; not linked to any other table.
+table Navigation
+	lineageTag: 5bf23369-507a-44f9-9ae0-d7512b224fba
+
+	/// Page the Go button opens: the page chosen in the dropdown, blank (button disabled) when none
+	measure 'Navigate To' = SELECTEDVALUE(Navigation[Page])
+		lineageTag: a04608f3-0006-4180-9b76-a6e3a3852c92
+
+	/// Shown in the dropdown
+	column Destination
+		dataType: string
+		lineageTag: 78fca418-861f-4ded-bcaf-0ca428745987
+		summarizeBy: none
+		sourceColumn: [Destination]
+		sortByColumn: Order
+
+	/// Page display name the Go button navigates to
+	column Page
+		dataType: string
+		isHidden
+		lineageTag: df2cd421-e6b7-4dd1-86de-932793baa878
+		summarizeBy: none
+		sourceColumn: [Page]
+
+	column Order
+		dataType: int64
+		isHidden
+		lineageTag: f9e60615-8670-4a1b-81b9-fe6d5b47a4f3
+		summarizeBy: none
+		sourceColumn: [Order]
+
+	partition Navigation = calculated
+		mode: import
+		source =
+				DATATABLE(
+				    "Destination", STRING,
+				    "Page", STRING,
+				    "Order", INTEGER,
+				    {
+				        { "Home", "Home", 1 },
+				        { "What's open to bid?", "What's open to bid?", 2 },
+				        { "Who's buying?", "Who's buying?", 3 },
+				        { "Who's winning?", "Who's winning?", 4 },
+				        { "How long to award?", "How long to award?", 5 }
+				    }
+				)
+
+	annotation PBI_ResultType = Table
+

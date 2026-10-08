@@ -1,0 +1,377 @@
+cultureInfo en-GB
+
+	linguisticMetadata =
+			{
+			  "Version": "2.0.0",
+			  "Language": "en-US",
+			  "Entities": {
+			    "awards.awarded_value": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Awards",
+			          "ConceptualProperty": "Awarded Value"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Awarded, last 12 months": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        },
+			        {
+			          "Total awarded": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        },
+			        {
+			          "Awarded value": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "awards.top_10_supplier_share": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Awards",
+			          "ConceptualProperty": "Top 10 Supplier Share"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Won by the top 10 suppliers": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "awards.awarded_value_by_group": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Awards",
+			          "ConceptualProperty": "Awarded Value by Group"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Awarded value": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "awards.awards": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Awards",
+			          "ConceptualProperty": "Awards"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Awards": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "awards.suppliers_awarded": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Awards",
+			          "ConceptualProperty": "Suppliers Awarded"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Suppliers awarded": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "navigation.destination": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Navigation",
+			          "ConceptualProperty": "Destination"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "NAVIGATE TO": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "data_freshness.data_loaded": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Data Freshness",
+			          "ConceptualProperty": "Data Loaded"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Data loaded": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "procurements.open_tenders": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Procurements",
+			          "ConceptualProperty": "Open Tenders"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Open tenders now": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "procurements.median_days_tender_to_award": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Procurements",
+			          "ConceptualProperty": "Median Days Tender to Award"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Median days, tender to award": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        },
+			        {
+			          "Days to award": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "procurements.days_to_close": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Procurements",
+			          "ConceptualProperty": "Days to Close"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Closes in": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "procurements.all_open_tenders": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Procurements",
+			          "ConceptualProperty": "All Open Tenders"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Open tenders": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "procurements.tenders_awarded": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Procurements",
+			          "ConceptualProperty": "Tenders Awarded"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Tenders awarded": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "procurements.median_days_to_award_by_group": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Procurements",
+			          "ConceptualProperty": "Median Days to Award by Group"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Median days to award": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "procurements.median_days_award_to_contract": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Procurements",
+			          "ConceptualProperty": "Median Days Award to Contract"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Median days, award to contract": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "buyer.buyer_name": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Buyer",
+			          "ConceptualProperty": "Buyer Name"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Buyer": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "sector.sector_name": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Sector",
+			          "ConceptualProperty": "Sector Name"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Sector": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    }
+			  }
+			}
+		contentType: json
+
