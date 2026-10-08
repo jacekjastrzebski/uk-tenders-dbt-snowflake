@@ -9,7 +9,7 @@ The report reads the dbt marts in `PROD_MARTS` ([dbt.md](dbt.md#marts)) and is s
 | `powerbi/UkTenders.pbip` | Open this in Power BI Desktop |
 | `powerbi/UkTenders.SemanticModel/definition/` | Model in TMDL: `expressions.tmdl` (connection parameters), `tables/*.tmdl` (columns, measures), `relationships.tmdl` |
 | `powerbi/UkTenders.Report/definition/` | Report in PBIR: `pages/<page>/page.json`, `pages/<page>/visuals/<visual>/visual.json` |
-| `powerbi/UkTenders.Report/StaticResources/RegisteredResources/HippoDigital.json` | Theme: colours, fonts, visual defaults |
+| `powerbi/UkTenders.Report/StaticResources/RegisteredResources/UkTenders.json` | Theme: colours, fonts, visual defaults |
 
 Not committed (`.gitignore`): `.pbi/cache.abf` (the imported data) and `.pbi/localSettings.json`.
 
@@ -182,7 +182,7 @@ git update-index --skip-worktree powerbi/UkTenders.SemanticModel/definition/expr
 
 ## Theme
 
-Colours and font are taken from [hippodigital.co.uk](https://hippodigital.co.uk) (its stylesheet, October 2026).
+A navy and pink palette on a light grey canvas, made for this report.
 
 **Font: DM Sans** (Google Fonts, open licence): a geometric sans with a modern, friendly feel that stays crisp at small sizes. The theme falls back to Segoe UI where DM Sans is not installed. Power BI Service only renders a fixed set of fonts, so the published report shows Segoe UI unless viewers have DM Sans installed; Desktop and PDF exports from Desktop use DM Sans.
 
@@ -193,8 +193,8 @@ Colours and font are taken from [hippodigital.co.uk](https://hippodigital.co.uk)
 | Series 2–4 | Pink, light blue, teal | `#E07FA3`, `#A5D0FF`, `#4F9B8D` |
 | Series 5–8 (avoid if possible) | Dark pink, mid blue, mint, dark green | `#B8577B`, `#6699CC`, `#A0F5E7`, `#002F26` |
 | Secondary text | Slate (navy tint) | `#4B5B70` |
-| Page background | Hippo light grey | `#EFF2F2` |
-| Visual background / border | White / Hippo grey | `#FFFFFF` / `#DDE4E6` |
+| Page background | Light grey | `#EFF2F2` |
+| Visual background / border | White / grey | `#FFFFFF` / `#DDE4E6` |
 | Good / neutral / bad | Teal / yellow / dark pink | `#4F9B8D` / `#FFC42E` / `#B8577B` |
 
 What keeps it from looking generic: a navy header band with a pink subtitle, light grey canvas with white rounded cards, navy single-colour bars (one colour per chart unless the colour means something), and a pink accent bar on KPI cards.
