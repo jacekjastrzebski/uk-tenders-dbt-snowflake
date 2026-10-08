@@ -1,6 +1,6 @@
 # Architecture
 
-How the tracker is built: a scheduled Python loader inside Snowflake stores Find a Tender notices unchanged, dbt turns them into a star schema 20 minutes later, and a Power BI report (in progress) reads the marts. GitHub Actions tests every change and deploys what changed. The diagrams are in [`diagrams/`](diagrams/); to run your own copy, see [self-hosting.md](self-hosting.md).
+How the tracker is built: a scheduled Python loader inside Snowflake stores Find a Tender notices unchanged, dbt turns them into a star schema 20 minutes later, and a Power BI report reads the marts. GitHub Actions tests every change and deploys what changed. The diagrams are in [`diagrams/`](diagrams/); to run your own copy, see [self-hosting.md](self-hosting.md).
 
 **Start here (5 minutes):** [system context](diagrams/c4.md#system-context) → [containers](diagrams/c4.md#containers) → [notice to dashboard](diagrams/flows.md#notice-to-dashboard) → [layers and grain](diagrams/data.md#layers-and-grain).
 

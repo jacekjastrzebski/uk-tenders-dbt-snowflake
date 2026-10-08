@@ -23,7 +23,7 @@ Find a Tender API  →  Python loader  →  Snowflake (raw)  →  dbt (staging, 
 
 1. **Ingest:** a Python loader, run inside Snowflake as a stored procedure by a scheduled task, fetches notices updated since the last run and stores each API page unchanged.
 2. **Transform:** dbt deduplicates, flattens the nested JSON and builds a star schema: two facts (awards by supplier, tenders) and four dimensions ([docs/dbt.md](docs/dbt.md), [diagram](docs/diagrams/marts-erd.md)).
-3. **Report (TO-DO):** a Power BI report on top of the marts.
+3. **Report:** a Power BI report on the marts, one page per question: what's open to bid, who's buying, who's winning and how long to award ([docs/powerbi.md](docs/powerbi.md)).
 
 Architecture overview and every diagram (C4, flows, data, roles, lifecycles): [docs/architecture.md](docs/architecture.md).
 
@@ -34,7 +34,7 @@ Architecture overview and every diagram (C4, flows, data, roles, lifecycles): [d
 | Transform (dbt staging and marts) | Done |
 | Run dbt in Snowflake 20 minutes after each load ([ADR 0009](docs/adr/0009-run-dbt-on-a-schedule-in-snowflake.md)) | Done |
 | Event-based failure alerts for all tasks (ingest and dbt) | TO-DO |
-| Report (Power BI) | TO-DO |
+| Report (Power BI) | Done |
 | Historical backfill from 24 February 2025 ([ADR 0017](docs/adr/0017-backfill-from-procurement-act-start.md)) | Done (172,312 notices) |
 
 ## Repository layout
@@ -51,7 +51,7 @@ Architecture overview and every diagram (C4, flows, data, roles, lifecycles): [d
 
 ## Run your own copy
 
-The repository is open: fork it and run the pipeline on your own Snowflake account and GitHub with [docs/self-hosting.md](docs/self-hosting.md); the Power BI report follows once it is merged.
+The repository is open: fork it and run the pipeline on your own Snowflake account and GitHub with [docs/self-hosting.md](docs/self-hosting.md), then the Power BI report with [docs/powerbi.md](docs/powerbi.md).
 
 ## Data and licence
 

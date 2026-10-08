@@ -85,3 +85,17 @@ Terms used in this project, grouped by area. Procurement background: [procuremen
 | Target | A named connection in `profiles.yml` (`dev`, `prod`); decides which schemas dbt writes to |
 | Profile | Connection settings in `~/.dbt/profiles.yml`, outside the repo |
 | Macro | Reusable Jinja code, e.g. `normalise_org_name` |
+
+## Power BI
+
+| Term | Meaning |
+|---|---|
+| PBIP | Power BI Project: the report saved as a folder of text files instead of one `.pbix`, so it can be reviewed in git |
+| Semantic model | The tables, relationships and measures a report reads (`UkTenders.SemanticModel`); also called a dataset |
+| TMDL | Tabular Model Definition Language: the text format of the semantic model, one `.tmdl` file per table |
+| PBIR | Power BI enhanced report format: one `page.json` per page and one `visual.json` per visual |
+| Import mode | Power BI copies the mart tables into the model at each refresh; visuals query that copy, not Snowflake |
+| Measure | A DAX calculation evaluated for whatever is filtered, e.g. Awarded Value |
+| DAX | Data Analysis Expressions: Power BI's formula language for measures |
+| Slicer | An on-page filter the reader picks from, e.g. Market |
+| Inactive relationship | A relationship a measure switches on with `USERELATIONSHIP`; used to date timings by award |

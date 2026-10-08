@@ -1,0 +1,153 @@
+/// One row per supplier on an award, from fct_award_suppliers; sum Allocated Value
+/// (the supplier's equal share). Headline totals use Is In Headline (ADR 0022).
+table Awards
+
+	/// Value awarded, joint awards split equally; excludes framework ceilings and awards of £100m or more
+	measure 'Awarded Value' = CALCULATE(SUM(Awards[Allocated Value]), KEEPFILTERS(Awards[Is In Headline] = TRUE()))
+		formatString: £#,0
+
+	/// Distinct awards in the headline totals
+	measure Awards = CALCULATE(DISTINCTCOUNT(Awards[Procurement Award Key]), KEEPFILTERS(Awards[Is In Headline] = TRUE()))
+		formatString: #,0
+
+	measure 'Suppliers Awarded' =
+			CALCULATE(
+			    DISTINCTCOUNT(Awards[Supplier Key]),
+			    KEEPFILTERS(Awards[Is In Headline] = TRUE()),
+			    KEEPFILTERS(Awards[Supplier Key] <> "UNKNOWN SUPPLIER")
+			)
+		formatString: #,0
+
+	/// Share of awarded value across all suppliers in the current filters
+	measure 'Market Share' = DIVIDE([Awarded Value], CALCULATE([Awarded Value], REMOVEFILTERS(Supplier)))
+		formatString: 0.0%
+
+	/// Share of value won by the 10 largest named suppliers (unknown and withheld left out)
+	measure 'Top 10 Supplier Share' =
+			VAR NamedSuppliers =
+			    CALCULATETABLE(
+			        VALUES(Supplier[Supplier Key]),
+			        Supplier[Supplier Key] <> "UNKNOWN SUPPLIER",
+			        Supplier[Is Withheld] = FALSE()
+			    )
+			VAR TopSuppliers = TOPN(10, NamedSuppliers, [Awarded Value])
+			RETURN
+			    DIVIDE(
+			        CALCULATE([Awarded Value], TopSuppliers),
+			        CALCULATE([Awarded Value], NamedSuppliers)
+			    )
+		formatString: 0.0%
+
+	/// Framework ceilings: the most that could be spent, not spend; shown separately
+	measure 'Framework Ceiling Value' = CALCULATE(SUM(Awards[Allocated Value]), KEEPFILTERS(Awards[Is Framework] = TRUE()))
+		formatString: £#,0
+
+	/// Awards of £100m or more (not frameworks), left out of the headline totals for review
+	measure 'Large Awards' =
+			CALCULATE(
+			    DISTINCTCOUNT(Awards[Procurement Award Key]),
+			    KEEPFILTERS(Awards[Is Large Value] = TRUE()),
+			    KEEPFILTERS(Awards[Is Framework] = FALSE())
+			)
+		formatString: #,0
+
+	/// Top of the monthly trend's value axis: the highest month plus 15% headroom
+	measure 'Monthly Trend Axis Max' = MAXX(VALUES('Date'[Month Start]), [Awarded Value]) * 1.15
+		formatString: £#,0
+		isHidden
+
+	column 'Award Supplier Key'
+		dataType: string
+		isHidden
+		isKey
+		summarizeBy: none
+		sourceColumn: AWARD_SUPPLIER_KEY
+
+	column 'Procurement Award Key'
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: PROCUREMENT_AWARD_KEY
+
+	column OCID
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: OCID
+
+	column 'Award Date'
+		dataType: dateTime
+		formatString: dd mmm yyyy
+		summarizeBy: none
+		sourceColumn: AWARD_DATE
+
+	column 'Buyer Key'
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: BUYER_KEY
+
+	column 'Supplier Key'
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: SUPPLIER_KEY
+
+	column 'CPV Division'
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: CPV_DIVISION
+
+	column 'Award Status'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: AWARD_STATUS
+
+	column 'Allocated Value'
+		dataType: double
+		isHidden
+		formatString: £#,0
+		summarizeBy: sum
+		sourceColumn: ALLOCATED_VALUE_GBP
+
+	column 'Suppliers on Award'
+		dataType: int64
+		formatString: #,0
+		summarizeBy: none
+		sourceColumn: SUPPLIERS_ON_AWARD
+
+	column 'Value Source'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: VALUE_SOURCE
+
+	column 'Date Source'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: DATE_SOURCE
+
+	column 'Is Framework'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: IS_FRAMEWORK
+
+	column 'Is Large Value'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: IS_LARGE_VALUE
+
+	column 'Is In Headline'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: IS_IN_HEADLINE
+
+	partition Awards = m
+		mode: import
+		source =
+				let
+				    Source = Marts{[Name = "FCT_AWARD_SUPPLIERS", Kind = "Table"]}[Data]
+				in
+				    Source
+
+	annotation PBI_ResultType = Table

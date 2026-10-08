@@ -1,0 +1,35 @@
+/// What is bought: the 45 CPV divisions, from dim_cpv_divisions.
+table Sector
+
+	column 'CPV Division'
+		dataType: string
+		isKey
+		summarizeBy: none
+		sourceColumn: CPV_DIVISION
+
+	column Sector
+		dataType: string
+		summarizeBy: none
+		sourceColumn: DIVISION_NAME
+
+	column 'Is Digital and Data'
+		dataType: boolean
+		isHidden
+		summarizeBy: none
+		sourceColumn: IS_DIGITAL_AND_DATA
+
+	/// Digital and data (CPV 48 software, 72 IT services) or Other
+	column Market
+		dataType: string
+		summarizeBy: none
+		sourceColumn: MARKET
+
+	partition Sector = m
+		mode: import
+		source =
+				let
+				    Source = Marts{[Name = "DIM_CPV_DIVISIONS", Kind = "Table"]}[Data]
+				in
+				    Source
+
+	annotation PBI_ResultType = Table

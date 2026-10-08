@@ -1,0 +1,32 @@
+/// Public bodies buying, from dim_buyers: one row per organisation, grouped by
+/// normalised name; the name shown is from its latest notice.
+table Buyer
+
+	column 'Buyer Key'
+		dataType: string
+		isHidden
+		isKey
+		summarizeBy: none
+		sourceColumn: BUYER_KEY
+
+	column Buyer
+		dataType: string
+		summarizeBy: none
+		sourceColumn: BUYER_NAME
+
+	/// All organisation IDs seen for this buyer, for tracing back to notices
+	column 'Buyer IDs'
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: BUYER_IDS
+
+	partition Buyer = m
+		mode: import
+		source =
+				let
+				    Source = Marts{[Name = "DIM_BUYERS", Kind = "Table"]}[Data]
+				in
+				    Source
+
+	annotation PBI_ResultType = Table

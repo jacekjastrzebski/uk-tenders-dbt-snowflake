@@ -1,6 +1,6 @@
 # Run your own copy
 
-Step by step from a fork to a scheduled pipeline on your own Snowflake account and GitHub, with the Power BI report on top once it is merged. How the parts fit together: [architecture.md](architecture.md).
+Step by step from a fork to a scheduled pipeline on your own Snowflake account and GitHub, with the Power BI report on top. How the parts fit together: [architecture.md](architecture.md).
 
 | Step | Where | Takes about |
 |---|---|---|
@@ -180,26 +180,7 @@ Six mart tables with rows, and `SUCCEEDED` for both tasks, means the pipeline wo
 
 ## 10. Power BI
 
-The report is in progress on branch `feat/powerbi`; once merged, its guide is `docs/powerbi.md`. The Snowflake side can be set up now.
-
-Power BI signs in to Snowflake as its own user that holds only `TENDER_REPORTER`, so the report can read the marts and nothing else. It uses a key pair: the Power BI Snowflake connector supports key-pair sign-in for import models, Microsoft Entra SSO works only for DirectQuery, and password sign-in is being phased out ([Microsoft: Snowflake connector](https://learn.microsoft.com/power-query/connectors/snowflake)).
-
-```bash
-openssl genrsa 2048 | openssl pkcs8 -topk8 -nocrypt -out ~/.snowflake/powerbi_key.p8
-chmod 600 ~/.snowflake/powerbi_key.p8
-PUB=$(openssl rsa -in ~/.snowflake/powerbi_key.p8 -pubout | grep -v '^-----' | tr -d '\n')
-snow sql -c tender -q "USE ROLE ACCOUNTADMIN;
-  CREATE USER IF NOT EXISTS TENDER_POWERBI
-    TYPE = SERVICE
-    DEFAULT_ROLE = TENDER_REPORTER
-    DEFAULT_WAREHOUSE = TENDER_WH
-    DEFAULT_NAMESPACE = TENDER_DB.PROD_MARTS
-    COMMENT = 'Power BI: reads the marts only';
-  GRANT ROLE TENDER_REPORTER TO USER TENDER_POWERBI;
-  ALTER USER TENDER_POWERBI SET RSA_PUBLIC_KEY = '$PUB'"
-```
-
-Copy `powerbi_key.p8` to the Windows computer for Power BI Desktop; keep it out of the repository.
+Follow [powerbi.md → Set up your own](powerbi.md#set-up-your-own): a Snowflake user `TENDER_POWERBI` that holds only `TENDER_REPORTER` and signs in with a key pair, then Power BI Desktop, connecting and refreshing, and optionally publishing with a scheduled refresh after each dbt build.
 
 ## Run it
 

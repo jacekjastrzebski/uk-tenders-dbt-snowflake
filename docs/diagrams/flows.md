@@ -20,7 +20,7 @@ flowchart TB
         direction LR
         C1["Check source<br/>freshness"] --> C2["Staging: deduplicate,<br/>flatten, strip contacts"] --> C3["Intermediate: one row<br/>per award, in GBP"] --> C4["Marts: star schema"] --> C5["Tests"]
     end
-    subgraph L4["Power BI (in progress)"]
+    subgraph L4["Power BI"]
         direction LR
         D1["Scheduled refresh<br/>imports the marts"] --> D2["Measures and pages"]
     end

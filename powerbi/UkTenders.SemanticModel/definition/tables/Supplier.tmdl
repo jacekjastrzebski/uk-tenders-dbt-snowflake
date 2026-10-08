@@ -1,0 +1,36 @@
+/// Organisations winning awards, from dim_suppliers: grouped by normalised name,
+/// lot numbers removed; includes "Unknown supplier" for awards published without one.
+table Supplier
+
+	column 'Supplier Key'
+		dataType: string
+		isHidden
+		isKey
+		summarizeBy: none
+		sourceColumn: SUPPLIER_KEY
+
+	column Supplier
+		dataType: string
+		summarizeBy: none
+		sourceColumn: SUPPLIER_NAME
+
+	column 'Supplier IDs'
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: SUPPLIER_IDS
+
+	column 'Is Withheld'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: IS_WITHHELD
+
+	partition Supplier = m
+		mode: import
+		source =
+				let
+				    Source = Marts{[Name = "DIM_SUPPLIERS", Kind = "Table"]}[Data]
+				in
+				    Source
+
+	annotation PBI_ResultType = Table
