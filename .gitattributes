@@ -1,0 +1,3 @@
+# Store text files with Unix line endings, whatever the editor writes
+# (Power BI Desktop on Windows saves with CRLF)
+* text=auto

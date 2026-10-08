@@ -3,9 +3,9 @@
   "name": "buying-kpiAwardedValue",
   "position": {
     "x": 16,
-    "y": 168,
+    "y": 200,
     "z": 1,
-    "width": 300,
+    "width": 616,
     "height": 96,
     "tabOrder": 1
   },
@@ -27,7 +27,8 @@
                 }
               },
               "queryRef": "Awards.Awarded Value",
-              "nativeQueryRef": "Awarded Value"
+              "nativeQueryRef": "Awarded Value",
+              "displayName": "Awarded value"
             }
           ]
         }
@@ -82,6 +83,21 @@
         }
       ]
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "objects": {
+      "labels": [
+        {
+          "properties": {
+            "labelDisplayUnits": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
   }
 }

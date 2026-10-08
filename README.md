@@ -25,7 +25,7 @@ Find a Tender API  →  Python loader  →  Snowflake (raw)  →  dbt (staging, 
 
 1. **Ingest:** a Python loader, run inside Snowflake as a stored procedure by a scheduled task, fetches notices updated since the last run and stores each API page unchanged.
 2. **Transform:** dbt deduplicates, flattens the nested JSON and builds a star schema: two facts (awards by supplier, tenders) and four dimensions ([docs/dbt.md](docs/dbt.md), [diagram](docs/diagrams/marts-erd.md)).
-3. **Report:** a Power BI report on the marts, one page per question: what's open to bid, who's buying, who's winning and how long to award ([docs/powerbi.md](docs/powerbi.md)).
+3. **Report:** a Power BI report on the marts, with a Home page and one page per question: what's open to bid, who's buying, who's winning and how long to award ([docs/powerbi.md](docs/powerbi.md)).
 
 Architecture overview and every diagram (C4, flows, data, roles, lifecycles): [docs/architecture.md](docs/architecture.md).
 

@@ -8,6 +8,7 @@ repos:
       - id: check-yaml
       - id: check-toml
       - id: end-of-file-fixer
+        exclude: ^powerbi/          # Power BI Desktop writes files without a final newline
       - id: trailing-whitespace
 
   # Same commands as CI, using the project's own environment

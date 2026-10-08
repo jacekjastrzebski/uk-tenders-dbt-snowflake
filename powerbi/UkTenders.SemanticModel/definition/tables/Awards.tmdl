@@ -1,14 +1,17 @@
 /// One row per supplier on an award, from fct_award_suppliers; sum Allocated Value
 /// (the supplier's equal share). Headline totals use Is In Headline (ADR 0022).
 table Awards
+	lineageTag: b913a7a2-2701-4a58-bc62-ae1890146386
 
 	/// Value awarded, joint awards split equally; excludes framework ceilings and awards of £100m or more
 	measure 'Awarded Value' = CALCULATE(SUM(Awards[Allocated Value]), KEEPFILTERS(Awards[Is In Headline] = TRUE()))
 		formatString: £#,0
+		lineageTag: 877c7473-9e00-4668-ad41-93105220e414
 
 	/// Distinct awards in the headline totals
 	measure Awards = CALCULATE(DISTINCTCOUNT(Awards[Procurement Award Key]), KEEPFILTERS(Awards[Is In Headline] = TRUE()))
 		formatString: #,0
+		lineageTag: ee4cbf8f-0180-4064-bce7-fa2900c3971a
 
 	measure 'Suppliers Awarded' =
 			CALCULATE(
@@ -17,10 +20,12 @@ table Awards
 			    KEEPFILTERS(Awards[Supplier Key] <> "UNKNOWN SUPPLIER")
 			)
 		formatString: #,0
+		lineageTag: abdeb640-7234-470a-881f-4fc8ac7f6574
 
 	/// Share of awarded value across all suppliers in the current filters
 	measure 'Market Share' = DIVIDE([Awarded Value], CALCULATE([Awarded Value], REMOVEFILTERS(Supplier)))
 		formatString: 0.0%
+		lineageTag: 1a41a9ed-9139-4659-9de7-feeed6166cbc
 
 	/// Share of value won by the 10 largest named suppliers (unknown and withheld left out)
 	measure 'Top 10 Supplier Share' =
@@ -37,10 +42,12 @@ table Awards
 			        CALCULATE([Awarded Value], NamedSuppliers)
 			    )
 		formatString: 0.0%
+		lineageTag: 16e6ab32-0de3-45dc-88cb-469beb517bb5
 
 	/// Framework ceilings: the most that could be spent, not spend; shown separately
 	measure 'Framework Ceiling Value' = CALCULATE(SUM(Awards[Allocated Value]), KEEPFILTERS(Awards[Is Framework] = TRUE()))
 		formatString: £#,0
+		lineageTag: 677632dc-95f9-4e07-a3a0-90f2124b76c8
 
 	/// Awards of £100m or more (not frameworks), left out of the headline totals for review
 	measure 'Large Awards' =
@@ -50,57 +57,94 @@ table Awards
 			    KEEPFILTERS(Awards[Is Framework] = FALSE())
 			)
 		formatString: #,0
+		lineageTag: ac189e66-63dc-417f-ba91-12f5ea39f922
 
-	/// Top of the monthly trend's value axis: the highest month plus 15% headroom
-	measure 'Monthly Trend Axis Max' = MAXX(VALUES('Date'[Month Start]), [Awarded Value]) * 1.15
+	/// Top of the monthly trend's value axis: the highest line in any month plus 20% headroom
+	measure 'Monthly Trend Axis Max' =
+			MAXX(
+			    CROSSJOIN(VALUES('Date'[Month Start]), VALUES('Colour Group'[Group])),
+			    [Awarded Value by Group]
+			) * 1.2
 		formatString: £#,0
 		isHidden
+		lineageTag: 2d3ca6dc-78be-446b-9f11-32261e03085b
+
+	/// Awarded Value split by legend group (table Colour Group): Digital and data / Other markets
+	/// when no market is chosen, otherwise one group per chosen market. Bar totals equal Awarded Value.
+	measure 'Awarded Value by Group' =
+			VAR GroupName = SELECTEDVALUE('Colour Group'[Group])
+			// colour by market once a Market, Sector or Buyer slicer is used. Only those slicers filter
+			// these columns: charts group by the copies (Sector Name, Buyer Name) and run Top N on keys
+			VAR MarketChosen =
+			    ISFILTERED(Sector[Market]) || ISFILTERED(Sector[Sector]) || ISFILTERED(Buyer[Buyer])
+			RETURN
+			    SWITCH(
+			        TRUE(),
+			        NOT MarketChosen && GroupName = "Digital and data",
+			            CALCULATE([Awarded Value], KEEPFILTERS(Sector[Market] = "Digital and data")),
+			        NOT MarketChosen && GroupName = "Other markets",
+			            CALCULATE([Awarded Value], KEEPFILTERS(Sector[Market] <> "Digital and data")),
+			        NOT MarketChosen || GroupName = "Other markets", BLANK(),
+			        CALCULATE([Awarded Value], KEEPFILTERS(Sector[Market] = GroupName))
+			    )
+		formatString: £#,0
+		lineageTag: 0bb87b60-ae5d-4869-9625-0e6f67511a73
 
 	column 'Award Supplier Key'
 		dataType: string
 		isHidden
 		isKey
+		lineageTag: 8fe73ae2-7278-4433-8d31-57419115316c
 		summarizeBy: none
 		sourceColumn: AWARD_SUPPLIER_KEY
 
 	column 'Procurement Award Key'
 		dataType: string
 		isHidden
+		lineageTag: 0669180b-8bc3-4ff8-853d-3c6eb1d262cc
 		summarizeBy: none
 		sourceColumn: PROCUREMENT_AWARD_KEY
 
 	column OCID
 		dataType: string
 		isHidden
+		lineageTag: 44d47819-5425-4b42-9ce1-71acd5643f2c
 		summarizeBy: none
 		sourceColumn: OCID
 
 	column 'Award Date'
 		dataType: dateTime
 		formatString: dd mmm yyyy
+		lineageTag: e08dc257-2172-4b00-b30d-f2ad88d9c35d
 		summarizeBy: none
 		sourceColumn: AWARD_DATE
+
+		annotation UnderlyingDateTimeDataType = Date
 
 	column 'Buyer Key'
 		dataType: string
 		isHidden
+		lineageTag: 8db875c1-c849-410f-9be5-2f3b11087507
 		summarizeBy: none
 		sourceColumn: BUYER_KEY
 
 	column 'Supplier Key'
 		dataType: string
 		isHidden
+		lineageTag: 7748d633-11de-435f-8347-3d2207aa8909
 		summarizeBy: none
 		sourceColumn: SUPPLIER_KEY
 
 	column 'CPV Division'
 		dataType: string
 		isHidden
+		lineageTag: 210aeeae-9e37-47df-a705-abd5c320c789
 		summarizeBy: none
 		sourceColumn: CPV_DIVISION
 
 	column 'Award Status'
 		dataType: string
+		lineageTag: 3c141d41-85b2-47c5-9da7-60424e84e50f
 		summarizeBy: none
 		sourceColumn: AWARD_STATUS
 
@@ -108,37 +152,46 @@ table Awards
 		dataType: double
 		isHidden
 		formatString: £#,0
+		lineageTag: 279cdd50-a5f0-4b28-9820-b76eb825c849
 		summarizeBy: sum
 		sourceColumn: ALLOCATED_VALUE_GBP
 
 	column 'Suppliers on Award'
-		dataType: int64
+		dataType: double
 		formatString: #,0
-		summarizeBy: none
+		lineageTag: 416dc007-78dc-41a1-9a9f-6167fa4418f5
+		summarizeBy: sum
 		sourceColumn: SUPPLIERS_ON_AWARD
+
+		annotation SummarizationSetBy = Automatic
 
 	column 'Value Source'
 		dataType: string
+		lineageTag: 71877128-6f46-4014-9129-c695da447adf
 		summarizeBy: none
 		sourceColumn: VALUE_SOURCE
 
 	column 'Date Source'
 		dataType: string
+		lineageTag: 0dd4d5a5-fddb-42ba-996d-29f1c3fb853f
 		summarizeBy: none
 		sourceColumn: DATE_SOURCE
 
 	column 'Is Framework'
 		dataType: boolean
+		lineageTag: e5f1b393-14ed-443b-b832-5935bb3329f1
 		summarizeBy: none
 		sourceColumn: IS_FRAMEWORK
 
 	column 'Is Large Value'
 		dataType: boolean
+		lineageTag: 3402c510-0dff-4688-bab2-bf3878bdb36b
 		summarizeBy: none
 		sourceColumn: IS_LARGE_VALUE
 
 	column 'Is In Headline'
 		dataType: boolean
+		lineageTag: 60d951a2-56b2-460a-9809-9dc0a59bc132
 		summarizeBy: none
 		sourceColumn: IS_IN_HEADLINE
 
@@ -151,3 +204,4 @@ table Awards
 				    Source
 
 	annotation PBI_ResultType = Table
+

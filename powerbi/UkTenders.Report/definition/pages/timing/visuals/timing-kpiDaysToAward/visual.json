@@ -3,9 +3,9 @@
   "name": "timing-kpiDaysToAward",
   "position": {
     "x": 16,
-    "y": 168,
+    "y": 200,
     "z": 1,
-    "width": 300,
+    "width": 405,
     "height": 96,
     "tabOrder": 1
   },
@@ -27,7 +27,8 @@
                 }
               },
               "queryRef": "Procurements.Median Days Tender to Award",
-              "nativeQueryRef": "Median Days Tender to Award"
+              "nativeQueryRef": "Median Days Tender to Award",
+              "displayName": "Median days, tender to award"
             }
           ]
         }
