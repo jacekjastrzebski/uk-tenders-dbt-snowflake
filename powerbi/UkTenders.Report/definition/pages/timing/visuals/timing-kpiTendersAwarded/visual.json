@@ -2,10 +2,10 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
   "name": "timing-kpiTendersAwarded",
   "position": {
-    "x": 648,
-    "y": 168,
+    "x": 858,
+    "y": 200,
     "z": 3,
-    "width": 300,
+    "width": 405,
     "height": 96,
     "tabOrder": 3
   },
@@ -27,7 +27,8 @@
                 }
               },
               "queryRef": "Procurements.Tenders Awarded",
-              "nativeQueryRef": "Tenders Awarded"
+              "nativeQueryRef": "Tenders Awarded",
+              "displayName": "Tenders awarded"
             }
           ]
         }
@@ -82,6 +83,21 @@
         }
       ]
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "objects": {
+      "labels": [
+        {
+          "properties": {
+            "labelDisplayUnits": {
+              "expr": {
+                "Literal": {
+                  "Value": "1D"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
   }
 }

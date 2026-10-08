@@ -1,12 +1,12 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
   "name": "open-dataAsOf",
   "position": {
-    "x": 1040,
-    "y": 8,
+    "x": 1024,
+    "y": 40,
     "z": 1,
-    "width": 216,
-    "height": 56,
+    "height": 36,
+    "width": 224,
     "tabOrder": 1
   },
   "visual": {
@@ -20,15 +20,15 @@
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Procurements"
+                      "Entity": "Data Freshness"
                     }
                   },
-                  "Property": "Data As Of"
+                  "Property": "Data Loaded"
                 }
               },
-              "queryRef": "Procurements.Data As Of",
-              "nativeQueryRef": "Data As Of",
-              "displayName": "Data as of"
+              "queryRef": "Data Freshness.Data Loaded",
+              "nativeQueryRef": "Data Loaded",
+              "displayName": "Data loaded"
             }
           ]
         }
@@ -62,21 +62,10 @@
       "categoryLabels": [
         {
           "properties": {
-            "color": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#E07FA3'"
-                    }
-                  }
-                }
-              }
-            },
-            "fontSize": {
+            "show": {
               "expr": {
                 "Literal": {
-                  "Value": "9D"
+                  "Value": "false"
                 }
               }
             }

@@ -2,10 +2,10 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
   "name": "open-kpiClosingSoon",
   "position": {
-    "x": 332,
-    "y": 168,
+    "x": 648,
+    "y": 200,
     "z": 1,
-    "width": 300,
+    "width": 616,
     "height": 96,
     "tabOrder": 1
   },
@@ -23,11 +23,11 @@
                       "Entity": "Procurements"
                     }
                   },
-                  "Property": "Closing in 14 Days"
+                  "Property": "Closing Soon"
                 }
               },
-              "queryRef": "Procurements.Closing in 14 Days",
-              "nativeQueryRef": "Closing in 14 Days"
+              "queryRef": "Procurements.Closing Soon",
+              "nativeQueryRef": "Closing Soon"
             }
           ]
         }
@@ -40,14 +40,14 @@
             "top": {
               "expr": {
                 "Literal": {
-                  "Value": "12D"
+                  "Value": "8D"
                 }
               }
             },
             "bottom": {
               "expr": {
                 "Literal": {
-                  "Value": "12D"
+                  "Value": "30D"
                 }
               }
             },
@@ -82,6 +82,34 @@
         }
       ]
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "objects": {
+      "labels": [
+        {
+          "properties": {
+            "labelDisplayUnits": {
+              "expr": {
+                "Literal": {
+                  "Value": "1D"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "categoryLabels": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
   }
 }

@@ -3,9 +3,9 @@
   "name": "open-kpiOpenTenders",
   "position": {
     "x": 16,
-    "y": 168,
+    "y": 200,
     "z": 0,
-    "width": 300,
+    "width": 616,
     "height": 96,
     "tabOrder": 0
   },
@@ -23,11 +23,12 @@
                       "Entity": "Procurements"
                     }
                   },
-                  "Property": "Open Tenders"
+                  "Property": "All Open Tenders"
                 }
               },
-              "queryRef": "Procurements.Open Tenders",
-              "nativeQueryRef": "Open Tenders"
+              "queryRef": "Procurements.All Open Tenders",
+              "nativeQueryRef": "All Open Tenders",
+              "displayName": "Open tenders"
             }
           ]
         }
@@ -82,6 +83,21 @@
         }
       ]
     },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "objects": {
+      "labels": [
+        {
+          "properties": {
+            "labelDisplayUnits": {
+              "expr": {
+                "Literal": {
+                  "Value": "1D"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
   }
 }
