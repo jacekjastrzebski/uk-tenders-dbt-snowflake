@@ -44,7 +44,7 @@ Architecture overview and every diagram (C4, flows, data, roles, lifecycles): [d
 | Path | Contents |
 |---|---|
 | `ingestion/` | Python loader and an API exploration script |
-| `snowflake/setup/` | Numbered SQL scripts that create the database, warehouse, raw tables and the dbt and Power BI roles |
+| `snowflake/setup/` | Numbered SQL scripts that create the database, warehouse, raw tables and the dbt, Power BI and guest roles |
 | `dbt/` | dbt project: staging, intermediate and mart models, seeds and tests; see `docs/dbt.md` |
 | `snowflake/native_ingestion/` | Numbered SQL scripts that run the loader as a Snowflake stored procedure on a schedule (needs a paid account) |
 | `snowflake/dbt/` | Setup, profile and scheduled task that run the dbt project inside Snowflake (ADR 0009) |
@@ -80,7 +80,7 @@ The loader runs inside Snowflake: a stored procedure imports `ingestion/load_fin
 
 One-off setup, in a Snowflake worksheet:
 
-1. Run the `snowflake/setup/` scripts in order, then `snowflake/native_ingestion/00_code_stage.sql`.
+1. Run the `snowflake/setup/` scripts `01`–`04` in order, then `snowflake/native_ingestion/00_code_stage.sql`.
 2. Run `01_external_access.sql` as ACCOUNTADMIN. It creates role `TENDER_INGEST`, which owns and runs the loader, and service user `TENDER_DEPLOY` for GitHub Actions; give that user a key pair (see `docs/snowflake-cli.md`).
 3. Add GitHub secrets `SNOWFLAKE_ACCOUNT`, `SNOWFLAKE_USER` (`TENDER_DEPLOY`), `SNOWFLAKE_PRIVATE_KEY` (its private key) and `ALERT_EMAIL` (the verified email of a Snowflake user, which receives failure alerts).
 

@@ -31,6 +31,7 @@ How the tracker is built: a scheduled Python loader inside Snowflake stores Find
 | Run the loader inside Snowflake | No server of our own; schedule, logs and alerts in one place | [0001](adr/0001-run-ingestion-in-snowflake.md) |
 | Run dbt on its own schedule, 20 minutes after each load | No orchestrator to run; loads take under a minute | [0009](adr/0009-run-dbt-on-a-schedule-in-snowflake.md) |
 | One role per job; service users sign in with key pairs | Least privilege | [0004](adr/0004-least-privilege-roles-and-deploy-user.md) |
+| Guests get a read-only role and their own warehouse, capped at 1 credit a month | Reviewers can query the data; cost stays bounded | [0029](adr/0029-guest-role-with-capped-warehouse.md) |
 | Deploy on merge, only what changed, after CI | Every change tested; small deploys | [0005](adr/0005-deploy-only-changed-objects.md), [0019](adr/0019-deploy-after-ci-checks.md) |
 | Star schema in `PROD_MARTS` for Power BI | Simple model, fast report, one read-only role | [0023](adr/0023-star-schema-for-power-bi.md), [0024](adr/0024-prod-schema-prefix.md) |
 
