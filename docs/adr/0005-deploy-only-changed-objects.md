@@ -1,6 +1,6 @@
 # 0005. Deploy on merge, only the objects whose files changed
 
-Status: Accepted (2026-10-07)
+Status: Accepted (2026-10-07); trigger changed by [0019](0019-deploy-after-ci-checks.md); compares with the last deployed commit since [0033](0033-pipeline-safeguards.md)
 
 ## Context
 Code must reach Snowflake reliably after review, without re-creating objects that did not change.

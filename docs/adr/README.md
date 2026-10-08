@@ -8,11 +8,11 @@ One file per significant decision: the context, the decision and its consequence
 | [0002](0002-one-daily-ingest-schedule.md) | One ingest schedule: every 3 hours, 07:00–19:00 UK time, every day | Accepted |
 | [0003](0003-failure-alert-by-email.md) | Email on failure with a scheduled alert | Accepted |
 | [0004](0004-least-privilege-roles-and-deploy-user.md) | One role per job and a service user for deploys | Accepted |
-| [0005](0005-deploy-only-changed-objects.md) | Deploy on merge, only the objects whose files changed | Accepted; trigger changed by 0019 |
+| [0005](0005-deploy-only-changed-objects.md) | Deploy on merge, only the objects whose files changed | Accepted; trigger changed by 0019, comparison by 0033 |
 | [0006](0006-loader-constants-in-code.md) | Keep loader constants in code, not a config file | Accepted |
 | [0007](0007-classify-notices-by-notice-type.md) | Classify notices by `noticeType`, not `tag` | Accepted |
 | [0008](0008-dbt-environments-and-staging-views.md) | dbt: dev/prod by schema, staging as views | Accepted; views superseded by 0015 |
-| [0009](0009-run-dbt-on-a-schedule-in-snowflake.md) | Run dbt in Snowflake, 20 minutes after each load | Accepted |
+| [0009](0009-run-dbt-on-a-schedule-in-snowflake.md) | Run dbt in Snowflake, 20 minutes after each load | Accepted; failure behaviour confirmed in 0033 |
 | [0010](0010-source-freshness-thresholds.md) | Source freshness: warn at 13 h (logged), error at 26 h (email) | Accepted |
 | [0011](0011-load-window-overlap.md) | Overlap each load window by 15 minutes | Accepted; time zone risk resolved by 0018 |
 | [0012](0012-business-terms-in-staging.md) | Name models in business terms: notices, not releases | Accepted |
@@ -31,5 +31,6 @@ One file per significant decision: the context, the decision and its consequence
 | [0027](0027-one-name-per-buyer-id.md) | One name per buyer ID when the ID has only a few names | Accepted |
 | [0028](0028-report-navigation-and-market-colours.md) | Report navigation and market colours | Accepted |
 | [0029](0029-guest-role-with-capped-warehouse.md) | A guest role with its own capped warehouse | Accepted |
-| [0030](0030-build-dbt-in-ci.md) | Build and test dbt on pull requests | Accepted |
+| [0030](0030-build-dbt-in-ci.md) | Build and test dbt on pull requests | Accepted; CI role changed by 0033 |
 | [0031](0031-alert-when-power-bi-stops-refreshing.md) | Alert from Snowflake when Power BI stops refreshing | Accepted |
+| [0033](0033-pipeline-safeguards.md) | Pipeline safeguards: CI role, deploy catch-up, stale-data alert, cost cap | Accepted |

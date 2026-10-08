@@ -8,7 +8,7 @@ Step by step from a fork to a scheduled pipeline on your own Snowflake account a
 | [2. Fork and clone](#2-fork-and-clone) | GitHub, your computer | 10 min |
 | [3. Snowflake CLI and your key pair](#3-snowflake-cli-and-your-key-pair) | Your computer, Snowsight | 10 min |
 | [4. Run the setup scripts](#4-run-the-setup-scripts) | Your computer → Snowflake | 5 min |
-| [5. Deploy user and GitHub secrets](#5-deploy-user-and-github-secrets) | Your computer → Snowflake, GitHub | 10 min |
+| [5. Deploy and CI users, GitHub secrets](#5-deploy-and-ci-users-github-secrets) | Your computer → Snowflake, GitHub | 15 min |
 | [6. First deploy](#6-first-deploy) | GitHub Actions → Snowflake | 5 min |
 | [7. First load and backfill](#7-first-load-and-backfill) | Snowflake | 1 min, backfill about an hour |
 | [8. First dbt build](#8-first-dbt-build) | Snowflake | 2 min |
@@ -25,7 +25,7 @@ Step by step from a fork to a scheduled pipeline on your own Snowflake account a
 | Windows 10 or 11 with [Power BI Desktop](https://www.microsoft.com/power-bi/desktop) | Open and refresh the report | Free |
 | Power BI Pro (or a Fabric capacity) | Only to publish the report to Power BI Service and share it | Per user licence |
 
-**Snowflake cost, roughly.** Typical runs: load about 25 s on serverless SMALL compute, dbt about 70 s on the X-SMALL `TENDER_WH` (billed at least 60 s, then suspends after 60 s idle), 5 times a day. With a Power BI refresh after each build, expect around 10–15 credits a month; storage is a few GB. Check actual use in Snowsight → Admin → Cost management after the first week.
+**Snowflake cost, roughly.** Typical runs: load about 25 s on serverless SMALL compute, dbt about 70 s on the X-SMALL `TENDER_WH` (billed at least 60 s, then suspends after 60 s idle), 5 times a day. With a Power BI refresh after each build, expect around 10–15 credits a month; storage is a few GB. A resource monitor stops `TENDER_WH` at 30 credits a month (step 4). Check actual use in Snowsight → Admin → Cost management after the first week.
 
 **Trial account?** External access is blocked, so the loader can't run inside Snowflake. You can still try the rest from your computer: in step 4 run only the four `snowflake/setup/` scripts, skip steps 5–8, then load with `uv run ingestion/load_find_a_tender.py` and build with dbt against `dev` ([dbt.md](dbt.md)).
 
@@ -73,6 +73,7 @@ snow sql -f snowflake/setup/01_database_warehouse.sql -c tender
 snow sql -f snowflake/setup/02_raw_objects.sql -c tender
 snow sql -f snowflake/setup/03_transform_role.sql -c tender
 snow sql -f snowflake/setup/04_reporting_role.sql -c tender
+snow sql -f snowflake/setup/06_ci_role.sql -c tender
 snow sql -f snowflake/native_ingestion/00_code_stage.sql -c tender
 snow sql -f snowflake/native_ingestion/01_external_access.sql -c tender
 snow sql -f snowflake/dbt/00_dbt_setup.sql -c tender
@@ -80,10 +81,11 @@ snow sql -f snowflake/dbt/00_dbt_setup.sql -c tender
 
 | Script | Runs as | Creates |
 |---|---|---|
-| `setup/01_database_warehouse.sql` | SYSADMIN | Database `TENDER_DB`, schema `RAW`, warehouse `TENDER_WH` (X-SMALL, auto-suspend 60 s) |
+| `setup/01_database_warehouse.sql` | SYSADMIN, then ACCOUNTADMIN | Database `TENDER_DB`, schema `RAW`, warehouse `TENDER_WH` (X-SMALL, auto-suspend 60 s, statements stop after 30 minutes), and resource monitor `TENDER_WH_MONITOR`: 30 credits a month, email at 75% (to account admins with email notifications on), suspend at 100% |
 | `setup/02_raw_objects.sql` | SYSADMIN | Raw tables `FIND_A_TENDER_RELEASES`, `FIND_A_TENDER_INGEST_RUNS` |
 | `setup/03_transform_role.sql` | ACCOUNTADMIN | Role `TENDER_TRANSFORM` (dbt): reads `RAW`, creates its own schemas. Also an empty schema `PROD`, which the prod dbt profile needs; models go to `PROD_STAGING`, `PROD_MARTS`, ... |
 | `setup/04_reporting_role.sql` | ACCOUNTADMIN | Role `TENDER_REPORTER` (Power BI): reads `PROD_MARTS`, `DEV_MARTS` |
+| `setup/06_ci_role.sql` | ACCOUNTADMIN | Role and service user `TENDER_CI`, which builds dbt pull requests: reads `RAW`, creates its own `CI_PR_*` schemas |
 | `setup/05_viewer_role.sql` (optional) | ACCOUNTADMIN | Role `TENDER_VIEWER` and a guest user who can browse everything and query `RAW` and the prod schemas on warehouse `TENDER_VIEWER_WH`, capped at 1 credit a month; run it last, with the commands in its header |
 | `native_ingestion/00_code_stage.sql` | SYSADMIN | Stage `RAW.CODE_STAGE` for the loader's Python file |
 | `native_ingestion/01_external_access.sql` | ACCOUNTADMIN | Network rule and integration for the API host, email integration `TENDER_EMAIL`, role `TENDER_INGEST`, service user `TENDER_DEPLOY` |
@@ -91,20 +93,45 @@ snow sql -f snowflake/dbt/00_dbt_setup.sql -c tender
 
 Roles and what each may touch: [security.md](diagrams/security.md#roles-and-access).
 
-## 5. Deploy user and GitHub secrets
+## 5. Deploy and CI users, GitHub secrets
 
-GitHub Actions deploys as the service user `TENDER_DEPLOY`, which signs in with a key pair. Create one, register it and store the private key as a secret ([snowflake-cli.md → Deploy user](snowflake-cli.md#deploy-user-for-github-actions)):
+GitHub Actions signs in to Snowflake as two service users, each with a key pair ([ADR 0033](adr/0033-pipeline-safeguards.md)):
+- `TENDER_DEPLOY` deploys from `main`. Its secrets live in the GitHub environment `production`, which only `main` can use, so pull request workflows can't read them.
+- `TENDER_CI` builds dbt pull requests into throwaway schemas, and can't touch prod.
+
+Create the environment, then a key pair per user: register each public key in Snowflake and store each private key as a secret ([snowflake-cli.md → Deploy user](snowflake-cli.md#deploy-user-for-github-actions)):
 
 ```bash
+gh api -X PUT "repos/{owner}/{repo}/environments/production" --input - <<'JSON'
+{"deployment_branch_policy": {"protected_branches": false, "custom_branch_policies": true}}
+JSON
+gh api -X POST "repos/{owner}/{repo}/environments/production/deployment-branch-policies" -f name=main
+
 openssl genrsa 2048 | openssl pkcs8 -topk8 -nocrypt -out deploy_key.p8
 PUB=$(openssl rsa -in deploy_key.p8 -pubout | grep -v '^-----' | tr -d '\n')
 snow sql -c tender -q "USE ROLE ACCOUNTADMIN; ALTER USER TENDER_DEPLOY SET RSA_PUBLIC_KEY = '$PUB'"
 
-gh secret set SNOWFLAKE_ACCOUNT --body <orgname>-<accountname>
-gh secret set SNOWFLAKE_USER --body TENDER_DEPLOY
-gh secret set SNOWFLAKE_PRIVATE_KEY < deploy_key.p8
-gh secret set ALERT_EMAIL --body <you@example.com>
-rm deploy_key.p8
+openssl genrsa 2048 | openssl pkcs8 -topk8 -nocrypt -out ci_key.p8
+PUB=$(openssl rsa -in ci_key.p8 -pubout | grep -v '^-----' | tr -d '\n')
+snow sql -c tender -q "USE ROLE ACCOUNTADMIN; ALTER USER TENDER_CI SET RSA_PUBLIC_KEY = '$PUB'"
+
+gh secret set SNOWFLAKE_ACCOUNT --body <orgname>-<accountname>   # both workflows use it
+gh secret set SNOWFLAKE_CI_PRIVATE_KEY < ci_key.p8
+gh secret set SNOWFLAKE_USER --env production --body TENDER_DEPLOY
+gh secret set SNOWFLAKE_PRIVATE_KEY --env production < deploy_key.p8
+gh secret set ALERT_EMAIL --env production --body <you@example.com>
+rm deploy_key.p8 ci_key.p8
+```
+
+Then protect `main`, so a pull request merges only when both CI jobs pass, for you too:
+
+```bash
+gh api -X PUT "repos/{owner}/{repo}/branches/main/protection" --input - <<'JSON'
+{"required_status_checks": {"strict": true, "contexts": ["checks", "dbt"]},
+ "enforce_admins": true,
+ "required_pull_request_reviews": {"required_approving_review_count": 0},
+ "restrictions": null}
+JSON
 ```
 
 `ALERT_EMAIL` must be the **verified** email address of a user in your Snowflake account (Snowsight → your profile → verify email); Snowflake only emails verified addresses. Test it once:
@@ -115,14 +142,14 @@ snow sql -c tender -f snowflake/checks/alert_email.sql -D alert_email=<you@examp
 
 ## 6. First deploy
 
-Run the Deploy workflow by hand; a manual run deploys everything (loader, procedures, ingest task and alert, dbt project, dbt task and alert):
+Run the Deploy workflow by hand; a manual run deploys everything (loader, procedures, ingest task and alert, dbt project, dbt task and alerts, Power BI refresh alert) and tags the commit `deployed`:
 
 ```bash
 gh workflow run deploy.yml --ref main
 gh run watch
 ```
 
-The tasks are now scheduled: loads at 07:00, 10:00, 13:00, 16:00 and 19:00 UK time, dbt 20 minutes later. From now on, merging to `main` deploys only what changed, after the CI checks pass ([flows.md → Change to production](diagrams/flows.md#change-to-production)).
+The tasks are now scheduled: loads at 07:00, 10:00, 13:00, 16:00 and 19:00 UK time, dbt 20 minutes later. From now on, merging to `main` deploys only what changed since the `deployed` tag, after the CI checks pass ([flows.md → Change to production](diagrams/flows.md#change-to-production)).
 
 A good first change: point the loader's `USER_AGENT` (`ingestion/load_find_a_tender.py`) at your fork, so the API's operators can see who is calling, and push it to `main`. The deploy uploads the new loader.
 
@@ -191,9 +218,11 @@ Follow [powerbi.md → Set up your own](powerbi.md#set-up-your-own): a Snowflake
 | See dbt output | Snowsight → Monitoring → dbt projects |
 | Loader runs and windows | `snowflake/checks/ingest_health.sql` |
 | A task suspended itself (3 failures in a row) | Fix the cause, then `ALTER TASK TENDER_DB.RAW.INGEST_FIND_A_TENDER RESUME` (or `TENDER_DB.DBT.RUN_DBT`); a redeploy also resumes it |
-| Pause everything to save credits | Suspend both tasks and both alerts (below); a manual Deploy run resumes them all |
+| Pause everything to save credits | Suspend both tasks and the alerts (below); a manual Deploy run resumes them all |
+| `TENDER_WH` stopped: monthly credit cap reached | Check what used it (Snowsight → Admin → Cost management), then as ACCOUNTADMIN `ALTER RESOURCE MONITOR TENDER_WH_MONITOR SET CREDIT_QUOTA = <more>`, or wait for the next month |
+| A deploy failed or was cancelled | The next merge or a manual Deploy run deploys everything changed since the `deployed` tag |
 | Upgrade dbt | Move the pins in `pyproject.toml` and `deploy.yml` together ([dbt.md → Runs in Snowflake](dbt.md#runs-in-snowflake)) |
-| Change the schedule | Edit the cron in `03_ingest_task.sql`, `04_failure_alert.sql` and `01_run_dbt_task.sql`. If the gap between runs changes from 3 hours, change the alerts' 3-hour look-back and the freshness thresholds in `_find_a_tender__sources.yml` to match. Merge to `main` |
+| Change the schedule | Edit the cron in `03_ingest_task.sql`, `04_failure_alert.sql` and `01_run_dbt_task.sql`. If the gap between runs changes from 3 hours, change the ingest alert's 3-hour look-back, the stale-data alert's 4 hours and the freshness thresholds in `_find_a_tender__sources.yml` to match. Merge to `main` |
 
 Pause everything:
 
@@ -201,7 +230,9 @@ Pause everything:
 snow sql -c tender -q "ALTER TASK TENDER_DB.RAW.INGEST_FIND_A_TENDER SUSPEND;
   ALTER ALERT TENDER_DB.RAW.INGEST_FIND_A_TENDER_FAILED SUSPEND;
   ALTER TASK TENDER_DB.DBT.RUN_DBT SUSPEND;
-  ALTER ALERT TENDER_DB.DBT.RUN_DBT_FAILED SUSPEND"
+  ALTER ALERT TENDER_DB.DBT.RUN_DBT_FAILED SUSPEND;
+  ALTER ALERT TENDER_DB.DBT.PIPELINE_STALE SUSPEND;
+  ALTER ALERT TENDER_DB.DBT.POWERBI_REFRESH_MISSED SUSPEND"
 ```
 
 ## Remove it
@@ -214,11 +245,14 @@ snow sql -c tender -q "USE ROLE ACCOUNTADMIN;
   DROP INTEGRATION IF EXISTS TENDER_EMAIL;
   DROP DATABASE IF EXISTS TENDER_DB;
   DROP WAREHOUSE IF EXISTS TENDER_WH;
+  DROP RESOURCE MONITOR IF EXISTS TENDER_WH_MONITOR;
   DROP USER IF EXISTS TENDER_DEPLOY;
   DROP USER IF EXISTS TENDER_POWERBI;
+  DROP USER IF EXISTS TENDER_CI;
   DROP ROLE IF EXISTS TENDER_INGEST;
   DROP ROLE IF EXISTS TENDER_TRANSFORM;
-  DROP ROLE IF EXISTS TENDER_REPORTER"
+  DROP ROLE IF EXISTS TENDER_REPORTER;
+  DROP ROLE IF EXISTS TENDER_CI"
 ```
 
-Then delete the GitHub secrets (`gh secret delete <name>`) and the published report, if any.
+Then delete the GitHub secrets (`gh secret delete <name>`), the environment (`gh api -X DELETE "repos/{owner}/{repo}/environments/production"`) and the published report, if any.

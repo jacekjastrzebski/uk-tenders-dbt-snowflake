@@ -88,9 +88,9 @@ The loader runs inside Snowflake: a stored procedure imports `ingestion/load_fin
 
 One-off setup, in a Snowflake worksheet:
 
-1. Run the `snowflake/setup/` scripts `01`–`04` in order, then `snowflake/native_ingestion/00_code_stage.sql`.
+1. Run the `snowflake/setup/` scripts `01`–`04` and `06` in order, then `snowflake/native_ingestion/00_code_stage.sql`.
 2. Run `01_external_access.sql` as ACCOUNTADMIN. It creates role `TENDER_INGEST`, which owns and runs the loader, and service user `TENDER_DEPLOY` for GitHub Actions; give that user a key pair (see `docs/snowflake-cli.md`).
-3. Add GitHub secrets `SNOWFLAKE_ACCOUNT`, `SNOWFLAKE_USER` (`TENDER_DEPLOY`), `SNOWFLAKE_PRIVATE_KEY` (its private key) and `ALERT_EMAIL` (the verified email of a Snowflake user, which receives failure alerts).
+3. Add GitHub secrets: `SNOWFLAKE_ACCOUNT`, and `SNOWFLAKE_CI_PRIVATE_KEY` for the CI user `TENDER_CI`, in the repository; `SNOWFLAKE_USER` (`TENDER_DEPLOY`), `SNOWFLAKE_PRIVATE_KEY` (its private key) and `ALERT_EMAIL` (the verified email of a Snowflake user, which receives failure alerts) in the environment `production`, which only `main` can use. Step by step: [docs/self-hosting.md](docs/self-hosting.md#5-deploy-and-ci-users-github-secrets).
 
 After that, merging a change to the loader or to scripts `02`–`04` into `main` deploys it once the CI checks pass: `.github/workflows/deploy.yml`, called by `ci.yml`, uploads the loader and recreates the procedure, tasks and alert. To deploy by hand:
 

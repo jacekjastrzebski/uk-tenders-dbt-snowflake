@@ -69,14 +69,14 @@ snow sql -c tender -q "SELECT package_name, MAX(version) FROM INFORMATION_SCHEMA
 
 ## Deploy user for GitHub Actions
 
-`01_external_access.sql` creates service user `TENDER_DEPLOY` with role `TENDER_INGEST` only. Give it a key pair and store the private key in GitHub:
+`01_external_access.sql` creates service user `TENDER_DEPLOY` with role `TENDER_INGEST` only. Give it a key pair and store the private key in the GitHub environment `production` (create it first: [self-hosting.md, step 5](self-hosting.md#5-deploy-and-ci-users-github-secrets); the CI user `TENDER_CI` gets a key the same way):
 
 ```bash
 openssl genrsa 2048 | openssl pkcs8 -topk8 -nocrypt -out deploy_key.p8
 PUB=$(openssl rsa -in deploy_key.p8 -pubout | grep -v '^-----' | tr -d '\n')
 snow sql -c tender -q "USE ROLE ACCOUNTADMIN; ALTER USER TENDER_DEPLOY SET RSA_PUBLIC_KEY = '$PUB'"
-gh secret set SNOWFLAKE_USER --body TENDER_DEPLOY
-gh secret set SNOWFLAKE_PRIVATE_KEY < deploy_key.p8
+gh secret set SNOWFLAKE_USER --env production --body TENDER_DEPLOY
+gh secret set SNOWFLAKE_PRIVATE_KEY --env production < deploy_key.p8
 rm deploy_key.p8
 ```
 

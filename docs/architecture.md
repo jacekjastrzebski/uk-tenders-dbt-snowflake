@@ -43,14 +43,16 @@ All decisions: [adr/](adr/README.md).
 |---|---|---|
 | pre-commit: private keys, YAML/TOML, mypy strict, pytest | Each commit, and CI | Broken Python, committed keys |
 | CI must pass before deploy | `ci.yml` → `deploy.yml` | Untested code reaching Snowflake |
+| dbt build and tests on pull requests; `checks` and `dbt` required to merge | `ci.yml` job `dbt`, as `TENDER_CI` in throwaway schemas | Broken models or failing tests reaching `main` |
 | Source freshness: warn 13 h, error 26 h | First step of `RUN_DBT` | Rebuilding marts on stale data |
 | dbt tests: keys, relationships, singular tests | `dbt build` | Bad rows going unnoticed: a failing test fails the build |
-| Failure alerts | 30 and 50 minutes past each run | Silent failures |
+| Failure alerts, and a stale-data alert (no successful load or dbt run for 4 hours) | 30 and 50 minutes past each run | Silent failures, and a task that suspended itself |
+| Cost cap: 30 credits a month on `TENDER_WH`, statements stop after 30 minutes | Resource monitor, warehouse setting | Runaway cost |
 
 ## Security and privacy
 
 - Buyer contact details are personal data: they stay in `RAW`, staging strips them, and a dbt test enforces it ([ADR 0016](adr/0016-strip-contact-details-in-staging.md)).
-- The deploy and Power BI users sign in with key pairs; the deploy key lives in a GitHub secret, and pre-commit blocks committed keys.
+- The deploy, CI and Power BI users sign in with key pairs, and pre-commit blocks committed keys. The deploy key is a secret of the GitHub environment `production`, which only `main` can use; pull requests are built as `TENDER_CI`, which can't touch prod ([ADR 0033](adr/0033-pipeline-safeguards.md)).
 - The loader can reach one host only. Roles and grants: [security.md](diagrams/security.md).
 - The data itself is public, under the Open Government Licence v3.0.
 
