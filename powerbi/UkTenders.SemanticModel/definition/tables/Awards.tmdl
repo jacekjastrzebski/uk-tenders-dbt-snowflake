@@ -51,6 +51,11 @@ table Awards
 			)
 		formatString: #,0
 
+	/// Top of the monthly trend's value axis: the highest month plus 15% headroom
+	measure 'Monthly Trend Axis Max' = MAXX(VALUES('Date'[Month Start]), [Awarded Value]) * 1.15
+		formatString: £#,0
+		isHidden
+
 	column 'Award Supplier Key'
 		dataType: string
 		isHidden
