@@ -12,10 +12,24 @@ models:
       - name: award_date
         description: UK date; award date, else contract signed date, else first publication date (see date_source).
         data_tests: [not_null]
+      - name: date_source
+        description: Which date award_date came from.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['award date', 'signed date', 'published date']
       - name: value_gbp
-        description: Award value in GBP; null when no value was published or there is no HMRC rate for the month.
+        description: Award value in GBP, at the latest HMRC rate on or before the award month; null when no value was published or the award is older than the first rate.
+      - name: rate_month
+        description: Month of the HMRC rate used; null for GBP. The test assert_fx_rates_recent warns when it lags the award by more than 2 months.
       - name: value_source
         description: Where the value came from - award or contract, net or gross (incl. VAT); net is preferred.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['award net', 'contract net', 'award gross', 'contract gross']
+      - name: is_old_regime
+        description: Every notice of the award is from before the Procurement Act (no notice type); left out of headline totals.
       - name: is_framework
         description: Framework set-up (ceiling value), not a call-off; left out of headline totals.
       - name: is_large_value

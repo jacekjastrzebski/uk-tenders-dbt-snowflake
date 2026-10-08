@@ -71,7 +71,7 @@ models:
     description: >
       One row per supplier on an award (deduplicated across notices); award
       value in GBP split equally between suppliers. Excludes dynamic-market
-      admissions and cancelled awards. Headline totals use is_in_headline.
+      admissions, cancelled and unsuccessful awards. Headline totals use is_in_headline.
     columns:
       - name: award_supplier_key
         data_tests: [unique, not_null]
@@ -85,6 +85,7 @@ models:
                 field: calendar_date
       - name: buyer_key
         data_tests:
+          - not_null
           - relationships:
               arguments:
                 to: ref('dim_buyers')
@@ -104,8 +105,10 @@ models:
                 field: cpv_division
       - name: allocated_value_gbp
         description: This supplier's equal share of the award value; sum this.
+      - name: is_old_regime
+        description: An award under the rules before the Procurement Act (its notices have no notice type).
       - name: is_in_headline
-        description: Counts in the headline totals - not a framework set-up, not a large value, value known.
+        description: Counts in the headline totals - not a framework set-up, not a large value, not under the old rules, value known.
 
   - name: fct_procurements
     description: >
@@ -118,6 +121,7 @@ models:
         data_tests: [unique, not_null]
       - name: buyer_key
         data_tests:
+          - not_null
           - relationships:
               arguments:
                 to: ref('dim_buyers')
@@ -159,6 +163,8 @@ models:
                 field: calendar_date
       - name: days_tender_to_award
         description: Days from tender to award notice; null when unknown or notices were published out of order.
+      - name: days_award_to_contract
+        description: Days from the award notice (UK6) to the contract notice (UK7); null without an award notice, or when published out of order.
       - name: is_cancelled
         description: A termination notice (UK12) and no award.
 

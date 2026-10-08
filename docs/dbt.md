@@ -9,7 +9,7 @@ dbt turns the raw API pages in `TENDER_DB.RAW` into clean tables. The project is
 | Sources | `RAW` | tables, loaded by the stored procedure | One row per API page |
 | Staging | `PROD_STAGING` / `DEV_STAGING` | tables ([ADR 0015](adr/0015-staging-as-tables.md)) | One row per notice, party, award, award supplier, contract; deduplicated, typed, no personal data |
 | Intermediate | `PROD_INTERMEDIATE` / `DEV_INTERMEDIATE` | views | Business rules shared by marts, e.g. `int_awards` (one row per award across notices); not for Power BI |
-| Seeds | `PROD_STAGING` / `DEV_STAGING` | tables, from CSV in `dbt/seeds/` | Reference data: HMRC exchange rates, CPV divisions |
+| Seeds | `PROD_STAGING` / `DEV_STAGING` | tables, from CSV in `dbt/seeds/` | Reference data: HMRC exchange rates (refresh monthly: `uv run ingestion/fetch_hmrc_exchange_rates.py`, then commit the CSV; the test `assert_fx_rates_recent` warns when it falls behind), CPV divisions |
 | Marts | `PROD_MARTS` / `DEV_MARTS` | tables | Star schema for Power BI ([ADR 0023](adr/0023-star-schema-for-power-bi.md)), see [Marts](#marts) |
 
 dbt runs as role `TENDER_TRANSFORM` (`snowflake/setup/03_transform_role.sql`): it can read `RAW` and create its own schemas, nothing else. The `dev` target writes to `DEV_*` schemas, so development never overwrites prod.

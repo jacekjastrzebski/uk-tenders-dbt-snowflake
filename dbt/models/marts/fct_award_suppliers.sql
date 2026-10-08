@@ -3,8 +3,9 @@
 -- GBP value is split equally between its distinct suppliers, so supplier
 -- totals add up to the award totals. Awards without a supplier get one
 -- "Unknown supplier" row, so they still count for their buyer.
--- Dynamic-market admissions and cancelled awards are left out. Framework
--- set-ups and large values stay in, flagged, for separate views.
+-- Dynamic-market admissions, cancelled awards and "unsuccessful" awards (a lot
+-- nobody won: no supplier, no value) are left out. Framework set-ups, large
+-- values and awards under the old rules stay in, flagged, outside the headline.
 
 WITH awards AS (
     SELECT
@@ -13,7 +14,7 @@ WITH awards AS (
         {{ ref('int_awards') }}
     WHERE
         NOT is_dynamic_market
-        AND award_status IS DISTINCT FROM 'cancelled'
+        AND COALESCE(award_status, '') NOT IN ('cancelled', 'unsuccessful')
 ),
 
 award_suppliers AS (
@@ -58,6 +59,7 @@ SELECT
     date_source,
     is_framework,
     is_large_value,
-    NOT is_framework AND NOT is_large_value AND value_gbp IS NOT NULL AS is_in_headline
+    is_old_regime,
+    NOT is_framework AND NOT is_large_value AND NOT is_old_regime AND value_gbp IS NOT NULL AS is_in_headline
 FROM
     award_supplier_rows

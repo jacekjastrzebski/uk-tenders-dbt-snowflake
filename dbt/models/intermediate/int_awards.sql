@@ -5,13 +5,15 @@
 --          without its value and date)
 --   date:  earliest award date, else contract signed date, else first
 --          publication date; as a UK date
---   GBP:   HMRC rate for the month of that date (ADR 0020); no GBP value
---          when there is no rate for that month (a handful of old awards)
---   flags: framework set-ups, large values, dynamic-market admissions, cancelled
+--   GBP:   the latest HMRC rate on or before that date's month (ADR 0020,
+--          ADR 0034); no GBP value before the first rate (a handful of old awards)
+--   flags: old regime, dynamic-market admissions, call-offs, framework set-ups,
+--          large values (award_status is passed on; the fact drops cancelled ones)
 
 WITH award_rows AS (
     SELECT
         a.procurement_award_key,
+        a.notice_id,
         a.ocid,
         a.award_status,
         a.award_value_amount,
@@ -45,7 +47,7 @@ latest_notice AS (
     FROM
         award_rows
     QUALIFY
-        ROW_NUMBER() OVER (PARTITION BY procurement_award_key ORDER BY published_at DESC) = 1
+        ROW_NUMBER() OVER (PARTITION BY procurement_award_key ORDER BY published_at DESC, notice_id DESC) = 1
 ),
 
 latest_value AS (
@@ -64,7 +66,7 @@ latest_value AS (
     QUALIFY
         ROW_NUMBER() OVER (
             PARTITION BY procurement_award_key
-            ORDER BY award_value_amount IS NOT NULL DESC, published_at DESC
+            ORDER BY award_value_amount IS NOT NULL DESC, published_at DESC, notice_id DESC
         ) = 1
 ),
 
@@ -109,16 +111,30 @@ awards AS (
 ),
 
 contracts AS (
+    -- value and currency from one contract entry, so they always belong together:
+    -- the latest with a net value, else the latest with a gross value, else the
+    -- latest; the signed date is the earliest across all of them
     SELECT
-        procurement_award_key,
-        MAX(contract_value_amount) AS contract_net,
-        MAX(contract_value_amount_gross) AS contract_gross,
-        MAX(contract_value_currency) AS contract_currency,
-        MIN(signed_at) AS signed_at
+        c.procurement_award_key,
+        c.contract_value_amount AS contract_net,
+        c.contract_value_amount_gross AS contract_gross,
+        c.contract_value_currency AS contract_currency,
+        MIN(c.signed_at) OVER (PARTITION BY c.procurement_award_key) AS signed_at
     FROM
-        {{ ref('stg_find_a_tender__contracts') }}
-    GROUP BY
-        procurement_award_key
+        {{ ref('stg_find_a_tender__contracts') }} AS c
+    INNER JOIN
+        {{ ref('stg_find_a_tender__notices') }} AS n
+    ON
+        c.notice_id = n.notice_id
+    QUALIFY
+        ROW_NUMBER() OVER (
+            PARTITION BY c.procurement_award_key
+            ORDER BY
+                c.contract_value_amount IS NOT NULL DESC,
+                c.contract_value_amount_gross IS NOT NULL DESC,
+                n.published_at DESC,
+                c.contract_key DESC
+        ) = 1
 ),
 
 suppliers AS (
@@ -156,7 +172,8 @@ rules AS (
             WHEN valid_signed_at IS NOT NULL THEN 'signed date'
             ELSE 'published date'
         END AS date_source,
-        CONVERT_TIMEZONE('UTC', 'Europe/London', COALESCE(valid_awarded_at, valid_signed_at, a.first_published_at))::DATE AS award_date
+        CONVERT_TIMEZONE('UTC', 'Europe/London', COALESCE(valid_awarded_at, valid_signed_at, a.first_published_at))::DATE AS award_date,
+        DATE_TRUNC(MONTH, award_date) AS award_month
     FROM
         awards AS a
     LEFT JOIN
@@ -182,6 +199,7 @@ SELECT
     COALESCE(r.currency, 'GBP') AS currency,
     r.value_source,
     IFF(COALESCE(r.currency, 'GBP') = 'GBP', r.value, r.value / x.units_per_gbp) AS value_gbp,
+    x.month_start AS rate_month,
     r.supplier_count,
     r.is_old_regime,
     r.is_dynamic_market,
@@ -191,8 +209,11 @@ SELECT
     COALESCE(value_gbp >= {{ var('large_award_gbp') }}, FALSE) AS is_large_value
 FROM
     rules AS r
-LEFT JOIN
+-- the latest rate on or before the award month, so new months still convert until
+-- the seed is refreshed; awards without a match keep a null rate, as with a left join
+ASOF JOIN
     {{ ref('hmrc_exchange_rates') }} AS x
+MATCH_CONDITION
+    (r.award_month >= x.month_start)
 ON
-    x.currency_code = r.currency
-    AND x.month_start = DATE_TRUNC(MONTH, r.award_date)
+    r.currency = x.currency_code

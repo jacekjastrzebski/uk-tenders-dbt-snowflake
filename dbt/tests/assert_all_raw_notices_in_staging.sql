@@ -1,4 +1,5 @@
--- Every notice loaded into raw must reach staging exactly once.
+-- Every notice loaded into raw must reach staging; that it is there only once
+-- is the unique test on stg_find_a_tender__notices.notice_id.
 
 WITH raw_notices AS (
     SELECT DISTINCT

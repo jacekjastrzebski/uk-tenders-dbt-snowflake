@@ -128,5 +128,5 @@ Non-framework GBP awards by size:
 - Pending awards count as awarded; cancelled awards and UK14/UK15 admissions don't.
 - Framework set-ups are left out of the headline numbers and shown separately; call-offs count as normal awards.
 - Joint awards are split equally between distinct suppliers.
-- Old-regime awards are included, using the contract value.
+- Old-regime awards are included, using the contract value, but left out of the headline totals since [ADR 0034](adr/0034-award-data-corrections.md).
 - Awards of £100m or more are flagged and left out of headline totals, but listed.

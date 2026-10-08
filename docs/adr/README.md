@@ -21,17 +21,18 @@ One file per significant decision: the context, the decision and its consequence
 | [0017](0017-backfill-from-procurement-act-start.md) | Backfill from 24 February 2025, through the API | Accepted |
 | [0018](0018-api-dates-in-uk-local-time.md) | Send API window dates as UK local time | Accepted |
 | [0019](0019-deploy-after-ci-checks.md) | Deploy only after the CI checks pass | Accepted |
-| [0020](0020-convert-amounts-to-gbp-with-hmrc-rates.md) | Convert amounts to GBP with HMRC monthly rates | Accepted |
-| [0021](0021-keep-supplier-names.md) | Keep supplier names, group lots, flag withheld suppliers | Accepted |
-| [0022](0022-award-fact-rules.md) | Rules for the award fact | Accepted |
+| [0020](0020-convert-amounts-to-gbp-with-hmrc-rates.md) | Convert amounts to GBP with HMRC monthly rates | Accepted; rate month and check changed by 0034 |
+| [0021](0021-keep-supplier-names.md) | Keep supplier names, group lots, flag withheld suppliers | Accepted; lot rule narrowed by 0034 |
+| [0022](0022-award-fact-rules.md) | Rules for the award fact | Accepted; headline narrowed by 0034 |
 | [0023](0023-star-schema-for-power-bi.md) | Marts as a star schema for Power BI | Accepted |
 | [0024](0024-prod-schema-prefix.md) | Prefix prod schemas with PROD_ | Accepted |
 | [0025](0025-replace-unusable-organisation-names.md) | Replace unusable organisation names | Accepted |
 | [0026](0026-looser-organisation-key.md) | Looser organisation key, and markets for the Market filter | Accepted |
-| [0027](0027-one-name-per-buyer-id.md) | One name per buyer ID when the ID has only a few names | Accepted |
+| [0027](0027-one-name-per-buyer-id.md) | One name per buyer ID when the ID has only a few names | Accepted; ties fixed by 0034 |
 | [0028](0028-report-navigation-and-market-colours.md) | Report navigation and market colours | Accepted |
 | [0029](0029-guest-role-with-capped-warehouse.md) | A guest role with its own capped warehouse | Accepted |
 | [0030](0030-build-dbt-in-ci.md) | Build and test dbt on pull requests | Accepted; CI role changed by 0033 |
 | [0031](0031-alert-when-power-bi-stops-refreshing.md) | Alert from Snowflake when Power BI stops refreshing | Accepted |
 | [0032](0032-serverless-load-warehouse-dbt.md) | Serverless compute for the load, a warehouse for dbt | Accepted |
 | [0033](0033-pipeline-safeguards.md) | Pipeline safeguards: CI role, deploy catch-up, stale-data alert, cost cap | Accepted |
+| [0034](0034-award-data-corrections.md) | Award data corrections: old regime out of the headline, rates, lots, ties | Accepted |

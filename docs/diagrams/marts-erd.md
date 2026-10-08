@@ -32,11 +32,12 @@ erDiagram
         date award_date FK "UK date"
         string buyer_key FK
         string supplier_key FK "or UNKNOWN SUPPLIER"
-        string cpv_division FK "may be null"
+        string cpv_division FK "or UNKNOWN"
         number allocated_value_gbp "equal share: sum this"
         string value_source "award or contract, net or gross"
         boolean is_framework "ceiling, shown separately"
         boolean is_large_value "100m or more"
+        boolean is_old_regime "before the Procurement Act"
         boolean is_in_headline "counts in headline totals"
     }
     DIM_DATES {
