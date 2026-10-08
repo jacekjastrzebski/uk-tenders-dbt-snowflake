@@ -1,0 +1,133 @@
+/// One row per supplier on an award, deduplicated across notices.
+table Awards
+
+	/// Value awarded, joint awards split equally between suppliers
+	measure 'Awarded Value' = SUM(Awards[Allocated Value])
+		formatString: £#,0
+
+	measure Awards = DISTINCTCOUNT(Awards[Award Key])
+		formatString: #,0
+
+	measure 'Suppliers Awarded' = DISTINCTCOUNT(Awards[Supplier ID])
+		formatString: #,0
+
+	measure 'Average Award Value' =
+			DIVIDE(
+			    SUMX(VALUES(Awards[Award Key]), CALCULATE(MAX(Awards[Award Value]))),
+			    [Awards]
+			)
+		formatString: £#,0
+
+	/// Share of awarded value across all suppliers in the current filters
+	measure 'Market Share' = DIVIDE([Awarded Value], CALCULATE([Awarded Value], REMOVEFILTERS(Supplier)))
+		formatString: 0.0%
+
+	column 'Award Supplier Key'
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: AWARD_SUPPLIER_KEY
+
+	column 'Award Key'
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: AWARD_KEY
+
+	column OCID
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: OCID
+
+	column 'Award ID'
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: AWARD_ID
+
+	column 'Notice ID'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: NOTICE_ID
+
+	column 'Notice Type'
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: NOTICE_TYPE
+
+	column 'Award Status'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: AWARD_STATUS
+
+	column 'Buyer ID'
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: BUYER_ID
+
+	column 'Supplier ID'
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: SUPPLIER_ID
+
+	column 'CPV Division'
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: CPV_DIVISION
+
+	column 'Awarded At'
+		dataType: dateTime
+		formatString: dd mmm yyyy hh:nn
+		summarizeBy: none
+		sourceColumn: AWARDED_AT
+
+	column 'Awarded Date'
+		dataType: dateTime
+		isHidden
+		formatString: dd mmm yyyy
+		summarizeBy: none
+		sourceColumn: AWARDED_DATE
+
+	column 'Contract Signed At'
+		dataType: dateTime
+		formatString: dd mmm yyyy hh:nn
+		summarizeBy: none
+		sourceColumn: CONTRACT_SIGNED_AT
+
+	column 'Supplier Count'
+		dataType: int64
+		isHidden
+		formatString: 0
+		summarizeBy: sum
+		sourceColumn: SUPPLIER_COUNT
+
+	/// Full award value, repeated per joint supplier; do not sum
+	column 'Award Value'
+		dataType: decimal
+		isHidden
+		formatString: £#,0
+		summarizeBy: sum
+		sourceColumn: AWARD_VALUE_GBP
+
+	/// Award value split equally between joint suppliers
+	column 'Allocated Value'
+		dataType: decimal
+		isHidden
+		formatString: £#,0
+		summarizeBy: sum
+		sourceColumn: ALLOCATED_VALUE_GBP
+
+	partition Awards = m
+		mode: import
+		source =
+				let
+				    Source = Marts{[Name = "FCT_AWARDS", Kind = "Table"]}[Data]
+				in
+				    Source
+
+	annotation PBI_ResultType = Table

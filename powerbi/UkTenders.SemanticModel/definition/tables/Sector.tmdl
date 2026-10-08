@@ -1,0 +1,39 @@
+/// What is bought: CPV divisions grouped into sectors.
+table Sector
+
+	column 'CPV Division'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: CPV_DIVISION
+
+	column 'CPV Division Name'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: CPV_DIVISION_NAME
+
+	column Sector
+		dataType: string
+		summarizeBy: none
+		sourceColumn: SECTOR
+
+	column 'Is Digital'
+		dataType: boolean
+		isHidden
+		summarizeBy: none
+		sourceColumn: IS_DIGITAL
+
+	/// Digital and data (CPV 48, 72) or Other
+	column Market
+		dataType: string
+		summarizeBy: none
+		sourceColumn: MARKET
+
+	partition Sector = m
+		mode: import
+		source =
+				let
+				    Source = Marts{[Name = "DIM_CPV_DIVISIONS", Kind = "Table"]}[Data]
+				in
+				    Source
+
+	annotation PBI_ResultType = Table

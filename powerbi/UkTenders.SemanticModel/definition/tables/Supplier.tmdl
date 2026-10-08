@@ -1,0 +1,46 @@
+/// Organisations awarded contracts.
+table Supplier
+
+	column 'Supplier ID'
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: SUPPLIER_ID
+
+	column Supplier
+		dataType: string
+		summarizeBy: none
+		sourceColumn: SUPPLIER_NAME
+
+	column Locality
+		dataType: string
+		dataCategory: City
+		summarizeBy: none
+		sourceColumn: LOCALITY
+
+	column Region
+		dataType: string
+		summarizeBy: none
+		sourceColumn: REGION
+
+	column Postcode
+		dataType: string
+		dataCategory: PostalCode
+		summarizeBy: none
+		sourceColumn: POSTCODE
+
+	column Country
+		dataType: string
+		dataCategory: Country
+		summarizeBy: none
+		sourceColumn: COUNTRY
+
+	partition Supplier = m
+		mode: import
+		source =
+				let
+				    Source = Marts{[Name = "DIM_SUPPLIERS", Kind = "Table"]}[Data]
+				in
+				    Source
+
+	annotation PBI_ResultType = Table

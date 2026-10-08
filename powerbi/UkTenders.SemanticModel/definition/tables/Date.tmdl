@@ -1,0 +1,68 @@
+/// One row per day, from dim_dates; mark as date table. UK financial year April to March.
+table 'Date'
+	dataCategory: Time
+
+	column 'Date'
+		dataType: dateTime
+		isKey
+		formatString: dd mmm yyyy
+		summarizeBy: none
+		sourceColumn: CALENDAR_DATE
+
+	column Year
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: CALENDAR_YEAR
+
+	column 'Month Number'
+		dataType: int64
+		isHidden
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: MONTH_NUMBER
+
+	column Month
+		dataType: string
+		summarizeBy: none
+		sourceColumn: MONTH_NAME
+		sortByColumn: 'Month Number'
+
+	column 'Month Start'
+		dataType: dateTime
+		formatString: mmm yyyy
+		summarizeBy: none
+		sourceColumn: MONTH_START
+
+	column 'Year Month'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: YEAR_MONTH
+
+	column 'Week Start'
+		dataType: dateTime
+		formatString: dd mmm yyyy
+		summarizeBy: none
+		sourceColumn: WEEK_START
+
+	column 'Financial Year'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: FINANCIAL_YEAR
+
+	column 'Financial Month Number'
+		dataType: int64
+		isHidden
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: FINANCIAL_MONTH_NUMBER
+
+	partition 'Date' = m
+		mode: import
+		source =
+				let
+				    Source = Marts{[Name = "DIM_DATES", Kind = "Table"]}[Data]
+				in
+				    Source
+
+	annotation PBI_ResultType = Table

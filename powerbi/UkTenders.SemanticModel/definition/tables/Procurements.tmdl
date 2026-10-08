@@ -1,0 +1,181 @@
+/// One row per procurement (ocid) with its stage and timings.
+table Procurements
+
+	measure Procurements = COUNTROWS(Procurements)
+		formatString: #,0
+
+	/// Tenders whose closing date is still ahead
+	measure 'Open Tenders' =
+			CALCULATE(
+			    COUNTROWS(Procurements),
+			    KEEPFILTERS(Procurements[Stage] = "Tender"),
+			    KEEPFILTERS(Procurements[Tender Closing At] >= NOW())
+			)
+		formatString: #,0
+		displayFolder: Open tenders
+
+	measure 'Closing in 7 Days' =
+			CALCULATE(
+			    [Open Tenders],
+			    KEEPFILTERS(Procurements[Tender Closing At] < NOW() + 7)
+			)
+		formatString: #,0
+		displayFolder: Open tenders
+
+	/// Blank unless open, so tables show open tenders only
+	measure 'Days to Close' = IF([Open Tenders] > 0, INT(MAX(Procurements[Tender Closing At]) - NOW()))
+		formatString: 0
+		displayFolder: Open tenders
+
+	measure 'Median Days Tender to Award' = MEDIAN(Procurements[Days Tender to Award])
+		formatString: 0
+		displayFolder: Timings
+
+	measure 'Median Days Award to Contract' = MEDIAN(Procurements[Days Award to Contract])
+		formatString: 0
+		displayFolder: Timings
+
+	/// Share of procurements with a UK5 transparency notice (direct award)
+	measure 'Direct Award Share' =
+			DIVIDE(
+			    CALCULATE(COUNTROWS(Procurements), KEEPFILTERS(Procurements[Is Direct Award] = TRUE())),
+			    COUNTROWS(Procurements)
+			)
+		formatString: 0%
+
+	column OCID
+		dataType: string
+		summarizeBy: none
+		sourceColumn: OCID
+
+	column Title
+		dataType: string
+		summarizeBy: none
+		sourceColumn: TITLE
+
+	column 'Buyer ID'
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: BUYER_ID
+
+	column 'CPV Division'
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: CPV_DIVISION
+
+	column 'Latest Notice Type'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: LATEST_NOTICE_TYPE
+
+	column Stage
+		dataType: string
+		summarizeBy: none
+		sourceColumn: PROCUREMENT_STAGE
+		sortByColumn: 'Stage Order'
+
+	column 'Stage Order'
+		dataType: int64
+		isHidden
+		formatString: 0
+		summarizeBy: sum
+		sourceColumn: PROCUREMENT_STAGE_ORDER
+
+	column 'Is Direct Award'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: IS_DIRECT_AWARD
+
+	column 'Notice Count'
+		dataType: int64
+		isHidden
+		formatString: 0
+		summarizeBy: sum
+		sourceColumn: NOTICE_COUNT
+
+	column 'First Published At'
+		dataType: dateTime
+		formatString: dd mmm yyyy hh:nn
+		summarizeBy: none
+		sourceColumn: FIRST_PUBLISHED_AT
+
+	column 'First Published Date'
+		dataType: dateTime
+		isHidden
+		formatString: dd mmm yyyy
+		summarizeBy: none
+		sourceColumn: FIRST_PUBLISHED_DATE
+
+	column 'Last Published At'
+		dataType: dateTime
+		formatString: dd mmm yyyy hh:nn
+		summarizeBy: none
+		sourceColumn: LAST_PUBLISHED_AT
+
+	column 'Tender Published At'
+		dataType: dateTime
+		formatString: dd mmm yyyy hh:nn
+		summarizeBy: none
+		sourceColumn: TENDER_PUBLISHED_AT
+
+	column 'Tender Closing At'
+		dataType: dateTime
+		formatString: dd mmm yyyy hh:nn
+		summarizeBy: none
+		sourceColumn: TENDER_CLOSING_AT
+
+	column 'First Awarded At'
+		dataType: dateTime
+		formatString: dd mmm yyyy hh:nn
+		summarizeBy: none
+		sourceColumn: FIRST_AWARDED_AT
+
+	column 'First Signed At'
+		dataType: dateTime
+		formatString: dd mmm yyyy hh:nn
+		summarizeBy: none
+		sourceColumn: FIRST_SIGNED_AT
+
+	column 'Days Tender to Award'
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: DAYS_TENDER_TO_AWARD
+
+	column 'Days Award to Contract'
+		dataType: int64
+		formatString: 0
+		summarizeBy: none
+		sourceColumn: DAYS_AWARD_TO_CONTRACT
+
+	column 'Tender Value'
+		dataType: decimal
+		formatString: £#,0
+		summarizeBy: sum
+		sourceColumn: TENDER_VALUE_GBP
+
+	column 'Total Awarded Value'
+		dataType: decimal
+		isHidden
+		formatString: £#,0
+		summarizeBy: sum
+		sourceColumn: AWARDED_VALUE_GBP
+
+	column 'Supplier Count'
+		dataType: int64
+		isHidden
+		formatString: 0
+		summarizeBy: sum
+		sourceColumn: SUPPLIER_COUNT
+
+	partition Procurements = m
+		mode: import
+		source =
+				let
+				    Source = Marts{[Name = "FCT_PROCUREMENTS", Kind = "Table"]}[Data]
+				in
+				    Source
+
+	annotation PBI_ResultType = Table

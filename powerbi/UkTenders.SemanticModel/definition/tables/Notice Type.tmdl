@@ -1,0 +1,40 @@
+/// Procurement Act notice types UK1-UK17.
+table 'Notice Type'
+
+	column 'Notice Type'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: NOTICE_TYPE
+
+	column 'Notice Type Label'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: NOTICE_TYPE_LABEL
+		sortByColumn: 'Sort Order'
+
+	column 'Notice Type Name'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: NOTICE_TYPE_NAME
+
+	column 'Lifecycle Stage'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: LIFECYCLE_STAGE
+
+	column 'Sort Order'
+		dataType: int64
+		isHidden
+		formatString: 0
+		summarizeBy: sum
+		sourceColumn: SORT_ORDER
+
+	partition 'Notice Type' = m
+		mode: import
+		source =
+				let
+				    Source = Marts{[Name = "DIM_NOTICE_TYPES", Kind = "Table"]}[Data]
+				in
+				    Source
+
+	annotation PBI_ResultType = Table

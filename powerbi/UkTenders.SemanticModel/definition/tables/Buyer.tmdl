@@ -1,0 +1,46 @@
+/// Public bodies buying; name and address from their latest notice.
+table Buyer
+
+	column 'Buyer ID'
+		dataType: string
+		isHidden
+		summarizeBy: none
+		sourceColumn: BUYER_ID
+
+	column Buyer
+		dataType: string
+		summarizeBy: none
+		sourceColumn: BUYER_NAME
+
+	column Locality
+		dataType: string
+		dataCategory: City
+		summarizeBy: none
+		sourceColumn: LOCALITY
+
+	column Region
+		dataType: string
+		summarizeBy: none
+		sourceColumn: REGION
+
+	column Postcode
+		dataType: string
+		dataCategory: PostalCode
+		summarizeBy: none
+		sourceColumn: POSTCODE
+
+	column Country
+		dataType: string
+		dataCategory: Country
+		summarizeBy: none
+		sourceColumn: COUNTRY
+
+	partition Buyer = m
+		mode: import
+		source =
+				let
+				    Source = Marts{[Name = "DIM_BUYERS", Kind = "Table"]}[Data]
+				in
+				    Source
+
+	annotation PBI_ResultType = Table
