@@ -57,8 +57,8 @@ Terms used in this project, grouped by area. Procurement background: [procuremen
 | Task | A scheduled statement; `INGEST_FIND_A_TENDER` calls the procedure |
 | Alert | A scheduled check that runs an action when its condition is true; emails on failed loads |
 | Stream | Tracks new rows in a table; not used yet (option for triggered tasks) |
-| Role | A set of privileges; one per job: `TENDER_INGEST`, `TENDER_TRANSFORM` |
-| Service user | A user for automation, key-pair login only: `TENDER_DEPLOY` |
+| Role | A set of privileges; one per job: `TENDER_INGEST` (loads), `TENDER_TRANSFORM` (dbt), `TENDER_REPORTER` (Power BI), `TENDER_CI` (dbt on pull requests), `TENDER_VIEWER` (guest) |
+| Service user | A user for automation, key-pair login only: `TENDER_DEPLOY` (GitHub deploys), `TENDER_CI` (GitHub CI), `TENDER_POWERBI` (Power BI refresh) |
 | Integration | Account-level connection to something outside: API access, email |
 
 ## Architecture

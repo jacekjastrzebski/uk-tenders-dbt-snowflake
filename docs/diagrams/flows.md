@@ -46,7 +46,7 @@ gantt
     Ingest failure alert              :milestone, 07:30:00, 0m
     section dbt
     Freshness and build (about 70 s)  :dbt, 07:20:00, 2m
-    dbt failure alert                 :milestone, 07:50:00, 0m
+    dbt failure and stale-data alerts :milestone, 07:50:00, 0m
     section Power BI
     Scheduled refresh                 :pbi, 08:00:00, 5m
     Refresh missed alert              :milestone, 09:30:00, 0m
@@ -81,7 +81,7 @@ sequenceDiagram
             API-->>P: error
             P->>API: back off, waiting longer each time, then retry
         end
-        Note over P,API: up to 10 retries per request
+        Note over P,API: up to 5 retries per request
         API-->>P: page: up to 100 releases
         P->>F: INSERT page unchanged (run_id, page_number, payload)
         Note over P: pause 0.5 s, and if a next link repeats,<br/>split the window in half and fetch each half
@@ -97,7 +97,7 @@ sequenceDiagram
 
 ## dbt run and failure alerts
 
-How dbt runs after each load, and how a failure of either job reaches you. Each alert looks back 3 hours, the gap between runs, so a failure is emailed once ([ADR 0003](../adr/0003-failure-alert-by-email.md), [ADR 0010](../adr/0010-source-freshness-thresholds.md)).
+How dbt runs after each load, and how a failure of either job reaches you. The ingest alert looks back 3 hours, the gap between runs; the dbt alert looks at runs that ended since its last check, so a run stopped by its timeout is still caught. Either way a failure is emailed once. A third alert emails when nothing has succeeded for 4 hours, e.g. after a task suspended itself ([ADR 0003](../adr/0003-failure-alert-by-email.md), [ADR 0010](../adr/0010-source-freshness-thresholds.md), [ADR 0033](../adr/0033-pipeline-safeguards.md)).
 
 ```mermaid
 sequenceDiagram
@@ -107,13 +107,14 @@ sequenceDiagram
     participant DB as TENDER_DB
     participant IA as Alert<br/>RAW.INGEST_FIND_A_TENDER_FAILED
     participant DA as Alert<br/>DBT.RUN_DBT_FAILED
+    participant SA as Alert<br/>DBT.PIPELINE_STALE
     participant M as Email (TENDER_EMAIL)
 
     Note over DT: 20 past 07, 10, 13, 16, 19
     DT->>DP: source freshness --target prod
     DP->>DB: MAX(loaded_at) in RAW
     alt raw data older than 26 h
-        DP-->>DT: freshness error, meant to fail the task before the build
+        DP-->>DT: freshness error: the task run fails, no build
     else fresh (a warning is logged after 13 h)
         DT->>DP: build --target prod
         DP->>DB: seeds, staging, intermediate, marts, tests
@@ -126,17 +127,20 @@ sequenceDiagram
         IA->>M: "Find a Tender ingest failed"
     end
     Note over DA: 50 past
-    DA->>DB: TASK_HISTORY errors for RUN_DBT in the last 3 h
+    DA->>DB: TASK_HISTORY errors for RUN_DBT that ended since the last check
     opt any
         DA->>M: "Find a Tender dbt run failed"
     end
+    SA->>DB: last successful load (INGEST_RUNS) and dbt run (TASK_HISTORY)
+    opt either more than 4 h ago
+        SA->>M: "Find a Tender data is out of date"
+    end
 ```
 
-Whether a freshness error stops the task before the build is still to be confirmed once in Snowflake ([dbt.md → Runs in Snowflake](../dbt.md#runs-in-snowflake)).
 
 ## Change to production
 
-How a code change reaches Snowflake, one lane per owner. Only objects whose files changed are redeployed ([ADR 0005](../adr/0005-deploy-only-changed-objects.md)), and only after the checks pass ([ADR 0019](../adr/0019-deploy-after-ci-checks.md)); pull requests that change dbt also build and test it in throwaway schemas ([ADR 0030](../adr/0030-build-dbt-in-ci.md)). A manual run, or a change to `deploy.yml` itself, deploys everything. One-off setup that needs ACCOUNTADMIN stays manual.
+How a code change reaches Snowflake, one lane per owner. Only objects whose files changed since the last successful deploy (tag `deployed`) are redeployed ([ADR 0005](../adr/0005-deploy-only-changed-objects.md), [ADR 0033](../adr/0033-pipeline-safeguards.md)), and only after the checks pass ([ADR 0019](../adr/0019-deploy-after-ci-checks.md)); pull requests that change dbt also build and test it in throwaway schemas, as `TENDER_CI` ([ADR 0030](../adr/0030-build-dbt-in-ci.md)). Both CI jobs, `checks` and `dbt`, are required to merge. The deploy runs in the GitHub environment `production`, which holds the deploy secrets and only `main` can use. A manual run, or a change to `deploy.yml` itself, deploys everything. One-off setup that needs ACCOUNTADMIN stays manual.
 
 ```mermaid
 flowchart TB
@@ -146,26 +150,29 @@ flowchart TB
     end
     subgraph CI["GitHub CI (ci.yml)"]
         C1["Checks on the PR:<br/>pre-commit, mypy strict, pytest,<br/>dbt parse"]
-        C3["dbt build into CI_PR_&lt;n&gt;_* schemas,<br/>then drop them (PRs changing dbt/)"]
+        C3["dbt build into CI_PR_&lt;n&gt;_* schemas<br/>as TENDER_CI, then drop them<br/>(PRs changing dbt/)"]
         C2["Same checks and dbt parse on main"]
     end
-    subgraph DEP["Deploy (deploy.yml)"]
-        P1{"Which files changed?"}
+    subgraph DEP["Deploy (deploy.yml, environment production)"]
+        P1{"Which files changed<br/>since tag deployed?"}
         P2["Upload loader to CODE_STAGE"]
         P3["Recreate procedure / task / alert"]
         P4["snow dbt deploy UK_TENDERS"]
-        P5["Recreate RUN_DBT task and alert"]
+        P5["Recreate RUN_DBT task and alerts"]
+        P7["Recreate Power BI<br/>refresh alert"]
+        P6["Move tag deployed<br/>to this commit"]
     end
     subgraph SF["Snowflake"]
         S1["Next scheduled run<br/>uses the new version"]
     end
 
     D3 --> C1 & C3
-    C1 & C3 -->|"green"| D5 --> C2 -->|"green"| P1
+    C1 & C3 -->|"both green (required)"| D5 --> C2 -->|"green"| P1
     C1 & C3 -->|"red"| D1
     P1 -->|"ingestion/load_find_a_tender.py"| P2
     P1 -->|"native_ingestion/02-04"| P3
     P1 -->|"dbt/** or profiles.yml"| P4
     P1 -->|"snowflake/dbt/01_run_dbt_task.sql"| P5
-    P2 & P3 & P4 & P5 --> S1
+    P1 -->|"snowflake/powerbi/01_refresh_alert.sql"| P7
+    P2 & P3 & P4 & P5 & P7 --> P6 --> S1
 ```

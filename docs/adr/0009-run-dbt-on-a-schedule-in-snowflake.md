@@ -1,6 +1,6 @@
 # 0009. Run dbt in Snowflake, 20 minutes after each load
 
-Status: Accepted (2026-10-08), built in `snowflake/dbt/`; proposed 2026-10-07. Details: [plans/dbt-orchestration.md](../plans/dbt-orchestration.md), usage in [dbt.md](../dbt.md#runs-in-snowflake).
+Status: Accepted (2026-10-08), built in `snowflake/dbt/`; proposed 2026-10-07. Details: [plans/dbt-orchestration.md](../plans/dbt-orchestration.md), usage in [dbt.md](../dbt.md#runs-in-snowflake). The last consequence's open question is answered in [0033](0033-pipeline-safeguards.md): a failed dbt command fails the task.
 
 ## Context
 dbt must run after each load, without a laptop. Options: chain `AFTER` the ingest task, a triggered task on a stream, or a schedule. Tasks in one graph need the same owner and schema, so chaining would merge the ingest and transform roles. A triggered task needs a stream, a table to consume it, and change tracking.

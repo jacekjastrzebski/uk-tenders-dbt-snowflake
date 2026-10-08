@@ -1,6 +1,6 @@
 # 0030. Build and test dbt on pull requests
 
-Status: Accepted (2026-10-08)
+Status: Accepted (2026-10-08); CI user and role changed to `TENDER_CI` by [0033](0033-pipeline-safeguards.md)
 
 ## Context
 CI ran pre-commit, mypy and pytest only. A broken model, a bad `ref()` or a failing data test was found only after merging, when the prod build in Snowflake failed and the alert emailed ([ADR 0009](0009-run-dbt-on-a-schedule-in-snowflake.md)).

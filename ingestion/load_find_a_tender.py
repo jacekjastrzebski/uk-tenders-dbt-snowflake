@@ -45,7 +45,7 @@ API_TIME_ZONE = ZoneInfo("Europe/London")  # ADR 0018
 # The API's rate limit is not documented. About 1,200 requests in 35 minutes with no
 # pause were fine; the 429s (Retry-After 120 s) came from re-requesting a looping page.
 API_PAUSE_SECONDS = 0.5  # between requests
-API_RETRIES = 10  # each waits Retry-After, so a run rides out ~20 minutes of 429s
+API_RETRIES = 5  # each waits Retry-After, so ~10 minutes of 429s, inside the task's 15-minute limit
 USER_AGENT = "uk-tenders-dbt-snowflake (+https://github.com/jacekjastrzebski/uk-tenders-dbt-snowflake)"
 
 RELEASES_TABLE = "RAW.FIND_A_TENDER_RELEASES"

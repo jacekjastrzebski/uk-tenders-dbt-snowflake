@@ -49,4 +49,4 @@ stateDiagram-v2
 
 - Timeouts: 15 minutes for the load, 30 minutes for dbt.
 - The deploy scripts create each task and resume it straight away, so a redeploy also clears a suspension after 3 failures.
-- Alerts (`INGEST_FIND_A_TENDER_FAILED`, `RUN_DBT_FAILED`) are only suspended or started; each check either sends an email or does nothing.
+- Alerts (`INGEST_FIND_A_TENDER_FAILED`, `RUN_DBT_FAILED`, `PIPELINE_STALE`, `POWERBI_REFRESH_MISSED`) are only suspended or started; each check either sends an email or does nothing.

@@ -58,20 +58,24 @@ The project is deployed as a dbt project object and runs on a schedule inside Sn
 |---|---|---|
 | :00 at 07, 10, 13, 16, 19 | Load from the API | task `RAW.INGEST_FIND_A_TENDER` |
 | :20 | `dbt source freshness`, then `dbt build --target prod` → `PROD_STAGING`, `PROD_MARTS` | task `DBT.RUN_DBT`, warehouse `TENDER_WH` |
-| :50 | Email if the dbt run failed | alert `DBT.RUN_DBT_FAILED` |
+| :50 | Email if a dbt run failed since the last check | alert `DBT.RUN_DBT_FAILED` |
+| :50 | Email if no load or no dbt run has succeeded for 4 hours, e.g. a task suspended itself ([ADR 0033](adr/0033-pipeline-safeguards.md)) | alert `DBT.PIPELINE_STALE` |
 
 - **Deploy:** merging a change under `dbt/` deploys a new version of `TENDER_DB.DBT.UK_TENDERS` (`snow dbt deploy` in `deploy.yml`, after CI). The prod profile is `snowflake/dbt/profiles.yml`. dbt is pinned to 1.12.3 there, because the account default (1.9.4) can't compile the project; local dbt is held to 1.12 in `pyproject.toml` (`<1.13`) so the two stay in step; when upgrading, check `SELECT SYSTEM$SUPPORTED_DBT_VERSIONS();` and move both pins together.
 - **Run by hand:** `EXECUTE DBT PROJECT TENDER_DB.DBT.UK_TENDERS ARGS = 'build --target prod';`, or `EXECUTE TASK TENDER_DB.DBT.RUN_DBT;` to run the task as scheduled.
 - **Logs:** Snowsight → Monitoring → dbt projects shows each run with its output. Task runs are in `TABLE(TENDER_DB.INFORMATION_SCHEMA.TASK_HISTORY(TASK_NAME => 'RUN_DBT'))`.
 - **One-off setup:** run `snowflake/dbt/00_dbt_setup.sql` as ACCOUNTADMIN before the first deploy.
-- **To check once after the first deploy:** that a failing dbt command fails the task, e.g. `EXECUTE DBT PROJECT TENDER_DB.DBT.UK_TENDERS ARGS = 'run-operation does_not_exist';` should raise an error. If it only returns a row with `success = FALSE`, the task body must check that flag and raise.
+- **Failures:** any failing dbt command (a freshness error, a model or a test) makes `EXECUTE DBT PROJECT` raise an error, so the task run fails and the alert emails. A freshness error stops the task before the build. Checked on 2026-10-08 with a missing macro, a division by zero and a failing test ([ADR 0033](adr/0033-pipeline-safeguards.md)).
 
 ## CI
 
-Every pull request parses the project; pull requests that change `dbt/` also build every model and run every test into temporary `CI_PR_<number>_*` schemas, which are dropped afterwards ([ADR 0030](adr/0030-build-dbt-in-ci.md)). To try the same locally against throwaway schemas:
+Every pull request parses the project; pull requests that change `dbt/` also build every model and run every test into temporary `CI_PR_<number>_*` schemas, which are dropped afterwards ([ADR 0030](adr/0030-build-dbt-in-ci.md)). The build signs in as service user `TENDER_CI`, whose role can read `RAW` and create its own schemas but can't touch `PROD_*` (`snowflake/setup/06_ci_role.sql`, [ADR 0033](adr/0033-pipeline-safeguards.md)). The `dbt` job is a required check on `main`.
+
+To try the same locally against throwaway schemas, with the same role (your user can use it through `SYSADMIN`):
 
 ```bash
 export SNOWFLAKE_ACCOUNT=<orgname>-<accountname> SNOWFLAKE_USER=<user> SNOWFLAKE_PRIVATE_KEY_PATH=$HOME/.snowflake/key.p8 DBT_CI_SCHEMA=CI_TEST
+# the role defaults to TENDER_CI; set SNOWFLAKE_ROLE to use another
 uv run dbt build --project-dir dbt --profiles-dir .github/dbt
 uv run dbt run-operation drop_ci_schemas --project-dir dbt --profiles-dir .github/dbt --args "{prefix: CI_TEST}"
 ```

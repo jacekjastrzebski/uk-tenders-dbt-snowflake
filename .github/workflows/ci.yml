@@ -34,7 +34,8 @@ jobs:
         run: uv run pytest
 
   # dbt: parse everything; on pull requests that change dbt/, also build every model and
-  # run every test into temporary CI_PR_<number> schemas, dropped afterwards (ADR 0030)
+  # run every test into temporary CI_PR_<number> schemas, dropped afterwards (ADR 0030).
+  # It signs in as TENDER_CI, which can't touch the prod schemas (snowflake/setup/06_ci_role.sql)
   dbt:
     runs-on: ubuntu-latest
     timeout-minutes: 15
@@ -44,6 +45,7 @@ jobs:
     env:
       DBT_PROFILES_DIR: .github/dbt
       DBT_CI_SCHEMA: CI_PR_${{ github.event.pull_request.number }}
+      SNOWFLAKE_USER: TENDER_CI
     steps:
       - uses: actions/checkout@v7
         with:
@@ -61,7 +63,7 @@ jobs:
         if: github.event_name == 'pull_request'
         env:
           BASE: ${{ github.event.pull_request.base.sha }}
-          HAS_SECRETS: ${{ secrets.SNOWFLAKE_PRIVATE_KEY != '' }}
+          HAS_SECRETS: ${{ secrets.SNOWFLAKE_CI_PRIVATE_KEY != '' }}
         run: |
           if git diff --name-only "$BASE" HEAD | grep -q '^dbt/'; then
             if [ "$HAS_SECRETS" = true ]; then
@@ -74,7 +76,7 @@ jobs:
       - name: Snowflake key
         if: steps.changed.outputs.build == 'true'
         env:
-          SNOWFLAKE_PRIVATE_KEY: ${{ secrets.SNOWFLAKE_PRIVATE_KEY }}
+          SNOWFLAKE_PRIVATE_KEY: ${{ secrets.SNOWFLAKE_CI_PRIVATE_KEY }}
         run: |
           umask 077   # readable by this user only
           mkdir -p ~/.snowflake
@@ -85,19 +87,19 @@ jobs:
         if: steps.changed.outputs.build == 'true'
         env:
           SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
-          SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
         run: uv run dbt build --project-dir dbt
 
       - name: Drop CI_PR schemas
         if: always() && steps.changed.outputs.build == 'true'
         env:
           SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
-          SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
         run: |
           uv run dbt run-operation drop_ci_schemas --project-dir dbt --args "{prefix: $DBT_CI_SCHEMA}"
 
   deploy:
     needs: [checks, dbt]   # deploy only what passed the checks
+    permissions:
+      contents: write      # to move the deployed tag (deploy.yml)
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
