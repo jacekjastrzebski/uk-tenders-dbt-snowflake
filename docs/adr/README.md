@@ -28,4 +28,4 @@ One file per significant decision: the context, the decision and its consequence
 | [0024](0024-prod-schema-prefix.md) | Prefix prod schemas with PROD_ | Accepted |
 | [0025](0025-replace-unusable-organisation-names.md) | Replace unusable organisation names | Accepted |
 | [0026](0026-looser-organisation-key.md) | Looser organisation key, and markets for the Market filter | Accepted |
-| [0027](0027-browse-only-guest-role.md) | A browse-only guest role with no warehouse | Accepted |
+| [0027](0027-guest-role-with-capped-warehouse.md) | A guest role with its own capped warehouse | Accepted |

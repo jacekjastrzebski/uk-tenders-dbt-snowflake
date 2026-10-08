@@ -84,7 +84,7 @@ snow sql -f snowflake/dbt/00_dbt_setup.sql -c tender
 | `setup/02_raw_objects.sql` | SYSADMIN | Raw tables `FIND_A_TENDER_RELEASES`, `FIND_A_TENDER_INGEST_RUNS` |
 | `setup/03_transform_role.sql` | ACCOUNTADMIN | Role `TENDER_TRANSFORM` (dbt): reads `RAW`, creates its own schemas. Also an empty schema `PROD`, which the prod dbt profile needs; models go to `PROD_STAGING`, `PROD_MARTS`, ... |
 | `setup/04_reporting_role.sql` | ACCOUNTADMIN | Role `TENDER_REPORTER` (Power BI): reads `PROD_MARTS`, `DEV_MARTS` |
-| `setup/05_viewer_role.sql` (optional) | ACCOUNTADMIN | Role `TENDER_VIEWER` and a guest user who can browse objects and task runs, but has no warehouse; run it last, with the commands in its header |
+| `setup/05_viewer_role.sql` (optional) | ACCOUNTADMIN | Role `TENDER_VIEWER` and a guest user who can browse everything and query `RAW` and the prod schemas on warehouse `TENDER_VIEWER_WH`, capped at 1 credit a month; run it last, with the commands in its header |
 | `native_ingestion/00_code_stage.sql` | SYSADMIN | Stage `RAW.CODE_STAGE` for the loader's Python file |
 | `native_ingestion/01_external_access.sql` | ACCOUNTADMIN | Network rule and integration for the API host, email integration `TENDER_EMAIL`, role `TENDER_INGEST`, service user `TENDER_DEPLOY` |
 | `dbt/00_dbt_setup.sql` | ACCOUNTADMIN | Schema `DBT` for the dbt project object, task and alert; grants `TENDER_TRANSFORM` to `TENDER_DEPLOY` |
