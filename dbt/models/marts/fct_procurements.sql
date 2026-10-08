@@ -75,7 +75,7 @@ dates AS (
 SELECT
     ocid,
     {{ normalise_org_name('buyer_name') }} AS buyer_key,
-    LEFT(cpv_code, 2) AS cpv_division,
+    COALESCE(LEFT(cpv_code, 2), 'UNKNOWN') AS cpv_division,   -- no CPV code: "Unknown sector" in dim_cpv_divisions
     title,
     tender_published_date,
     closing_date,

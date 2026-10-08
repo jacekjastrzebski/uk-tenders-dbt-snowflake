@@ -28,10 +28,10 @@ models:
         description: Month within the financial year, April = 1 to March = 12; sort months by this in financial-year visuals.
 
   - name: dim_cpv_divisions
-    description: Sectors, one row per CPV division (first 2 digits of a CPV code).
+    description: Sectors, one row per CPV division (first 2 digits of a CPV code), plus "Unknown sector" (UNKNOWN) for notices without a CPV code.
     columns:
       - name: cpv_division
-        description: e.g. 72; facts join on LEFT(cpv_code, 2).
+        description: e.g. 72; facts join on LEFT(cpv_code, 2), or UNKNOWN when there is no CPV code.
         data_tests: [unique, not_null]
       - name: division_name
         description: Official CPV name, e.g. IT services.
@@ -47,7 +47,7 @@ models:
         description: Normalised buyer name; facts join on the same macro applied to their buyer name.
         data_tests: [unique, not_null]
       - name: buyer_name
-        description: Name from the buyer's most recent notice.
+        description: Name from the buyer's most recent notice; never an unusable name like "[]" (ADR 0025).
       - name: buyer_ids
         description: All organisation IDs seen for this buyer, comma-separated, for tracing back to notices.
 
@@ -61,7 +61,7 @@ models:
         description: Normalised supplier name; facts join on the same macro applied to their supplier name.
         data_tests: [unique, not_null]
       - name: supplier_name
-        description: Name from the supplier's most recent notice, lot numbers removed.
+        description: Name from the supplier's most recent notice, lot numbers removed; never an unusable name like "N/A" (ADR 0025).
       - name: supplier_ids
         description: All organisation IDs seen for this supplier, comma-separated.
       - name: is_withheld
@@ -161,3 +161,10 @@ models:
         description: Days from tender to award notice; null when unknown or notices were published out of order.
       - name: is_cancelled
         description: A termination notice (UK12) and no award.
+
+  - name: dim_data_freshness
+    description: One row with the time of the latest load from the API, for the report's "Data loaded" card.
+    columns:
+      - name: last_loaded_at
+        description: Latest load time in staging, UK local time.
+        data_tests: [not_null]

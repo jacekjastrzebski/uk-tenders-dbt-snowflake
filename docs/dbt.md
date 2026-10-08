@@ -73,6 +73,7 @@ The project is deployed as a dbt project object and runs on a schedule inside Sn
 - SQL style as in `CLAUDE.md`.
 - Personal data (`parties[].contactPoint`) never leaves `RAW`; `dbt/tests/assert_no_contact_points.sql` enforces it.
 - Staging timestamps are UTC (`TIMESTAMP_NTZ`), so date grouping doesn't depend on the session time zone.
+- Organisation names that can't identify anyone (`[]`, `Test`, `N/A`, amounts) are replaced in staging with the same ID's usable name, else "Unnamed buyer/supplier (ID)" ([ADR 0025](adr/0025-replace-unusable-organisation-names.md)).
 - Mart names: `fct_<entity>` for facts and `dim_<entity>` for dimensions, plural entity (e.g. `fct_award_suppliers`, `dim_dates`).
 - Changing models, keys or relationships means updating the diagrams in [`docs/diagrams/`](diagrams/) (ERDs, `data.md`) in the same PR.
 
@@ -83,9 +84,10 @@ Star schema for the Power BI report ([ADR 0023](adr/0023-star-schema-for-power-b
 | Model | Grain | Used for |
 |---|---|---|
 | `dim_dates` | Day, 1990–2035 (vars in `dbt_project.yml`) | Date filters and trends; UK financial year |
-| `dim_cpv_divisions` | CPV division (seed `cpv_divisions`) | Sector filters; the digital and data market (48, 72) |
+| `dim_cpv_divisions` | CPV division (seed `cpv_divisions`), plus "Unknown sector" for notices without a CPV code | Sector filters; the digital and data market (48, 72) |
 | `dim_buyers` | Buyer organisation, grouped by normalised name | Who's buying? |
 | `dim_suppliers` | Supplier organisation, grouped by normalised name (lots removed); withheld flagged; plus "Unknown supplier" | Who's winning? |
+| `dim_data_freshness` | One row: latest load time, UK | The report's "Data loaded" card |
 | `fct_procurements` | Procurement Act tender (`ocid` with a UK4 notice) | What's open to bid? (closing_date from today, no award, not cancelled) How long to award? (median `days_tender_to_award`) |
 | `fct_award_suppliers` | Supplier on an award, deduplicated across notices ([ADR 0022](adr/0022-award-fact-rules.md)) | Who's buying? Who's winning? Sum `allocated_value_gbp` where `is_in_headline` |
 

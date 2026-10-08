@@ -176,7 +176,7 @@ SELECT
     r.award_date,
     r.date_source,
     {{ normalise_org_name('r.buyer_name') }} AS buyer_key,
-    LEFT(r.cpv_code, 2) AS cpv_division,
+    COALESCE(LEFT(r.cpv_code, 2), 'UNKNOWN') AS cpv_division,   -- no CPV code: "Unknown sector" in dim_cpv_divisions
     r.title,
     r.value,
     COALESCE(r.currency, 'GBP') AS currency,

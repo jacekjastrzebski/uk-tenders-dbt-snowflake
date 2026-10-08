@@ -31,6 +31,8 @@ models:
         description: True when the legal basis is the Procurement Act 2023 (2023/54).
       - name: buyer_id
         description: Buyer organisation ID; from the buyer object, else the party with role buyer.
+      - name: buyer_name
+        description: Buyer name as published; unusable names ("[]", "Test", ...) replaced with the same ID's latest usable name, else "Unnamed buyer (ID)" (ADR 0025).
       - name: description
         description: Free text from the buyer; may contain contact emails, treat as possibly personal.
       - name: tender_status
@@ -115,6 +117,8 @@ models:
   - name: stg_find_a_tender__award_suppliers
     description: One row per supplier on an award.
     columns:
+      - name: supplier_name
+        description: Supplier name as published; unusable names ("N/A", amounts, ...) replaced with the same ID's latest usable name, else "Unnamed supplier (ID)" (ADR 0025).
       - name: award_supplier_key
         data_tests: [unique, not_null]
       - name: award_key
