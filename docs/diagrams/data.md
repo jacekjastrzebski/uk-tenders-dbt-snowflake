@@ -28,7 +28,7 @@ flowchart TB
     subgraph MARTS["PROD_MARTS: tables, star schema"]
         F1["fct_procurements<br/>1 row = 1 Procurement Act tender"]
         F2["fct_award_suppliers<br/>1 row = 1 supplier on an award"]
-        DIM["dim_buyers · dim_suppliers ·<br/>dim_cpv_divisions · dim_dates"]
+        DIM["dim_buyers · dim_suppliers ·<br/>dim_cpv_divisions · dim_dates ·<br/>dim_data_freshness"]
     end
     API --> R1
     R1 --> S1 --> S2 & S3 & S4 & S5
@@ -68,6 +68,7 @@ flowchart LR
     dim_buyers["dim_buyers"]:::mart
     dim_sup["dim_suppliers"]:::mart
     dim_cpv["dim_cpv_divisions"]:::mart
+    dim_fresh["dim_data_freshness"]:::mart
 
     raw_rel --> notices
     notices --> parties & awards & award_sup & contracts
@@ -77,6 +78,7 @@ flowchart LR
     notices --> dim_buyers
     notices & award_sup --> dim_sup
     cpv --> dim_cpv
+    notices --> dim_fresh
 ```
 
 `raw.find_a_tender_ingest_runs` is declared for freshness only; no model reads it. `dim_dates` has no inputs.

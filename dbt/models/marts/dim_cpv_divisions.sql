@@ -8,3 +8,12 @@ SELECT
     IFF(is_digital_and_data, 'Digital and data', 'Other') AS market
 FROM
     {{ ref('cpv_divisions') }}
+
+UNION ALL
+
+-- Notices without a CPV code, so they don't show as blank in the report
+SELECT
+    'UNKNOWN',
+    'Unknown sector',
+    FALSE,
+    'Other'

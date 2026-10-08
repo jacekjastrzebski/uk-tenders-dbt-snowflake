@@ -28,10 +28,10 @@ models:
         description: Month within the financial year, April = 1 to March = 12; sort months by this in financial-year visuals.
 
   - name: dim_cpv_divisions
-    description: Sectors, one row per CPV division (first 2 digits of a CPV code).
+    description: Sectors, one row per CPV division (first 2 digits of a CPV code), plus "Unknown sector" (UNKNOWN) for notices without a CPV code.
     columns:
       - name: cpv_division
-        description: e.g. 72; facts join on LEFT(cpv_code, 2).
+        description: e.g. 72; facts join on LEFT(cpv_code, 2), or UNKNOWN when there is no CPV code.
         data_tests: [unique, not_null]
       - name: division_name
         description: Official CPV name, e.g. IT services.
@@ -161,3 +161,10 @@ models:
         description: Days from tender to award notice; null when unknown or notices were published out of order.
       - name: is_cancelled
         description: A termination notice (UK12) and no award.
+
+  - name: dim_data_freshness
+    description: One row with the time of the latest load from the API, for the report's "Data loaded" card.
+    columns:
+      - name: last_loaded_at
+        description: Latest load time in staging, UK local time.
+        data_tests: [not_null]
