@@ -25,6 +25,8 @@ Find a Tender API  →  Python loader  →  Snowflake (raw)  →  dbt (staging, 
 2. **Transform:** dbt deduplicates, flattens the nested JSON and builds a star schema: two facts (awards by supplier, tenders) and four dimensions ([docs/dbt.md](docs/dbt.md), [diagram](docs/diagrams/marts-erd.md)).
 3. **Report:** a Power BI report on the marts, one page per question: what's open to bid, who's buying, who's winning and how long to award ([docs/powerbi.md](docs/powerbi.md)).
 
+Architecture overview and every diagram (C4, flows, data, roles, lifecycles): [docs/architecture.md](docs/architecture.md).
+
 | Step | Status |
 |---|---|
 | Ingest (Python loader into Snowflake) | Done |
@@ -46,6 +48,10 @@ Find a Tender API  →  Python loader  →  Snowflake (raw)  →  dbt (staging, 
 | `snowflake/dbt/` | Setup, profile and scheduled task that run the dbt project inside Snowflake (ADR 0009) |
 | `tests/` | Tests for the Python code |
 | `docs/` | Procurement primer, glossary, API reference, EDA findings, decision records (`adr/`), plans and diagrams |
+
+## Run your own copy
+
+The repository is open: fork it and run the pipeline on your own Snowflake account and GitHub with [docs/self-hosting.md](docs/self-hosting.md), then the Power BI report with [docs/powerbi.md](docs/powerbi.md).
 
 ## Data and licence
 
