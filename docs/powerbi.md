@@ -15,16 +15,19 @@ Not committed (`.gitignore`): `.pbi/cache.abf` (the imported data) and `.pbi/loc
 
 ## Pages
 
-One page per question the tracker answers. Every page has the same header, a "data as of" card and Market / Sector / Buyer slicers, synced across pages. The last three pages are filtered to the last 12 complete months (a page filter on `Date`), so a part-month never drags a trend down.
+A landing page, *Home*, explains why the report exists, the time horizon (from 24 February 2025, when the Procurement Act 2023 came in) and the four questions, each a clickable tile with a live number and a specific call to action ("See open tenders →"). Then one page per question; the pages can be read in any order, and a *Navigate to* dropdown with a *Go →* button in each header opens any page (the `Navigation` table, not linked to the model; the button's destination is the measure `Navigate To`, so it stays disabled until a page is chosen). Slicer cards have a two-line label (name, then a grey hint); the Sector and Buyer slicers have a search box ("Type to search"). Every page has the same header with the time of the latest load ("Last refreshed", UK time); question pages have Market / Sector / Buyer slicers, synced across pages. Each page's Buyer list shows only buyers with something on that page (open tenders, headline awards or tenders awarded); names starting with a digit sort last (`Buyer Sort`). Notes on what a page leaves out sit in a footnote at the bottom. The last three pages are filtered to the last 12 complete months (a page filter on `Date`), so a part-month never drags a trend down.
 
 | Page | Cards | Visuals |
 |---|---|---|
-| What's open to bid? | Open Tenders, Closing in 14 Days | Open tenders with closing date, soonest first |
-| Who's buying? | Awarded Value, Awards | Top buyers; awarded value by month |
-| Who's winning? | Top 10 Supplier Share, Suppliers Awarded, Awarded Value | Supplier league table with market share (without "Unknown supplier"); value by sector |
-| How long to award? | Median days tender → award, award → contract, Tenders Awarded | Median days by award month; awarded tenders, longest wait first |
+| Home | Open tenders, awarded value, top 10 share, median days (one per question) | Why this report; time horizon; buttons to the four pages |
+| What's open to bid? | All Open Tenders; Closing Soon (the slicer's window, 14 days by default, with a matching label) | "Closes within" slicer (today, 7, 14, 30 days, any time; table `Closing Window`); open tenders with closing date and "Closes in" (Today, 1 day, n days), soonest first |
+| Who's buying? | Awarded Value, Awards | Top 12 buyers and awarded value by month, both in market colours (see below) |
+| Who's winning? | Top 10 Supplier Share, Suppliers Awarded, Awarded Value | Supplier league table with market share (without "Unknown supplier"); top 10 sectors in market colours |
+| How long to award? | Median days tender → award, award → contract, Tenders Awarded; "Days to award" range slider | Median days by award month in market colours; "From Tender to Award" table, longest wait first, with data bars |
 
-Headline values exclude framework ceilings and single awards of £100m or more ([ADR 0022](adr/0022-award-fact-rules.md)); frameworks are not shown at all, as their ceilings are not spend. Line charts start at 0 and end 15% above their highest month (the hidden `… Axis Max` measures).
+Headline values exclude framework ceilings and single awards of £100m or more ([ADR 0022](adr/0022-award-fact-rules.md)); frameworks are not shown at all, as their ceilings are not spend. Line charts start at 0 and end 20% above their highest line (the hidden `… Axis Max` measures).
+
+**Market colours** ([ADR 0028](adr/0028-report-navigation-and-market-colours.md)): with no Market, Sector or Buyer chosen, charts show Digital and data (pink) against Other markets (navy); once one is chosen, one colour per market, with a legend of only the markets shown. Charts group by hidden copies of the names (`Buyer Name`, `Sector Name`) and run their Top N on key columns, so their own bars never count as a choice.
 
 ## Model
 
@@ -35,19 +38,26 @@ erDiagram
     Awards }o--|| Date : "Award Date"
     Awards }o--|| Buyer : "Buyer Key"
     Awards }o--|| Supplier : "Supplier Key"
-    Awards }o--o| Sector : "CPV Division"
+    Awards }o--|| Sector : "CPV Division (Unknown sector if none)"
     Procurements }o--|| Date : "Tender Published Date (active)"
     Procurements }o..o| Date : "Award Published Date (inactive)"
     Procurements }o--o| Buyer : "Buyer Key"
-    Procurements }o--o| Sector : "CPV Division"
+    Procurements }o--|| Sector : "CPV Division"
+    "Data Freshness" {
+        datetime LastLoadedAt "one row, no relationships"
+    }
 ```
 
 | Table | Mart | Measures |
 |---|---|---|
-| `Awards` | `FCT_AWARD_SUPPLIERS` | Awarded Value, Awards, Suppliers Awarded, Market Share, Top 10 Supplier Share, Framework Ceiling Value, Large Awards, Monthly Trend Axis Max (hidden) |
-| `Procurements` | `FCT_PROCUREMENTS` | Tenders, Open Tenders, Closing in 14 Days, Days to Close, Median Days Tender to Award, Median Days Award to Contract, Tenders Awarded, Median Trend Axis Max (hidden), Data As Of |
+| `Awards` | `FCT_AWARD_SUPPLIERS` | Awarded Value, Awards, Suppliers Awarded, Market Share, Top 10 Supplier Share, Framework Ceiling Value, Large Awards, Awarded Value by Group, Monthly Trend Axis Max (hidden) |
+| `Procurements` | `FCT_PROCUREMENTS` | Tenders, Open Tenders, All Open Tenders, Closing Soon (+ Label), Days to Close, Median Days Tender to Award, Median Days Award to Contract, Median Days to Award by Group, Tenders Awarded, Median Trend Axis Max (hidden) |
 | `Date` | `DIM_DATES` | |
-| `Buyer`, `Supplier`, `Sector` | `DIM_BUYERS`, `DIM_SUPPLIERS`, `DIM_CPV_DIVISIONS` | |
+| `Buyer`, `Supplier`, `Sector` | `DIM_BUYERS`, `DIM_SUPPLIERS`, `DIM_CPV_DIVISIONS` | (hidden helper columns: Buyer Sort, Buyer Name, Sector Name) |
+| `Data Freshness` | `DIM_DATA_FRESHNESS` | Data Loaded |
+| `Navigation` | calculated in DAX (5 pages) | Navigate To |
+| `Closing Window` | calculated in DAX (5 windows) | Window Days (hidden; used by Open Tenders) |
+| `Colour Group` | calculated in DAX (markets + Other markets) | legend groups for the "… by Group" measures |
 
 "Open" is worked out at query time (closing date from today, no award, not cancelled), so it stays right between refreshes. Timing measures (medians, Tenders Awarded) date procurements by award, through the inactive Award Published Date relationship (`USERELATIONSHIP`); everything else uses the tender date. Relationships are single direction, dimension to fact.
 
@@ -63,7 +73,7 @@ sequenceDiagram
     participant M as TENDER_DB.PROD_MARTS
     PBI->>SF: sign in as TENDER_POWERBI (key pair)
     SF-->>PBI: session, role TENDER_REPORTER, warehouse TENDER_WH
-    loop each of the 6 tables
+    loop each of the 7 tables
         PBI->>M: SELECT * FROM <mart table>
         M-->>PBI: rows
     end
@@ -160,7 +170,7 @@ git update-index --skip-worktree powerbi/UkTenders.SemanticModel/definition/expr
 | Sees more than the marts | You signed in as your own user, whose secondary roles are active too; use `TENDER_POWERBI` |
 | *No active warehouse* | `TENDER_REPORTER` lacks `USAGE` on `TENDER_WH`: re-run `snowflake/setup/04_reporting_role.sql` |
 | Key rejected | The public key on the user doesn't match the file: `DESC USER TENDER_POWERBI` and compare `RSA_PUBLIC_KEY_FP` with `openssl rsa -in powerbi_key.p8 -pubout -outform DER \| openssl dgst -sha256 -binary \| openssl enc -base64` |
-| Data looks old | Compare *Data as of* with `SELECT MAX(loaded_at) FROM TENDER_DB.RAW.FIND_A_TENDER_RELEASES`; check the task history ([self-hosting.md](self-hosting.md#run-it)) |
+| Data looks old | Compare *Data loaded* with `SELECT MAX(loaded_at) FROM TENDER_DB.RAW.FIND_A_TENDER_RELEASES`; check the task history ([self-hosting.md](self-hosting.md#run-it)) |
 | Fonts look different in Service | Power BI Service renders a fixed set of fonts; see [Theme](#theme) |
 
 ## Editing as code

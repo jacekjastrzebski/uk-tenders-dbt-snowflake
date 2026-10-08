@@ -100,3 +100,4 @@ Terms used in this project, grouped by area. Procurement background: [procuremen
 | DAX | Data Analysis Expressions: Power BI's formula language for measures |
 | Slicer | An on-page filter the reader picks from, e.g. Market |
 | Inactive relationship | A relationship a measure switches on with `USERELATIONSHIP`; used to date timings by award |
+| Disconnected table | A small table with no relationships, used for slicer choices or legends: `Navigation`, `Closing Window`, `Colour Group` |
