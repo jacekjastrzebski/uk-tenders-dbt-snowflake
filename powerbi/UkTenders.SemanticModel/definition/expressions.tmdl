@@ -1,0 +1,42 @@
+/// Snowflake account host, e.g. myorg-myaccount.snowflakecomputing.com
+expression SnowflakeServer = "<orgname>-<accountname>.snowflakecomputing.com" meta [IsParameterQuery = true, Type = "Text", IsParameterQueryRequired = true]
+	queryGroup: Parameters
+
+	annotation PBI_ResultType = Text
+
+expression SnowflakeWarehouse = "TENDER_WH" meta [IsParameterQuery = true, Type = "Text", IsParameterQueryRequired = true]
+	queryGroup: Parameters
+
+	annotation PBI_ResultType = Text
+
+/// Read-only role for the marts (snowflake/setup/04_reporting_role.sql)
+expression SnowflakeRole = "TENDER_REPORTER" meta [IsParameterQuery = true, Type = "Text", IsParameterQueryRequired = true]
+	queryGroup: Parameters
+
+	annotation PBI_ResultType = Text
+
+expression SnowflakeDatabase = "TENDER_DB" meta [IsParameterQuery = true, Type = "Text", IsParameterQueryRequired = true]
+	queryGroup: Parameters
+
+	annotation PBI_ResultType = Text
+
+/// PROD_MARTS (refreshed in Snowflake after each load), or DEV_MARTS to test dbt changes
+expression SnowflakeSchema = "PROD_MARTS" meta [IsParameterQuery = true, Type = "Text", IsParameterQueryRequired = true]
+	queryGroup: Parameters
+
+	annotation PBI_ResultType = Text
+
+/// The marts schema; every table partition reads one table from it
+expression Marts =
+		let
+			Source = Snowflake.Databases(SnowflakeServer, SnowflakeWarehouse, [Role = SnowflakeRole]),
+			Database = Source{[Name = SnowflakeDatabase, Kind = "Database"]}[Data],
+			Schema = Database{[Name = SnowflakeSchema, Kind = "Schema"]}[Data]
+		in
+			Schema
+
+	annotation PBI_ResultType = Table
+
+queryGroup Parameters
+
+	annotation PBI_QueryGroupOrder = 0

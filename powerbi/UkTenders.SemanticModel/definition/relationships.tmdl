@@ -1,0 +1,32 @@
+relationship awards_award_date
+	fromColumn: Awards.'Award Date'
+	toColumn: 'Date'.'Date'
+
+relationship awards_buyer_key
+	fromColumn: Awards.'Buyer Key'
+	toColumn: Buyer.'Buyer Key'
+
+relationship awards_supplier_key
+	fromColumn: Awards.'Supplier Key'
+	toColumn: Supplier.'Supplier Key'
+
+relationship awards_cpv_division
+	fromColumn: Awards.'CPV Division'
+	toColumn: Sector.'CPV Division'
+
+relationship procurements_tender_published_date
+	fromColumn: Procurements.'Tender Published Date'
+	toColumn: 'Date'.'Date'
+
+relationship procurements_award_published_date
+	isActive: false
+	fromColumn: Procurements.'Award Published Date'
+	toColumn: 'Date'.'Date'
+
+relationship procurements_buyer_key
+	fromColumn: Procurements.'Buyer Key'
+	toColumn: Buyer.'Buyer Key'
+
+relationship procurements_cpv_division
+	fromColumn: Procurements.'CPV Division'
+	toColumn: Sector.'CPV Division'

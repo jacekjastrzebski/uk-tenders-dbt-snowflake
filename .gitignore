@@ -57,3 +57,6 @@ data/
 dbt/target/
 dbt/logs/
 dbt/dbt_packages/
+# --- Power BI (local cache and per-user settings) ---
+**/.pbi/localSettings.json
+**/.pbi/cache.abf
