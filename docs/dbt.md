@@ -84,7 +84,7 @@ Star schema for the Power BI report ([ADR 0023](adr/0023-star-schema-for-power-b
 | Model | Grain | Used for |
 |---|---|---|
 | `dim_dates` | Day, 1990–2035 (vars in `dbt_project.yml`) | Date filters and trends; UK financial year |
-| `dim_cpv_divisions` | CPV division (seed `cpv_divisions`), plus "Unknown sector" for notices without a CPV code | Sector filters; the digital and data market (48, 72) |
+| `dim_cpv_divisions` | CPV division (seed `cpv_divisions`), plus "Unknown sector" for notices without a CPV code | Sector and Market filters: 9 markets from the seed, e.g. Digital and data (48, 72) |
 | `dim_buyers` | Buyer organisation, grouped by normalised name | Who's buying? |
 | `dim_suppliers` | Supplier organisation, grouped by normalised name (lots removed); withheld flagged; plus "Unknown supplier" | Who's winning? |
 | `dim_data_freshness` | One row: latest load time, UK | The report's "Data loaded" card |
