@@ -2,6 +2,55 @@
 /// (the supplier's equal share). Headline totals use Is In Headline (ADR 0022).
 table Awards
 
+	/// Value awarded, joint awards split equally; excludes framework ceilings and awards of £100m or more
+	measure 'Awarded Value' = CALCULATE(SUM(Awards[Allocated Value]), KEEPFILTERS(Awards[Is In Headline] = TRUE()))
+		formatString: £#,0
+
+	/// Distinct awards in the headline totals
+	measure Awards = CALCULATE(DISTINCTCOUNT(Awards[Procurement Award Key]), KEEPFILTERS(Awards[Is In Headline] = TRUE()))
+		formatString: #,0
+
+	measure 'Suppliers Awarded' =
+			CALCULATE(
+			    DISTINCTCOUNT(Awards[Supplier Key]),
+			    KEEPFILTERS(Awards[Is In Headline] = TRUE()),
+			    KEEPFILTERS(Awards[Supplier Key] <> "UNKNOWN SUPPLIER")
+			)
+		formatString: #,0
+
+	/// Share of awarded value across all suppliers in the current filters
+	measure 'Market Share' = DIVIDE([Awarded Value], CALCULATE([Awarded Value], REMOVEFILTERS(Supplier)))
+		formatString: 0.0%
+
+	/// Share of value won by the 10 largest named suppliers (unknown and withheld left out)
+	measure 'Top 10 Supplier Share' =
+			VAR NamedSuppliers =
+			    CALCULATETABLE(
+			        VALUES(Supplier[Supplier Key]),
+			        Supplier[Supplier Key] <> "UNKNOWN SUPPLIER",
+			        Supplier[Is Withheld] = FALSE()
+			    )
+			VAR TopSuppliers = TOPN(10, NamedSuppliers, [Awarded Value])
+			RETURN
+			    DIVIDE(
+			        CALCULATE([Awarded Value], TopSuppliers),
+			        CALCULATE([Awarded Value], NamedSuppliers)
+			    )
+		formatString: 0.0%
+
+	/// Framework ceilings: the most that could be spent, not spend; shown separately
+	measure 'Framework Ceiling Value' = CALCULATE(SUM(Awards[Allocated Value]), KEEPFILTERS(Awards[Is Framework] = TRUE()))
+		formatString: £#,0
+
+	/// Awards of £100m or more (not frameworks), left out of the headline totals for review
+	measure 'Large Awards' =
+			CALCULATE(
+			    DISTINCTCOUNT(Awards[Procurement Award Key]),
+			    KEEPFILTERS(Awards[Is Large Value] = TRUE()),
+			    KEEPFILTERS(Awards[Is Framework] = FALSE())
+			)
+		formatString: #,0
+
 	column 'Award Supplier Key'
 		dataType: string
 		isHidden
