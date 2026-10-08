@@ -26,19 +26,32 @@ table Procurements
 		formatString: 0
 		displayFolder: Open tenders
 
-	measure 'Median Days Tender to Award' = MEDIAN(Procurements[Days Tender to Award])
+	/// Timings are dated by award: date filters and axes apply to the award date, not the tender date
+	measure 'Median Days Tender to Award' =
+			CALCULATE(MEDIAN(Procurements[Days Tender to Award]), USERELATIONSHIP(Procurements[Award Published Date], 'Date'[Date]))
 		formatString: 0
 		displayFolder: Timings
 
-	measure 'Median Days Award to Contract' = MEDIAN(Procurements[Days Award to Contract])
+	measure 'Median Days Award to Contract' =
+			CALCULATE(MEDIAN(Procurements[Days Award to Contract]), USERELATIONSHIP(Procurements[Award Published Date], 'Date'[Date]))
 		formatString: 0
 		displayFolder: Timings
 
-	/// Same median, with the date slicer and axis applied to the award date instead of the tender date
-	measure 'Median Days Tender to Award by Award Month' =
-			CALCULATE([Median Days Tender to Award], USERELATIONSHIP(Procurements[Award Published Date], 'Date'[Date]))
+	/// Tenders with an award published, dated by the award
+	measure 'Tenders Awarded' =
+			CALCULATE(
+			    COUNTROWS(Procurements),
+			    USERELATIONSHIP(Procurements[Award Published Date], 'Date'[Date]),
+			    KEEPFILTERS(NOT ISBLANK(Procurements[Award Published Date]))
+			)
+		formatString: #,0
+		displayFolder: Timings
+
+	/// Top of the monthly median's value axis: the highest month plus 15% headroom
+	measure 'Median Trend Axis Max' = MAXX(VALUES('Date'[Month Start]), [Median Days Tender to Award]) * 1.15
 		formatString: 0
 		displayFolder: Timings
+		isHidden
 
 	/// Latest tender in the data, ignoring all filters
 	measure 'Data As Of' = CALCULATE(MAX(Procurements[Tender Published Date]), REMOVEFILTERS())

@@ -1,6 +1,6 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
-  "name": "pipeline-header",
+  "name": "timing-header",
   "position": {
     "x": 0,
     "y": 0,
@@ -31,7 +31,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "How long does it take?  ",
+                    "value": "How long to award?  ",
                     "textStyle": {
                       "fontFamily": "'DM Sans', 'Segoe UI Semibold', wf_segoe-ui_semibold, helvetica, arial, sans-serif",
                       "fontSize": "11pt",
@@ -39,7 +39,7 @@
                     }
                   },
                   {
-                    "value": "Procurements by stage and days between notices",
+                    "value": "Days from tender to award and contract, for tenders awarded in the last 12 complete months",
                     "textStyle": {
                       "fontFamily": "'DM Sans', 'Segoe UI', wf_segoe-ui_normal, helvetica, arial, sans-serif",
                       "fontSize": "11pt",

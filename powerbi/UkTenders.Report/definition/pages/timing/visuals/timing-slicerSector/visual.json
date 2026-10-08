@@ -1,12 +1,12 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
-  "name": "pipeline-slicerMarket",
+  "name": "timing-slicerSector",
   "position": {
-    "x": 16,
+    "x": 437,
     "y": 88,
     "z": 0,
     "width": 405,
-    "height": 64,
+    "height": 72,
     "tabOrder": 0
   },
   "visual": {
@@ -23,11 +23,11 @@
                       "Entity": "Sector"
                     }
                   },
-                  "Property": "Market"
+                  "Property": "Sector"
                 }
               },
-              "queryRef": "Sector.Market",
-              "nativeQueryRef": "Market"
+              "queryRef": "Sector.Sector",
+              "nativeQueryRef": "Sector"
             }
           ]
         }
@@ -96,7 +96,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Market'"
+                  "Value": "'Sector'"
                 }
               }
             }
@@ -105,7 +105,7 @@
       ]
     },
     "syncGroup": {
-      "groupName": "Market",
+      "groupName": "Sector",
       "fieldChanges": true,
       "filterChanges": true
     },

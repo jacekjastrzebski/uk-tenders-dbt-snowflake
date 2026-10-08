@@ -1,52 +1,37 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
-  "name": "pipeline-slicerSector",
+  "name": "timing-kpiDaysToAward",
   "position": {
-    "x": 437,
-    "y": 88,
-    "z": 0,
-    "width": 405,
-    "height": 64,
-    "tabOrder": 0
+    "x": 16,
+    "y": 168,
+    "z": 1,
+    "width": 300,
+    "height": 96,
+    "tabOrder": 1
   },
   "visual": {
-    "visualType": "slicer",
+    "visualType": "card",
     "query": {
       "queryState": {
         "Values": {
           "projections": [
             {
               "field": {
-                "Column": {
+                "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Sector"
+                      "Entity": "Procurements"
                     }
                   },
-                  "Property": "Sector"
+                  "Property": "Median Days Tender to Award"
                 }
               },
-              "queryRef": "Sector.Sector",
-              "nativeQueryRef": "Sector"
+              "queryRef": "Procurements.Median Days Tender to Award",
+              "nativeQueryRef": "Median Days Tender to Award"
             }
           ]
         }
       }
-    },
-    "objects": {
-      "data": [
-        {
-          "properties": {
-            "mode": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Dropdown'"
-                }
-              }
-            }
-          }
-        }
-      ]
     },
     "visualContainerObjects": {
       "padding": [
@@ -89,25 +74,13 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
-                }
-              }
-            },
-            "text": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Sector'"
+                  "Value": "false"
                 }
               }
             }
           }
         }
       ]
-    },
-    "syncGroup": {
-      "groupName": "Sector",
-      "fieldChanges": true,
-      "filterChanges": true
     },
     "drillFilterOtherVisuals": true
   }

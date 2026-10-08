@@ -1,82 +1,46 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
-  "name": "pipeline-byStage",
+  "name": "timing-slicerMarket",
   "position": {
     "x": 16,
-    "y": 280,
+    "y": 88,
     "z": 0,
     "width": 405,
-    "height": 424,
+    "height": 72,
     "tabOrder": 0
   },
   "visual": {
-    "visualType": "clusteredColumnChart",
+    "visualType": "slicer",
     "query": {
       "queryState": {
-        "Category": {
+        "Values": {
           "projections": [
             {
               "field": {
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Procurements"
+                      "Entity": "Sector"
                     }
                   },
-                  "Property": "Stage"
+                  "Property": "Market"
                 }
               },
-              "queryRef": "Procurements.Stage",
-              "nativeQueryRef": "Stage"
-            }
-          ]
-        },
-        "Y": {
-          "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Procurements"
-                    }
-                  },
-                  "Property": "Procurements"
-                }
-              },
-              "queryRef": "Procurements.Procurements",
-              "nativeQueryRef": "Procurements"
+              "queryRef": "Sector.Market",
+              "nativeQueryRef": "Market"
             }
           ]
         }
-      },
-      "sortDefinition": {
-        "sort": [
-          {
-            "field": {
-              "Column": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "Procurements"
-                  }
-                },
-                "Property": "Stage"
-              }
-            },
-            "direction": "Ascending"
-          }
-        ],
-        "isDefaultSort": true
       }
     },
     "objects": {
-      "labels": [
+      "data": [
         {
           "properties": {
-            "show": {
+            "mode": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "'Dropdown'"
                 }
               }
             }
@@ -132,13 +96,18 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Procurements by stage'"
+                  "Value": "'Market'"
                 }
               }
             }
           }
         }
       ]
+    },
+    "syncGroup": {
+      "groupName": "Market",
+      "fieldChanges": true,
+      "filterChanges": true
     },
     "drillFilterOtherVisuals": true
   }

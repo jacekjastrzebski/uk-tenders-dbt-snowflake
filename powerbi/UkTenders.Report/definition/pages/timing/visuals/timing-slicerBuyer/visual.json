@@ -1,82 +1,46 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
-  "name": "pipeline-byNoticeType",
+  "name": "timing-slicerBuyer",
   "position": {
-    "x": 437,
-    "y": 280,
+    "x": 858,
+    "y": 88,
     "z": 0,
     "width": 405,
-    "height": 424,
+    "height": 72,
     "tabOrder": 0
   },
   "visual": {
-    "visualType": "clusteredBarChart",
+    "visualType": "slicer",
     "query": {
       "queryState": {
-        "Category": {
+        "Values": {
           "projections": [
             {
               "field": {
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Notice Type"
+                      "Entity": "Buyer"
                     }
                   },
-                  "Property": "Notice Type Label"
+                  "Property": "Buyer"
                 }
               },
-              "queryRef": "Notice Type.Notice Type Label",
-              "nativeQueryRef": "Notice Type Label"
-            }
-          ]
-        },
-        "Y": {
-          "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Notices"
-                    }
-                  },
-                  "Property": "Notices"
-                }
-              },
-              "queryRef": "Notices.Notices",
-              "nativeQueryRef": "Notices"
+              "queryRef": "Buyer.Buyer",
+              "nativeQueryRef": "Buyer"
             }
           ]
         }
-      },
-      "sortDefinition": {
-        "sort": [
-          {
-            "field": {
-              "Column": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "Notice Type"
-                  }
-                },
-                "Property": "Notice Type Label"
-              }
-            },
-            "direction": "Ascending"
-          }
-        ],
-        "isDefaultSort": true
       }
     },
     "objects": {
-      "labels": [
+      "data": [
         {
           "properties": {
-            "show": {
+            "mode": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
+                  "Value": "'Dropdown'"
                 }
               }
             }
@@ -132,13 +96,18 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Notices by type'"
+                  "Value": "'Buyer'"
                 }
               }
             }
           }
         }
       ]
+    },
+    "syncGroup": {
+      "groupName": "Buyer",
+      "fieldChanges": true,
+      "filterChanges": true
     },
     "drillFilterOtherVisuals": true
   }

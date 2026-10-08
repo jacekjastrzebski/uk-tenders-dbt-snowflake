@@ -1,13 +1,13 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
-  "name": "pipeline-kpiDaysToAward",
+  "name": "timing-kpiDaysToContract",
   "position": {
     "x": 332,
     "y": 168,
-    "z": 1,
+    "z": 2,
     "width": 300,
     "height": 96,
-    "tabOrder": 1
+    "tabOrder": 2
   },
   "visual": {
     "visualType": "card",
@@ -23,11 +23,11 @@
                       "Entity": "Procurements"
                     }
                   },
-                  "Property": "Median Days Tender to Award"
+                  "Property": "Median Days Award to Contract"
                 }
               },
-              "queryRef": "Procurements.Median Days Tender to Award",
-              "nativeQueryRef": "Median Days Tender to Award"
+              "queryRef": "Procurements.Median Days Award to Contract",
+              "nativeQueryRef": "Median Days Award to Contract"
             }
           ]
         }

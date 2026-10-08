@@ -1,97 +1,95 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
-  "name": "pipeline-timings",
+  "name": "timing-trend",
   "position": {
-    "x": 858,
+    "x": 16,
     "y": 280,
-    "z": 0,
-    "width": 405,
+    "z": 5,
+    "width": 616,
     "height": 424,
-    "tabOrder": 0
+    "tabOrder": 5
   },
   "visual": {
-    "visualType": "tableEx",
+    "visualType": "lineChart",
     "query": {
       "queryState": {
-        "Values": {
+        "Category": {
           "projections": [
             {
               "field": {
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Procurements"
+                      "Entity": "Date"
                     }
                   },
-                  "Property": "Title"
+                  "Property": "Month Start"
                 }
               },
-              "queryRef": "Procurements.Title",
-              "nativeQueryRef": "Title"
-            },
+              "queryRef": "Date.Month Start",
+              "nativeQueryRef": "Month Start"
+            }
+          ]
+        },
+        "Y": {
+          "projections": [
             {
               "field": {
-                "Column": {
+                "Measure": {
                   "Expression": {
                     "SourceRef": {
                       "Entity": "Procurements"
                     }
                   },
-                  "Property": "Stage"
+                  "Property": "Median Days Tender to Award"
                 }
               },
-              "queryRef": "Procurements.Stage",
-              "nativeQueryRef": "Stage"
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Procurements"
-                    }
-                  },
-                  "Property": "Days Tender to Award"
-                }
-              },
-              "queryRef": "Procurements.Days Tender to Award",
-              "nativeQueryRef": "Days Tender to Award"
-            },
-            {
-              "field": {
-                "Column": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Procurements"
-                    }
-                  },
-                  "Property": "Days Award to Contract"
-                }
-              },
-              "queryRef": "Procurements.Days Award to Contract",
-              "nativeQueryRef": "Days Award to Contract"
+              "queryRef": "Procurements.Median Days Tender to Award",
+              "nativeQueryRef": "Median Days Tender to Award"
             }
           ]
         }
-      },
-      "sortDefinition": {
-        "sort": [
-          {
-            "field": {
-              "Column": {
-                "Expression": {
-                  "SourceRef": {
-                    "Entity": "Procurements"
-                  }
-                },
-                "Property": "Days Tender to Award"
+      }
+    },
+    "objects": {
+      "labels": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "valueAxis": [
+        {
+          "properties": {
+            "start": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
               }
             },
-            "direction": "Descending"
+            "end": {
+              "expr": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Procurements"
+                    }
+                  },
+                  "Property": "Median Trend Axis Max"
+                }
+              }
+            }
           }
-        ],
-        "isDefaultSort": true
-      }
+        }
+      ]
     },
     "visualContainerObjects": {
       "padding": [
@@ -141,7 +139,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Procurement timings'"
+                  "Value": "'Median days from tender to award, by award month'"
                 }
               }
             }
