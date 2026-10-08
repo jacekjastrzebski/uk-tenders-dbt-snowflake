@@ -1,0 +1,17 @@
+# dbt profile for CI (.github/workflows/ci.yml, ADR 0030). Connection details come from
+# environment variables; the defaults let `dbt parse` run without any secrets.
+# Kept outside snowflake/dbt/, which `snow dbt deploy` uploads with the project.
+uk_tenders:
+  target: ci
+  outputs:
+    ci:
+      type: snowflake
+      account: "{{ env_var('SNOWFLAKE_ACCOUNT', 'not-set') }}"
+      user: "{{ env_var('SNOWFLAKE_USER', 'not-set') }}"
+      authenticator: snowflake_jwt
+      private_key_path: "{{ env_var('SNOWFLAKE_PRIVATE_KEY_PATH', '/dev/null') }}"
+      role: TENDER_TRANSFORM
+      database: TENDER_DB
+      warehouse: TENDER_WH
+      schema: "{{ env_var('DBT_CI_SCHEMA', 'CI') }}"   # models go to <schema>_STAGING, _MARTS, ...
+      threads: 4

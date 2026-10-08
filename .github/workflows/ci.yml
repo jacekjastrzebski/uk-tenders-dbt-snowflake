@@ -1,4 +1,5 @@
-# Type check and test every pull request and every push to main;
+# Type check and test every pull request and every push to main, and parse (and on
+# dbt pull requests build) the dbt project;
 # on main, deploy to Snowflake (deploy.yml) only after the checks pass
 name: CI
 
@@ -32,8 +33,71 @@ jobs:
       - name: Tests
         run: uv run pytest
 
+  # dbt: parse everything; on pull requests that change dbt/, also build every model and
+  # run every test into temporary CI_PR_<number> schemas, dropped afterwards (ADR 0030)
+  dbt:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    concurrency:
+      group: dbt-${{ github.event.pull_request.number || github.sha }}
+      cancel-in-progress: true
+    env:
+      DBT_PROFILES_DIR: .github/dbt
+      DBT_CI_SCHEMA: CI_PR_${{ github.event.pull_request.number }}
+    steps:
+      - uses: actions/checkout@v7
+        with:
+          fetch-depth: 0   # to compare with the base branch
+      - uses: astral-sh/setup-uv@v10.2.0
+
+      - name: Install dbt
+        run: uv sync --locked --group dbt
+
+      - name: Parse
+        run: uv run dbt parse --project-dir dbt
+
+      - name: Did dbt change?
+        id: changed
+        if: github.event_name == 'pull_request'
+        env:
+          BASE: ${{ github.event.pull_request.base.sha }}
+          HAS_SECRETS: ${{ secrets.SNOWFLAKE_PRIVATE_KEY != '' }}
+        run: |
+          if git diff --name-only "$BASE" HEAD | grep -q '^dbt/'; then
+            if [ "$HAS_SECRETS" = true ]; then
+              echo "build=true" >> "$GITHUB_OUTPUT"
+            else
+              echo "::notice::dbt changed, but no Snowflake secrets (pull request from a fork): build skipped"
+            fi
+          fi
+
+      - name: Snowflake key
+        if: steps.changed.outputs.build == 'true'
+        env:
+          SNOWFLAKE_PRIVATE_KEY: ${{ secrets.SNOWFLAKE_PRIVATE_KEY }}
+        run: |
+          umask 077   # readable by this user only
+          mkdir -p ~/.snowflake
+          printf '%s\n' "$SNOWFLAKE_PRIVATE_KEY" > ~/.snowflake/key.p8
+          echo "SNOWFLAKE_PRIVATE_KEY_PATH=$HOME/.snowflake/key.p8" >> "$GITHUB_ENV"
+
+      - name: Build and test into CI_PR schemas
+        if: steps.changed.outputs.build == 'true'
+        env:
+          SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+          SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
+        run: uv run dbt build --project-dir dbt
+
+      - name: Drop CI_PR schemas
+        if: always() && steps.changed.outputs.build == 'true'
+        env:
+          SNOWFLAKE_ACCOUNT: ${{ secrets.SNOWFLAKE_ACCOUNT }}
+          SNOWFLAKE_USER: ${{ secrets.SNOWFLAKE_USER }}
+        run: |
+          uv run dbt run-operation drop_ci_schemas --project-dir dbt --args "{prefix: $DBT_CI_SCHEMA}"
+
   deploy:
-    needs: checks   # deploy only what passed the checks
+    needs: [checks, dbt]   # deploy only what passed the checks
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
     uses: ./.github/workflows/deploy.yml
     secrets: inherit
