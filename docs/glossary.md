@@ -20,6 +20,7 @@ Terms used in this project, grouped by area. Procurement background: [procuremen
 | CPV code | Common Procurement Vocabulary: standard 8-digit code for what is bought, see [primer](procurement-primer.md#cpv-codes) |
 | CPV division | The first 2 digits of a CPV code: one of about 45 sectors, e.g. 72 IT services |
 | Digital and data market | CPV divisions 48 (software) and 72 (IT services) |
+| Market | A group of CPV divisions for the report's Market filter: 9 markets such as Digital and data, Health and social care, Construction and property ([ADR 0026](adr/0026-looser-organisation-key.md)) |
 | Old-regime notice | A notice under the rules before the Procurement Act 2023 (24 Feb 2025); has no notice type |
 
 ## OCDS and the API

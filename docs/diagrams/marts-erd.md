@@ -54,7 +54,7 @@ erDiagram
         string cpv_division PK "e.g. 72, or UNKNOWN"
         string division_name "e.g. IT services"
         boolean is_digital_and_data "48 and 72"
-        string market "Digital and data or Other"
+        string market "one of 9 markets, or Unknown"
     }
     DIM_BUYERS {
         string buyer_key PK "normalised name"
@@ -76,7 +76,7 @@ erDiagram
 
 - `FCT_PROCUREMENTS`: one row per tender. Open = `closing_date` from today, no `award_published_date`, not `is_cancelled`, worked out in Power BI so it never goes stale. Its other dates also join `DIM_DATES`, as inactive relationships.
 - `FCT_AWARD_SUPPLIERS`: one row per supplier on an award; sum `allocated_value_gbp`, filtered on `is_in_headline` for headline numbers. Rules in [ADR 0022](../adr/0022-award-fact-rules.md).
-- Facts join buyers on `buyer_key` and suppliers on `supplier_key`: the name normalised with the macro `normalise_org_name` (lot numbers removed, upper case, single spaces), because one organisation appears under several IDs ([ADR 0021](../adr/0021-keep-supplier-names.md)).
+- Facts join buyers on `buyer_key` and suppliers on `supplier_key`: the name normalised with the macro `normalise_org_name` (lot numbers, a trailing "(…)", "The", legal suffixes, spaces and punctuation removed, upper case), because one organisation appears under several IDs and spellings ([ADR 0021](../adr/0021-keep-supplier-names.md), [ADR 0026](../adr/0026-looser-organisation-key.md)).
 - Facts join their CPV division (`LEFT(cpv_code, 2)`) to `cpv_division`; notices without a CPV code join the "Unknown sector" row (`UNKNOWN`).
 - `DIM_DATA_FRESHNESS` has one row and joins nothing: the report shows it as "Data loaded".
 - Facts join their date columns (UK date, not UTC) to `calendar_date`; a fact has several dates, so in Power BI one relationship is active and the others are used with `USERELATIONSHIP`.

@@ -38,7 +38,7 @@ models:
       - name: is_digital_and_data
         description: True for divisions 48 (software) and 72 (IT services).
       - name: market
-        description: Digital and data, or Other; for slicers.
+        description: One of 9 markets from the cpv_divisions seed (e.g. Digital and data, Health and social care), or Unknown; for slicers.
 
   - name: dim_buyers
     description: Buyers, one row per organisation grouped by normalised name (macro normalise_org_name).

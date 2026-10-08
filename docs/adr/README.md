@@ -27,3 +27,4 @@ One file per significant decision: the context, the decision and its consequence
 | [0023](0023-star-schema-for-power-bi.md) | Marts as a star schema for Power BI | Accepted |
 | [0024](0024-prod-schema-prefix.md) | Prefix prod schemas with PROD_ | Accepted |
 | [0025](0025-replace-unusable-organisation-names.md) | Replace unusable organisation names | Accepted |
+| [0026](0026-looser-organisation-key.md) | Looser organisation key, and markets for the Market filter | Accepted |

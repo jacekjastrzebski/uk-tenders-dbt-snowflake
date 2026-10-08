@@ -6,7 +6,7 @@ WITH buyer_notices AS (
     SELECT
         {{ normalise_org_name('buyer_name') }} AS buyer_key,
         buyer_id,
-        buyer_name,
+        TRIM(buyer_name) AS buyer_name,
         published_at
     FROM
         {{ ref('stg_find_a_tender__notices') }}

@@ -26,16 +26,22 @@ seeds:
   - name: cpv_divisions
     description: >
       The 45 CPV 2008 divisions (first 2 digits of a CPV code) with their official
-      names; is_digital_and_data marks the market this project tracks (48, 72).
+      names; is_digital_and_data marks the market this project tracks (48, 72), and
+      market groups divisions into 9 markets for the report's Market filter.
     config:
+      full_refresh: true   # 45 rows: rebuild every run, so added columns reach prod without a manual --full-refresh
       column_types:
         cpv_division: varchar(2)   # keep the leading zero of 03 and 09
         division_name: varchar
         is_digital_and_data: boolean
+        market: varchar
     columns:
       - name: cpv_division
         data_tests: [unique, not_null]
       - name: division_name
         data_tests: [not_null]
       - name: is_digital_and_data
+        data_tests: [not_null]
+      - name: market
+        description: One of 9 markets, e.g. Digital and data (48, 72), Health and social care, Construction and property.
         data_tests: [not_null]

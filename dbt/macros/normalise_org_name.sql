@@ -10,13 +10,29 @@
 {%- endmacro %}
 
 {#
-  Grouping key for organisation names: lot numbers removed, upper case, single
-  spaces. The same organisation appears under several IDs (old Find a Tender,
-  PPON, Companies House), so marts group buyers and suppliers by this instead.
+  Grouping key for organisation names. The same organisation appears under
+  several IDs (old Find a Tender, PPON, Companies House) and several spellings,
+  so marts group buyers and suppliers by this key instead
+  (docs/adr/0026-looser-organisation-key.md). From the name it removes:
+  lot numbers, a trailing "(...)" such as "(FCDO)", a leading "The", a trailing
+  Limited / Ltd / PLC / LLP / CIC, then all spaces and punctuation, in upper case.
+  "A2 Dominion Group" and "A2Dominion Group" both become A2DOMINIONGROUP.
+  A name that would end up empty keeps its plain upper-case form.
   Use it everywhere an organisation is joined, so keys always match.
 #}
 {% macro normalise_org_name(column) -%}
-    UPPER(TRIM(REGEXP_REPLACE({{ strip_lot_numbers(column) }}, '\\s+', ' ')))
+    COALESCE(
+        NULLIF(
+            REGEXP_REPLACE(
+                REGEXP_REPLACE(
+                    REGEXP_REPLACE(
+                        REGEXP_REPLACE(UPPER({{ strip_lot_numbers(column) }}), '\\s*\\([^)]*\\)$', ''),
+                        '^THE\\s+', ''),
+                    '\\s+(LIMITED|LTD\\.?|PLC|LLP|CIC)$', ''),
+                '[[:punct:][:space:]]', ''),
+            ''),
+        UPPER(TRIM({{ column }}))
+    )
 {%- endmacro %}
 
 {#
