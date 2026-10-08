@@ -2,6 +2,8 @@
 
 A market tracker for UK public-sector digital and data contracts: what's open to bid, who's buying, who's winning and how long to award. Built on Find a Tender with Snowflake and dbt, refreshed every 3 hours from 07:00 to 19:00 UK time.
 
+**[Open the live report](https://app.powerbi.com/view?r=eyJrIjoiMmU5NTM2YWItNjYzMy00ZTFhLTkwNGUtMjZhZWU2ODRlNzk0IiwidCI6Ijc5ZDViMTQwLTkwY2MtNDBhNC1hN2M4LTY2ZDM1MTdiYTk3MiJ9)** (Power BI, public, no sign-in needed; refreshed at 08:00, 11:00, 14:00, 17:00 and 20:00 UK time).
+
 ## What it is
 
 [Find a Tender](https://www.find-tender.service.gov.uk) is the UK government's official service for publishing public procurement notices. Since the Procurement Act 2023 came into force on 24 February 2025, public bodies publish a notice at every stage of a procurement: planned, open for bids, awarded, contract signed, changed and ended.
