@@ -7,6 +7,7 @@
 #   04_failure_alert.sql             -> recreate the failure alert
 #   dbt/** or snowflake/dbt/profiles.yml -> deploy a new version of the dbt project object (ADR 0009)
 #   snowflake/dbt/01_run_dbt_task.sql    -> recreate the dbt task and its failure alert
+#   snowflake/powerbi/01_refresh_alert.sql -> recreate the Power BI refresh alert
 # A manual run (workflow_dispatch) deploys everything, and so does a push that changes this
 # workflow: a change to how things deploy should reach Snowflake without a manual run.
 # One-off setup (00 and 01 in snowflake/native_ingestion/, snowflake/dbt/00_dbt_setup.sql) stays
@@ -65,6 +66,7 @@ jobs:
           deploy_if_changed dbt       'dbt/.*'
           deploy_if_changed dbt       snowflake/dbt/profiles.yml
           deploy_if_changed dbt_task  snowflake/dbt/01_run_dbt_task.sql
+          deploy_if_changed pbi_alert snowflake/powerbi/01_refresh_alert.sql
 
       - name: Write Snowflake connection
         if: steps.changed.outputs.any == 'true'   # CI calls this on every push; most change nothing here
@@ -117,3 +119,9 @@ jobs:
         env:
           ALERT_EMAIL: ${{ secrets.ALERT_EMAIL }}
         run: uvx --from snowflake-cli==3.28.0 snow sql -f snowflake/dbt/01_run_dbt_task.sql -D "alert_email=$ALERT_EMAIL" -c tender
+
+      - name: Create Power BI refresh alert
+        if: steps.changed.outputs.pbi_alert == 'true'
+        env:
+          ALERT_EMAIL: ${{ secrets.ALERT_EMAIL }}
+        run: uvx --from snowflake-cli==3.28.0 snow sql -f snowflake/powerbi/01_refresh_alert.sql -D "alert_email=$ALERT_EMAIL" -c tender

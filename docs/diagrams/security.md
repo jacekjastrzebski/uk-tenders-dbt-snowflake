@@ -27,7 +27,7 @@ flowchart LR
         stage["CODE_STAGE"]
         rawobj["RAW procedures, task, alert"]
         integrations["FIND_A_TENDER_API_ACCESS,<br/>TENDER_EMAIL"]
-        dbtobj["DBT schema:<br/>project, task, alert"]
+        dbtobj["DBT schema:<br/>project, task, alerts"]
         built["PROD_* and DEV_* schemas"]
         marts["PROD_MARTS, DEV_MARTS"]
         structure["All schemas, tables, views<br/>(structure only)"]
@@ -49,6 +49,7 @@ flowchart LR
     ingest -->|uses| integrations
     transform -->|SELECT| raw
     transform -->|owns| dbtobj & built
+    transform -->|"MONITOR (TENDER_WH)"| base
     reporter -->|SELECT| marts
     viewer -->|"USAGE, REFERENCES"| structure
     viewer -->|MONITOR| tasks
