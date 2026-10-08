@@ -33,4 +33,5 @@ One file per significant decision: the context, the decision and its consequence
 | [0029](0029-guest-role-with-capped-warehouse.md) | A guest role with its own capped warehouse | Accepted |
 | [0030](0030-build-dbt-in-ci.md) | Build and test dbt on pull requests | Accepted; CI role changed by 0033 |
 | [0031](0031-alert-when-power-bi-stops-refreshing.md) | Alert from Snowflake when Power BI stops refreshing | Accepted |
+| [0032](0032-serverless-load-warehouse-dbt.md) | Serverless compute for the load, a warehouse for dbt | Accepted |
 | [0033](0033-pipeline-safeguards.md) | Pipeline safeguards: CI role, deploy catch-up, stale-data alert, cost cap | Accepted |
