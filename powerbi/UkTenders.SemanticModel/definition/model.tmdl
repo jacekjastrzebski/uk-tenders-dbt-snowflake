@@ -9,13 +9,11 @@ model Model
 
 annotation __PBI_TimeIntelligenceEnabled = 0
 
-annotation PBI_QueryOrder = ["SnowflakeServer","SnowflakeWarehouse","SnowflakeRole","SnowflakeDatabase","SnowflakeSchema","Marts","Date","Buyer","Supplier","Sector","Notice Type","Notices","Awards","Procurements"]
+annotation PBI_QueryOrder = ["SnowflakeServer","SnowflakeWarehouse","SnowflakeRole","SnowflakeDatabase","SnowflakeSchema","Marts","Date","Buyer","Supplier","Sector","Awards","Procurements"]
 
 ref table 'Date'
 ref table Buyer
 ref table Supplier
 ref table Sector
-ref table 'Notice Type'
-ref table Notices
 ref table Awards
 ref table Procurements

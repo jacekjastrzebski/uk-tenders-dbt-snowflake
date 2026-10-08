@@ -1,39 +1,29 @@
-/// Organisations awarded contracts.
+/// Organisations winning awards, from dim_suppliers: grouped by normalised name,
+/// lot numbers removed; includes "Unknown supplier" for awards published without one.
 table Supplier
 
-	column 'Supplier ID'
+	column 'Supplier Key'
 		dataType: string
 		isHidden
+		isKey
 		summarizeBy: none
-		sourceColumn: SUPPLIER_ID
+		sourceColumn: SUPPLIER_KEY
 
 	column Supplier
 		dataType: string
 		summarizeBy: none
 		sourceColumn: SUPPLIER_NAME
 
-	column Locality
+	column 'Supplier IDs'
 		dataType: string
-		dataCategory: City
+		isHidden
 		summarizeBy: none
-		sourceColumn: LOCALITY
+		sourceColumn: SUPPLIER_IDS
 
-	column Region
-		dataType: string
+	column 'Is Withheld'
+		dataType: boolean
 		summarizeBy: none
-		sourceColumn: REGION
-
-	column Postcode
-		dataType: string
-		dataCategory: PostalCode
-		summarizeBy: none
-		sourceColumn: POSTCODE
-
-	column Country
-		dataType: string
-		dataCategory: Country
-		summarizeBy: none
-		sourceColumn: COUNTRY
+		sourceColumn: IS_WITHHELD
 
 	partition Supplier = m
 		mode: import

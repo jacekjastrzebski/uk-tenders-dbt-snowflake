@@ -1,42 +1,31 @@
-relationship notices_published_date
-	fromColumn: Notices.'Published Date'
+relationship awards_award_date
+	fromColumn: Awards.'Award Date'
 	toColumn: 'Date'.'Date'
 
-relationship notices_buyer_id
-	fromColumn: Notices.'Buyer ID'
-	toColumn: Buyer.'Buyer ID'
+relationship awards_buyer_key
+	fromColumn: Awards.'Buyer Key'
+	toColumn: Buyer.'Buyer Key'
 
-relationship notices_cpv_division
-	fromColumn: Notices.'CPV Division'
-	toColumn: Sector.'CPV Division'
-
-relationship notices_notice_type
-	fromColumn: Notices.'Notice Type'
-	toColumn: 'Notice Type'.'Notice Type'
-
-relationship awards_awarded_date
-	fromColumn: Awards.'Awarded Date'
-	toColumn: 'Date'.'Date'
-
-relationship awards_buyer_id
-	fromColumn: Awards.'Buyer ID'
-	toColumn: Buyer.'Buyer ID'
-
-relationship awards_supplier_id
-	fromColumn: Awards.'Supplier ID'
-	toColumn: Supplier.'Supplier ID'
+relationship awards_supplier_key
+	fromColumn: Awards.'Supplier Key'
+	toColumn: Supplier.'Supplier Key'
 
 relationship awards_cpv_division
 	fromColumn: Awards.'CPV Division'
 	toColumn: Sector.'CPV Division'
 
-relationship procurements_first_published_date
-	fromColumn: Procurements.'First Published Date'
+relationship procurements_tender_published_date
+	fromColumn: Procurements.'Tender Published Date'
 	toColumn: 'Date'.'Date'
 
-relationship procurements_buyer_id
-	fromColumn: Procurements.'Buyer ID'
-	toColumn: Buyer.'Buyer ID'
+relationship procurements_award_published_date
+	isActive: false
+	fromColumn: Procurements.'Award Published Date'
+	toColumn: 'Date'.'Date'
+
+relationship procurements_buyer_key
+	fromColumn: Procurements.'Buyer Key'
+	toColumn: Buyer.'Buyer Key'
 
 relationship procurements_cpv_division
 	fromColumn: Procurements.'CPV Division'

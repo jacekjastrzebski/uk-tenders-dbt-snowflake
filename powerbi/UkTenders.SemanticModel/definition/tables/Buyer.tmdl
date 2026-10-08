@@ -1,39 +1,25 @@
-/// Public bodies buying; name and address from their latest notice.
+/// Public bodies buying, from dim_buyers: one row per organisation, grouped by
+/// normalised name; the name shown is from its latest notice.
 table Buyer
 
-	column 'Buyer ID'
+	column 'Buyer Key'
 		dataType: string
 		isHidden
+		isKey
 		summarizeBy: none
-		sourceColumn: BUYER_ID
+		sourceColumn: BUYER_KEY
 
 	column Buyer
 		dataType: string
 		summarizeBy: none
 		sourceColumn: BUYER_NAME
 
-	column Locality
+	/// All organisation IDs seen for this buyer, for tracing back to notices
+	column 'Buyer IDs'
 		dataType: string
-		dataCategory: City
+		isHidden
 		summarizeBy: none
-		sourceColumn: LOCALITY
-
-	column Region
-		dataType: string
-		summarizeBy: none
-		sourceColumn: REGION
-
-	column Postcode
-		dataType: string
-		dataCategory: PostalCode
-		summarizeBy: none
-		sourceColumn: POSTCODE
-
-	column Country
-		dataType: string
-		dataCategory: Country
-		summarizeBy: none
-		sourceColumn: COUNTRY
+		sourceColumn: BUYER_IDS
 
 	partition Buyer = m
 		mode: import

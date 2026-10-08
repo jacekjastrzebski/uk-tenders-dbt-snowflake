@@ -1,28 +1,24 @@
-/// What is bought: CPV divisions grouped into sectors.
+/// What is bought: the 45 CPV divisions, from dim_cpv_divisions.
 table Sector
 
 	column 'CPV Division'
 		dataType: string
+		isKey
 		summarizeBy: none
 		sourceColumn: CPV_DIVISION
-
-	column 'CPV Division Name'
-		dataType: string
-		summarizeBy: none
-		sourceColumn: CPV_DIVISION_NAME
 
 	column Sector
 		dataType: string
 		summarizeBy: none
-		sourceColumn: SECTOR
+		sourceColumn: DIVISION_NAME
 
-	column 'Is Digital'
+	column 'Is Digital and Data'
 		dataType: boolean
 		isHidden
 		summarizeBy: none
-		sourceColumn: IS_DIGITAL
+		sourceColumn: IS_DIGITAL_AND_DATA
 
-	/// Digital and data (CPV 48, 72) or Other
+	/// Digital and data (CPV 48 software, 72 IT services) or Other
 	column Market
 		dataType: string
 		summarizeBy: none

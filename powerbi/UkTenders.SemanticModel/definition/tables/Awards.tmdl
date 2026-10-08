@@ -1,38 +1,19 @@
-/// One row per supplier on an award, deduplicated across notices.
+/// One row per supplier on an award, from fct_award_suppliers; sum Allocated Value
+/// (the supplier's equal share). Headline totals use Is In Headline (ADR 0022).
 table Awards
-
-	/// Value awarded, joint awards split equally between suppliers
-	measure 'Awarded Value' = SUM(Awards[Allocated Value])
-		formatString: £#,0
-
-	measure Awards = DISTINCTCOUNT(Awards[Award Key])
-		formatString: #,0
-
-	measure 'Suppliers Awarded' = DISTINCTCOUNT(Awards[Supplier ID])
-		formatString: #,0
-
-	measure 'Average Award Value' =
-			DIVIDE(
-			    SUMX(VALUES(Awards[Award Key]), CALCULATE(MAX(Awards[Award Value]))),
-			    [Awards]
-			)
-		formatString: £#,0
-
-	/// Share of awarded value across all suppliers in the current filters
-	measure 'Market Share' = DIVIDE([Awarded Value], CALCULATE([Awarded Value], REMOVEFILTERS(Supplier)))
-		formatString: 0.0%
 
 	column 'Award Supplier Key'
 		dataType: string
 		isHidden
+		isKey
 		summarizeBy: none
 		sourceColumn: AWARD_SUPPLIER_KEY
 
-	column 'Award Key'
+	column 'Procurement Award Key'
 		dataType: string
 		isHidden
 		summarizeBy: none
-		sourceColumn: AWARD_KEY
+		sourceColumn: PROCUREMENT_AWARD_KEY
 
 	column OCID
 		dataType: string
@@ -40,39 +21,23 @@ table Awards
 		summarizeBy: none
 		sourceColumn: OCID
 
-	column 'Award ID'
+	column 'Award Date'
+		dataType: dateTime
+		formatString: dd mmm yyyy
+		summarizeBy: none
+		sourceColumn: AWARD_DATE
+
+	column 'Buyer Key'
 		dataType: string
 		isHidden
 		summarizeBy: none
-		sourceColumn: AWARD_ID
+		sourceColumn: BUYER_KEY
 
-	column 'Notice ID'
-		dataType: string
-		summarizeBy: none
-		sourceColumn: NOTICE_ID
-
-	column 'Notice Type'
+	column 'Supplier Key'
 		dataType: string
 		isHidden
 		summarizeBy: none
-		sourceColumn: NOTICE_TYPE
-
-	column 'Award Status'
-		dataType: string
-		summarizeBy: none
-		sourceColumn: AWARD_STATUS
-
-	column 'Buyer ID'
-		dataType: string
-		isHidden
-		summarizeBy: none
-		sourceColumn: BUYER_ID
-
-	column 'Supplier ID'
-		dataType: string
-		isHidden
-		summarizeBy: none
-		sourceColumn: SUPPLIER_ID
+		sourceColumn: SUPPLIER_KEY
 
 	column 'CPV Division'
 		dataType: string
@@ -80,53 +45,54 @@ table Awards
 		summarizeBy: none
 		sourceColumn: CPV_DIVISION
 
-	column 'Awarded At'
-		dataType: dateTime
-		formatString: dd mmm yyyy hh:nn
+	column 'Award Status'
+		dataType: string
 		summarizeBy: none
-		sourceColumn: AWARDED_AT
+		sourceColumn: AWARD_STATUS
 
-	column 'Awarded Date'
-		dataType: dateTime
-		isHidden
-		formatString: dd mmm yyyy
-		summarizeBy: none
-		sourceColumn: AWARDED_DATE
-
-	column 'Contract Signed At'
-		dataType: dateTime
-		formatString: dd mmm yyyy hh:nn
-		summarizeBy: none
-		sourceColumn: CONTRACT_SIGNED_AT
-
-	column 'Supplier Count'
-		dataType: int64
-		isHidden
-		formatString: 0
-		summarizeBy: sum
-		sourceColumn: SUPPLIER_COUNT
-
-	/// Full award value, repeated per joint supplier; do not sum
-	column 'Award Value'
-		dataType: decimal
-		isHidden
-		formatString: £#,0
-		summarizeBy: sum
-		sourceColumn: AWARD_VALUE_GBP
-
-	/// Award value split equally between joint suppliers
 	column 'Allocated Value'
-		dataType: decimal
+		dataType: double
 		isHidden
 		formatString: £#,0
 		summarizeBy: sum
 		sourceColumn: ALLOCATED_VALUE_GBP
 
+	column 'Suppliers on Award'
+		dataType: int64
+		formatString: #,0
+		summarizeBy: none
+		sourceColumn: SUPPLIERS_ON_AWARD
+
+	column 'Value Source'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: VALUE_SOURCE
+
+	column 'Date Source'
+		dataType: string
+		summarizeBy: none
+		sourceColumn: DATE_SOURCE
+
+	column 'Is Framework'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: IS_FRAMEWORK
+
+	column 'Is Large Value'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: IS_LARGE_VALUE
+
+	column 'Is In Headline'
+		dataType: boolean
+		summarizeBy: none
+		sourceColumn: IS_IN_HEADLINE
+
 	partition Awards = m
 		mode: import
 		source =
 				let
-				    Source = Marts{[Name = "FCT_AWARDS", Kind = "Table"]}[Data]
+				    Source = Marts{[Name = "FCT_AWARD_SUPPLIERS", Kind = "Table"]}[Data]
 				in
 				    Source
 
