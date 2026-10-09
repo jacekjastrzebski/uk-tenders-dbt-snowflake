@@ -149,6 +149,12 @@ gh workflow run deploy.yml --ref main
 gh run watch
 ```
 
+The deploy also creates the Power BI refresh alert, which emails when nothing has read the marts by 90 minutes after a build. Until Power BI is set up (step 10), suspend it:
+
+```bash
+snow sql -c tender -q "ALTER ALERT TENDER_DB.DBT.POWERBI_REFRESH_MISSED SUSPEND"
+```
+
 The tasks are now scheduled: loads at 07:00, 10:00, 13:00, 16:00 and 19:00 UK time, dbt 20 minutes later. From now on, merging to `main` deploys only what changed since the `deployed` tag, after the CI checks pass ([flows.md → Change to production](diagrams/flows.md#change-to-production)).
 
 A good first change: point the loader's `USER_AGENT` (`ingestion/load_find_a_tender.py`) at your fork, so the API's operators can see who is calling, and push it to `main`. The deploy uploads the new loader.
@@ -204,11 +210,17 @@ ORDER BY
     table_name"
 ```
 
-Six mart tables with rows, and `SUCCEEDED` for both tasks, means the pipeline works end to end.
+Seven mart tables with rows, and `SUCCEEDED` for both tasks, means the pipeline works end to end.
 
 ## 10. Power BI
 
 Follow [powerbi.md → Set up your own](powerbi.md#set-up-your-own): a Snowflake user `TENDER_POWERBI` that holds only `TENDER_REPORTER` and signs in with a key pair, then Power BI Desktop, connecting and refreshing, and optionally publishing with a scheduled refresh after each dbt build.
+
+Once the scheduled refresh runs, turn the refresh alert back on (it was suspended in step 6); without a scheduled refresh, leave it off:
+
+```bash
+snow sql -c tender -q "ALTER ALERT TENDER_DB.DBT.POWERBI_REFRESH_MISSED RESUME"
+```
 
 ## Run it
 
@@ -237,7 +249,7 @@ snow sql -c tender -q "ALTER TASK TENDER_DB.RAW.INGEST_FIND_A_TENDER SUSPEND;
 
 ## Remove it
 
-No need to suspend anything first: dropping the database drops its tasks, alerts, procedures and stage. Drop the API integration before the database, because it refers to the network rule in `RAW`.
+Replace `<GUEST_USER>` with the guest's user name from step 4, or delete that line if you didn't create one. No need to suspend anything first: dropping the database drops its tasks, alerts, procedures and stage. Drop the API integration before the database, because it refers to the network rule in `RAW`.
 
 ```bash
 snow sql -c tender -q "USE ROLE ACCOUNTADMIN;
@@ -245,14 +257,18 @@ snow sql -c tender -q "USE ROLE ACCOUNTADMIN;
   DROP INTEGRATION IF EXISTS TENDER_EMAIL;
   DROP DATABASE IF EXISTS TENDER_DB;
   DROP WAREHOUSE IF EXISTS TENDER_WH;
+  DROP WAREHOUSE IF EXISTS TENDER_VIEWER_WH;
   DROP RESOURCE MONITOR IF EXISTS TENDER_WH_MONITOR;
+  DROP RESOURCE MONITOR IF EXISTS TENDER_VIEWER_MONITOR;
   DROP USER IF EXISTS TENDER_DEPLOY;
   DROP USER IF EXISTS TENDER_POWERBI;
   DROP USER IF EXISTS TENDER_CI;
+  DROP USER IF EXISTS <GUEST_USER>;
   DROP ROLE IF EXISTS TENDER_INGEST;
   DROP ROLE IF EXISTS TENDER_TRANSFORM;
   DROP ROLE IF EXISTS TENDER_REPORTER;
-  DROP ROLE IF EXISTS TENDER_CI"
+  DROP ROLE IF EXISTS TENDER_CI;
+  DROP ROLE IF EXISTS TENDER_VIEWER"
 ```
 
 Then delete the GitHub secrets (`gh secret delete <name>`), the environment (`gh api -X DELETE "repos/{owner}/{repo}/environments/production"`) and the published report, if any.
