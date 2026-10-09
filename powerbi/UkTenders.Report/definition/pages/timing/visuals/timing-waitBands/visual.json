@@ -631,8 +631,13 @@
             },
             "text": {
               "expr": {
-                "Literal": {
-                  "Value": "'How long tenders wait for an award'"
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Procurements"
+                    }
+                  },
+                  "Property": "Wait Chart Title"
                 }
               }
             }

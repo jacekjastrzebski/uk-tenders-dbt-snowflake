@@ -1,11 +1,11 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
-  "name": "timing-slicerMarket",
+  "name": "timing-slicerMonths",
   "position": {
-    "x": 16,
-    "y": 146,
-    "z": 2,
-    "height": 44,
+    "x": 772,
+    "y": 122,
+    "z": 45,
+    "height": 68,
     "width": 236,
     "tabOrder": 0
   },
@@ -20,14 +20,14 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Sector"
+                      "Entity": "Date"
                     }
                   },
-                  "Property": "Market"
+                  "Property": "Date"
                 }
               },
-              "queryRef": "Sector.Market",
-              "nativeQueryRef": "Market",
+              "queryRef": "Date.Date",
+              "nativeQueryRef": "Date",
               "active": true
             }
           ]
@@ -41,7 +41,7 @@
             "mode": {
               "expr": {
                 "Literal": {
-                  "Value": "'Dropdown'"
+                  "Value": "'Between'"
                 }
               }
             }
@@ -59,11 +59,6 @@
               }
             }
           }
-        }
-      ],
-      "general": [
-        {
-          "properties": {}
         }
       ]
     },
@@ -167,11 +162,6 @@
           }
         }
       ]
-    },
-    "syncGroup": {
-      "groupName": "Market",
-      "fieldChanges": true,
-      "filterChanges": true
     },
     "drillFilterOtherVisuals": true
   }

@@ -29,6 +29,7 @@ ref table 'Closing Window'
 ref table 'Colour Group'
 ref table 'Wait Band'
 ref table 'Win Band'
+ref table Stage
 
 ref cultureInfo en-GB
 

@@ -1,11 +1,11 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
-  "name": "timing-slicerMarketLabel",
+  "name": "timing-slicerStageLabel",
   "position": {
-    "x": 16,
+    "x": 1024,
     "y": 96,
-    "z": 1,
-    "width": 236,
+    "z": 46,
+    "width": 240,
     "height": 96,
     "tabOrder": 0
   },
@@ -19,7 +19,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "Market",
+                    "value": "Stage",
                     "textStyle": {
                       "fontFamily": "'DM Sans', 'Segoe UI Semibold', wf_segoe-ui_semibold, helvetica, arial, sans-serif",
                       "fontSize": "12pt",
@@ -31,7 +31,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "Choose one or more",
+                    "value": "Switches the chart and table",
                     "textStyle": {
                       "fontFamily": "'DM Sans', 'Segoe UI', wf_segoe-ui_normal, helvetica, arial, sans-serif",
                       "fontSize": "9pt",
@@ -61,7 +61,7 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#FFFFFF'"
+                      "Value": "'#FDF0F5'"
                     }
                   }
                 }
@@ -92,7 +92,7 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#DDE4E6'"
+                      "Value": "'#E07FA3'"
                     }
                   }
                 }

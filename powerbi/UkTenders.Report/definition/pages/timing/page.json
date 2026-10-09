@@ -78,27 +78,5 @@
         }
       }
     ]
-  },
-  "visualInteractions": [
-    {
-      "source": "timing-slicerDays",
-      "target": "timing-waitBands",
-      "type": "NoFilter"
-    },
-    {
-      "source": "timing-slicerDays",
-      "target": "timing-kpiDaysToAward",
-      "type": "NoFilter"
-    },
-    {
-      "source": "timing-slicerDays",
-      "target": "timing-kpiDaysToContract",
-      "type": "NoFilter"
-    },
-    {
-      "source": "timing-slicerDays",
-      "target": "timing-kpiTendersAwarded",
-      "type": "NoFilter"
-    }
-  ]
+  }
 }

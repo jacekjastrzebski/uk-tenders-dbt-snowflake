@@ -51,12 +51,12 @@
                       "Entity": "Procurements"
                     }
                   },
-                  "Property": "Median Days Tender to Award"
+                  "Property": "Days in Chosen Band"
                 }
               },
-              "queryRef": "Procurements.Median Days Tender to Award",
-              "nativeQueryRef": "Median Days Tender to Award",
-              "displayName": "Days to award"
+              "queryRef": "Procurements.Days in Chosen Band",
+              "nativeQueryRef": "Days in Chosen Band",
+              "displayName": "Days"
             }
           ]
         }
@@ -71,7 +71,7 @@
                     "Entity": "Procurements"
                   }
                 },
-                "Property": "Median Days Tender to Award"
+                "Property": "Days in Chosen Band"
               }
             },
             "direction": "Descending"
@@ -133,7 +133,7 @@
             }
           },
           "selector": {
-            "metadata": "Procurements.Median Days Tender to Award"
+            "metadata": "Procurements.Days in Chosen Band"
           }
         }
       ],
@@ -222,7 +222,7 @@
             }
           },
           "selector": {
-            "metadata": "Procurements.Median Days Tender to Award"
+            "metadata": "Procurements.Days in Chosen Band"
           }
         },
         {
@@ -292,8 +292,13 @@
             },
             "text": {
               "expr": {
-                "Literal": {
-                  "Value": "'From Tender to Award'"
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Procurements"
+                    }
+                  },
+                  "Property": "Wait Table Title"
                 }
               }
             }
