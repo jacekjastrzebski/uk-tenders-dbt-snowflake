@@ -287,27 +287,6 @@ cultureInfo en-GB
 			        }
 			      ]
 			    },
-			    "procurements.median_days_to_award_by_group": {
-			      "Definition": {
-			        "Binding": {
-			          "ConceptualEntity": "Procurements",
-			          "ConceptualProperty": "Median Days to Award by Group"
-			        }
-			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "Median days to award": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
-			    },
 			    "procurements.median_days_award_to_contract": {
 			      "Definition": {
 			        "Binding": {
@@ -361,6 +340,132 @@ cultureInfo en-GB
 			      "Terms": [
 			        {
 			          "Sector": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "awards.share_of_suppliers_in_win_band": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Awards",
+			          "ConceptualProperty": "Share of Suppliers in Win Band"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Share of suppliers": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "awards.share_of_value_in_win_band": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Awards",
+			          "ConceptualProperty": "Share of Value in Win Band"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Share of awarded value": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "procurements.ocid": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Procurements",
+			          "ConceptualProperty": "OCID"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Procurement ID": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "procurements.share_in_wait_band_by_group": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Procurements",
+			          "ConceptualProperty": "Share in Wait Band by Group"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Share of tenders": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "win_band.wins": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Win Band",
+			          "ConceptualProperty": "Wins"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Won": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "wait_band.wait": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Wait Band",
+			          "ConceptualProperty": "Wait"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Wait for an award": {
 			            "State": "Suggested",
 			            "Source": {
 			              "Type": "External",

@@ -39,7 +39,7 @@
                     }
                   },
                   {
-                    "value": "Suppliers' share of awarded value",
+                    "value": "Suppliers' share of awarded value, and how often they win",
                     "textStyle": {
                       "fontFamily": "'DM Sans', 'Segoe UI', wf_segoe-ui_normal, helvetica, arial, sans-serif",
                       "fontSize": "11pt",

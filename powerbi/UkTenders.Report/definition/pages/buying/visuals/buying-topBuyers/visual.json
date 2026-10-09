@@ -5,7 +5,7 @@
     "x": 16,
     "y": 304,
     "z": 4,
-    "height": 376,
+    "height": 360,
     "width": 616,
     "tabOrder": 4
   },
@@ -678,7 +678,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Top 12 buyers by awarded value'"
+                  "Value": "'Top 10 buyers by awarded value'"
                 }
               }
             }
@@ -752,7 +752,7 @@
                         }
                       }
                     ],
-                    "Top": 12
+                    "Top": 10
                   }
                 }
               },

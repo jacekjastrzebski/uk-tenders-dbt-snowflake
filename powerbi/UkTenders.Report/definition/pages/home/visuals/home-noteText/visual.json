@@ -1,13 +1,13 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
-  "name": "winning-note",
+  "name": "home-noteText",
   "position": {
-    "x": 16,
-    "y": 668,
-    "z": 4,
-    "width": 1248,
-    "height": 48,
-    "tabOrder": 4
+    "x": 108,
+    "y": 672,
+    "z": 55,
+    "width": 1140,
+    "height": 24,
+    "tabOrder": 55
   },
   "visual": {
     "visualType": "actionButton",
@@ -45,7 +45,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Please note:'"
+                  "Value": "'Award totals leave out frameworks (spending caps), awards of £100m or more, awards from procurements begun before 24 Feb 2025 and awards with no value.'"
                 }
               }
             },
@@ -77,14 +77,7 @@
             "verticalAlignment": {
               "expr": {
                 "Literal": {
-                  "Value": "'middle'"
-                }
-              }
-            },
-            "bold": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
+                  "Value": "'bottom'"
                 }
               }
             }
@@ -177,25 +170,7 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
-                }
-              }
-            },
-            "color": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#FFFFFF'"
-                    }
-                  }
-                }
-              }
-            },
-            "transparency": {
-              "expr": {
-                "Literal": {
-                  "Value": "0D"
+                  "Value": "false"
                 }
               }
             }
@@ -208,59 +183,7 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "true"
-                }
-              }
-            },
-            "color": {
-              "solid": {
-                "color": {
-                  "expr": {
-                    "Literal": {
-                      "Value": "'#DDE4E6'"
-                    }
-                  }
-                }
-              }
-            },
-            "radius": {
-              "expr": {
-                "Literal": {
-                  "Value": "8D"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "padding": [
-        {
-          "properties": {
-            "left": {
-              "expr": {
-                "Literal": {
-                  "Value": "16D"
-                }
-              }
-            },
-            "right": {
-              "expr": {
-                "Literal": {
-                  "Value": "16D"
-                }
-              }
-            },
-            "top": {
-              "expr": {
-                "Literal": {
-                  "Value": "0D"
-                }
-              }
-            },
-            "bottom": {
-              "expr": {
-                "Literal": {
-                  "Value": "0D"
+                  "Value": "false"
                 }
               }
             }

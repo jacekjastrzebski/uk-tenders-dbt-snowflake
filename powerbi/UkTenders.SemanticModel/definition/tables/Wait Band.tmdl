@@ -1,0 +1,53 @@
+/// Bands for "How long tenders wait for an award" on How long to award?; not linked to any table.
+/// Tenders in Wait Band counts tenders whose days from tender to award fall in the band.
+table 'Wait Band'
+	lineageTag: e34e7d31-91bd-4555-b7b1-e7c09fe8dafc
+
+	/// Shown on the chart's axis, in Order
+	column Wait
+		dataType: string
+		lineageTag: 6c97c786-509e-4927-ac22-3a6b4454f4e6
+		summarizeBy: none
+		sourceColumn: [Wait]
+		sortByColumn: Order
+
+	column Order
+		dataType: int64
+		isHidden
+		lineageTag: 88d332eb-93fe-4a28-87d7-9ec50cfc77b5
+		summarizeBy: none
+		sourceColumn: [Order]
+
+	column 'From Days'
+		dataType: int64
+		isHidden
+		lineageTag: 7df4cb21-ab36-4d0f-b4d3-3563932b500f
+		summarizeBy: none
+		sourceColumn: [From Days]
+
+	column 'To Days'
+		dataType: int64
+		isHidden
+		lineageTag: f9ae8da9-aec1-4d81-a630-4597ea36fc3e
+		summarizeBy: none
+		sourceColumn: [To Days]
+
+	partition 'Wait Band' = calculated
+		mode: import
+		source =
+				DATATABLE(
+				    "Wait", STRING,
+				    "Order", INTEGER,
+				    "From Days", INTEGER,
+				    "To Days", INTEGER,
+				    {
+				        { "Within a month", 1, 0, 30 },
+				        { "1–3 months", 2, 31, 90 },
+				        { "3–6 months", 3, 91, 180 },
+				        { "6–12 months", 4, 181, 365 },
+				        { "Over a year", 5, 366, 100000 }
+				    }
+				)
+
+	annotation PBI_ResultType = Table
+

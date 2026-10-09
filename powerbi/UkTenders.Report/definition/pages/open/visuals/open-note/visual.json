@@ -1,13 +1,13 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
-  "name": "winning-note",
+  "name": "open-note",
   "position": {
     "x": 16,
     "y": 668,
-    "z": 4,
+    "z": 43,
     "width": 1248,
     "height": 48,
-    "tabOrder": 4
+    "tabOrder": 2
   },
   "visual": {
     "visualType": "actionButton",

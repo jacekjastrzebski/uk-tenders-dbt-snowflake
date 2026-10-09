@@ -13,17 +13,29 @@ table Awards
 		formatString: #,0
 		lineageTag: ee4cbf8f-0180-4064-bce7-fa2900c3971a
 
+	/// Distinct named suppliers in the headline totals (unknown and withheld left out)
 	measure 'Suppliers Awarded' =
 			CALCULATE(
 			    DISTINCTCOUNT(Awards[Supplier Key]),
 			    KEEPFILTERS(Awards[Is In Headline] = TRUE()),
-			    KEEPFILTERS(Awards[Supplier Key] <> "UNKNOWN SUPPLIER")
+			    KEEPFILTERS(Awards[Supplier Key] <> "UNKNOWN SUPPLIER"),
+			    KEEPFILTERS(Supplier[Is Withheld] = FALSE())
 			)
 		formatString: #,0
 		lineageTag: abdeb640-7234-470a-881f-4fc8ac7f6574
 
-	/// Share of awarded value across all suppliers in the current filters
-	measure 'Market Share' = DIVIDE([Awarded Value], CALCULATE([Awarded Value], REMOVEFILTERS(Supplier)))
+	/// Share of awarded value among named suppliers (unknown and withheld left out), so the
+	/// supplier table's shares add up to 100%, as Top 10 Supplier Share does
+	measure 'Market Share' =
+			VAR NamedSuppliersValue =
+			    CALCULATE(
+			        [Awarded Value],
+			        REMOVEFILTERS(Supplier),
+			        Supplier[Supplier Key] <> "UNKNOWN SUPPLIER",
+			        Supplier[Is Withheld] = FALSE()
+			    )
+			RETURN
+			    DIVIDE([Awarded Value], NamedSuppliersValue)
 		formatString: 0.0%
 		lineageTag: 1a41a9ed-9139-4659-9de7-feeed6166cbc
 
@@ -59,16 +71,6 @@ table Awards
 		formatString: #,0
 		lineageTag: ac189e66-63dc-417f-ba91-12f5ea39f922
 
-	/// Top of the monthly trend's value axis: the highest line in any month plus 20% headroom
-	measure 'Monthly Trend Axis Max' =
-			MAXX(
-			    CROSSJOIN(VALUES('Date'[Month Start]), VALUES('Colour Group'[Group])),
-			    [Awarded Value by Group]
-			) * 1.2
-		formatString: £#,0
-		isHidden
-		lineageTag: 2d3ca6dc-78be-446b-9f11-32261e03085b
-
 	/// Awarded Value split by legend group (table Colour Group): Digital and data / Other markets
 	/// when no market is chosen, otherwise one group per chosen market. Bar totals equal Awarded Value.
 	measure 'Awarded Value by Group' =
@@ -89,6 +91,151 @@ table Awards
 			    )
 		formatString: £#,0
 		lineageTag: 0bb87b60-ae5d-4869-9625-0e6f67511a73
+
+	/// Value of the awards in Large Awards
+	measure 'Large Award Value' =
+			CALCULATE(
+			    SUM(Awards[Allocated Value]),
+			    KEEPFILTERS(Awards[Is Large Value] = TRUE()),
+			    KEEPFILTERS(Awards[Is Framework] = FALSE())
+			)
+		formatString: £#,0
+		displayFolder: Not in totals
+		lineageTag: 9aabdf4c-25cd-4580-8957-3f2e7d756d7d
+
+	/// Framework set-ups: their value is a ceiling, not spend
+	measure 'Framework Awards' = CALCULATE(DISTINCTCOUNT(Awards[Procurement Award Key]), KEEPFILTERS(Awards[Is Framework] = TRUE()))
+		formatString: #,0
+		displayFolder: Not in totals
+		lineageTag: 4aa8ff7c-d97f-43c5-8cea-90b09cc79333
+
+	/// Awards under the rules before the Procurement Act that aren't already a framework or a large award
+	measure 'Old Regime Awards' =
+			CALCULATE(
+			    DISTINCTCOUNT(Awards[Procurement Award Key]),
+			    KEEPFILTERS(Awards[Is Old Regime] = TRUE()),
+			    KEEPFILTERS(Awards[Is Framework] = FALSE()),
+			    KEEPFILTERS(Awards[Is Large Value] = FALSE())
+			)
+		formatString: #,0
+		displayFolder: Not in totals
+		lineageTag: 3215c0af-34c6-4cb9-a32b-901dc23387ae
+
+	/// Value of the awards in Old Regime Awards
+	measure 'Old Regime Value' =
+			CALCULATE(
+			    SUM(Awards[Allocated Value]),
+			    KEEPFILTERS(Awards[Is Old Regime] = TRUE()),
+			    KEEPFILTERS(Awards[Is Framework] = FALSE()),
+			    KEEPFILTERS(Awards[Is Large Value] = FALSE())
+			)
+		formatString: £#,0
+		displayFolder: Not in totals
+		lineageTag: 64b00f04-c6e4-4e5b-9e75-83217623742e
+
+	/// Footnote on Who's buying? and Who's winning?: the months covered and what the totals leave out,
+	/// under the current filters. Each award counts once: frameworks, then large awards, then old
+	/// rules, then no value. Shown as a button's text, the way to put a measure into a line of text
+	measure 'Exclusions Note' =
+			VAR LargeValue = [Large Award Value] + 0
+			VAR OldValue = [Old Regime Value] + 0
+			VAR LargeText = IF(LargeValue >= 1000000000, FORMAT(LargeValue / 1000000000, "£0.0") & "bn", FORMAT(LargeValue / 1000000, "£0") & "m")
+			VAR OldText = IF(OldValue >= 1000000000, FORMAT(OldValue / 1000000000, "£0.0") & "bn", FORMAT(OldValue / 1000000, "£0") & "m")
+			// the months the page filter covers, e.g. Oct 2025 to Sep 2026
+			VAR Period = FORMAT(MIN('Date'[Date]), "mmm yyyy") & " to " & FORMAT(MAX('Date'[Date]), "mmm yyyy")
+			RETURN
+			    "Awards published " & Period & ". Left out of the totals: "
+			        & FORMAT([Framework Awards] + 0, "#,0") & " frameworks and other multi-supplier awards (spending caps, not money spent), "
+			        & FORMAT([Large Awards] + 0, "#,0") & " awards of £100m or more (" & LargeText & ", would swamp the rest), "
+			        & FORMAT([Old Regime Awards] + 0, "#,0") & " awards from procurements begun before 24 Feb 2025 (" & OldText & ") and "
+			        & FORMAT([No Value Awards] + 0, "#,0") & " awards with no value given."
+		displayFolder: Not in totals
+		lineageTag: 945923a8-ba2d-4658-a723-e208c33fd48b
+
+	/// Named suppliers whose number of awards falls in the band on the axis (table Win Band)
+	measure 'Suppliers in Win Band' =
+			VAR FromAwards = SELECTEDVALUE('Win Band'[From Awards])
+			VAR ToAwards = SELECTEDVALUE('Win Band'[To Awards])
+			VAR SuppliersInBand =
+			    FILTER(
+			        CALCULATETABLE(
+			            VALUES(Awards[Supplier Key]),
+			            KEEPFILTERS(Awards[Is In Headline] = TRUE()),
+			            KEEPFILTERS(Awards[Supplier Key] <> "UNKNOWN SUPPLIER"),
+			            KEEPFILTERS(Supplier[Is Withheld] = FALSE())
+			        ),
+			        VAR Wins = [Awards]
+			        RETURN
+			            Wins >= FromAwards && Wins <= ToAwards
+			    )
+			RETURN
+			    COUNTROWS(SuppliersInBand)
+		formatString: #,0
+		displayFolder: Win bands
+		lineageTag: 781c35f0-2516-4baf-ab72-160c61fa04ee
+
+	/// Share of named suppliers in the band; the bands add up to 100%. Labelled "68% of suppliers"
+	measure 'Share of Suppliers in Win Band' = DIVIDE([Suppliers in Win Band], [Suppliers Awarded])
+		displayFolder: Win bands
+		lineageTag: 8cf89fc9-93f8-4e03-b996-cbf891659880
+
+		formatStringDefinition = "0%"" of suppliers"""
+
+	/// Share of named suppliers' awarded value won by the suppliers in the band; the bands add up to
+	/// 100%. Labelled "30% of awarded value"
+	measure 'Share of Value in Win Band' =
+			VAR FromAwards = SELECTEDVALUE('Win Band'[From Awards])
+			VAR ToAwards = SELECTEDVALUE('Win Band'[To Awards])
+			VAR SuppliersInBand =
+			    FILTER(
+			        CALCULATETABLE(
+			            VALUES(Awards[Supplier Key]),
+			            KEEPFILTERS(Awards[Is In Headline] = TRUE()),
+			            KEEPFILTERS(Awards[Supplier Key] <> "UNKNOWN SUPPLIER"),
+			            KEEPFILTERS(Supplier[Is Withheld] = FALSE())
+			        ),
+			        VAR Wins = [Awards]
+			        RETURN
+			            Wins >= FromAwards && Wins <= ToAwards
+			    )
+			VAR NamedSuppliersValue =
+			    CALCULATE(
+			        [Awarded Value],
+			        KEEPFILTERS(Awards[Supplier Key] <> "UNKNOWN SUPPLIER"),
+			        KEEPFILTERS(Supplier[Is Withheld] = FALSE())
+			    )
+			RETURN
+			    DIVIDE(CALCULATE([Awarded Value], SuppliersInBand), NamedSuppliersValue)
+		displayFolder: Win bands
+		lineageTag: 8deb9bff-f027-49f3-ae6e-dc5a5267fdf7
+
+		formatStringDefinition = "0%"" of awarded value"""
+
+	/// Subtitle of "How often suppliers win": the chart's story in words, under the current filters
+	measure 'Win Chart Story' =
+			VAR OnceSuppliers = CALCULATE([Share of Suppliers in Win Band], 'Win Band'[Wins] = "Once")
+			VAR FrequentSuppliers = CALCULATE([Share of Suppliers in Win Band], 'Win Band'[Wins] = "10 or more")
+			VAR FrequentValue = CALCULATE([Share of Value in Win Band], 'Win Band'[Wins] = "10 or more")
+			RETURN
+			    FORMAT(OnceSuppliers + 0, "0%") & " of suppliers won just once; the "
+			        & FORMAT(FrequentSuppliers + 0, "0%") & " who won 10 or more times took "
+			        & FORMAT(FrequentValue + 0, "0%") & " of the awarded value."
+		displayFolder: Win bands
+		lineageTag: 2a235781-d807-4068-8b33-fa452beaf769
+
+	/// Awards left out of the totals only because no value was published (or no exchange rate),
+	/// so not already a framework, a large award or an old-regime award
+	measure 'No Value Awards' =
+			CALCULATE(
+			    DISTINCTCOUNT(Awards[Procurement Award Key]),
+			    KEEPFILTERS(Awards[Is In Headline] = FALSE()),
+			    KEEPFILTERS(Awards[Is Framework] = FALSE()),
+			    KEEPFILTERS(Awards[Is Large Value] = FALSE()),
+			    KEEPFILTERS(Awards[Is Old Regime] = FALSE())
+			)
+		formatString: #,0
+		displayFolder: Not in totals
+		lineageTag: 00552950-5615-4932-a4c3-da4cc5ed0e17
 
 	column 'Award Supplier Key'
 		dataType: string
@@ -194,6 +341,12 @@ table Awards
 		lineageTag: 60d951a2-56b2-460a-9809-9dc0a59bc132
 		summarizeBy: none
 		sourceColumn: IS_IN_HEADLINE
+
+	column 'Is Old Regime'
+		dataType: boolean
+		lineageTag: d3f9a56a-da3a-43a0-a662-0187c7cad4f7
+		summarizeBy: none
+		sourceColumn: IS_OLD_REGIME
 
 	partition Awards = m
 		mode: import

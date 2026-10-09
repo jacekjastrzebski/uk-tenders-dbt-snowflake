@@ -27,6 +27,8 @@ ref table 'Data Freshness'
 ref table Navigation
 ref table 'Closing Window'
 ref table 'Colour Group'
+ref table 'Wait Band'
+ref table 'Win Band'
 
 ref cultureInfo en-GB
 

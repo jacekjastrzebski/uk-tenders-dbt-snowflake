@@ -31,7 +31,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "The data starts on 24 February 2025, the day the Procurement Act 2023 came into force. Since then every notice follows the same rules and says whether it's a tender, an award or a contract, so a purchase can be followed from start to finish. Older notices work differently, so they're left out.",
+                    "value": "The data starts on 24 February 2025, the day the Procurement Act 2023 came into force. Since then every notice follows the same rules and says whether it's a tender, an award or a contract, so a purchase can be followed from start to finish. Procurements started under the pre-2025 rules work differently, so they're left out of the totals.",
                     "textStyle": {
                       "fontFamily": "'DM Sans', 'Segoe UI', wf_segoe-ui_normal, helvetica, arial, sans-serif",
                       "fontSize": "9.5pt",
