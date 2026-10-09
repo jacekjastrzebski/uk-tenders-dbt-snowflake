@@ -1,12 +1,12 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
   "name": "home-header",
   "position": {
     "x": 16,
     "y": 8,
     "z": 0,
-    "width": 1248,
     "height": 80,
+    "width": 1248,
     "tabOrder": 0
   },
   "visual": {
@@ -21,9 +21,9 @@
                   {
                     "value": "UK public tenders",
                     "textStyle": {
-                      "fontFamily": "'DM Sans', 'Segoe UI Semibold', wf_segoe-ui_semibold, helvetica, arial, sans-serif",
+                      "fontFamily": "DM Sans, Segoe UI Semibold, wf_segoe-ui_semibold, helvetica, arial, sans-serif",
                       "fontSize": "20pt",
-                      "color": "#FFFFFF"
+                      "color": "#ffffff"
                     }
                   }
                 ]
@@ -33,17 +33,17 @@
                   {
                     "value": "Home  ",
                     "textStyle": {
-                      "fontFamily": "'DM Sans', 'Segoe UI Semibold', wf_segoe-ui_semibold, helvetica, arial, sans-serif",
+                      "fontFamily": "DM Sans, Segoe UI Semibold, wf_segoe-ui_semibold, helvetica, arial, sans-serif",
                       "fontSize": "11pt",
-                      "color": "#E07FA3"
+                      "color": "#e07fa3"
                     }
                   },
                   {
                     "value": "A market tracker for UK public-sector contracts",
                     "textStyle": {
-                      "fontFamily": "'DM Sans', 'Segoe UI', wf_segoe-ui_normal, helvetica, arial, sans-serif",
+                      "fontFamily": "DM Sans, Segoe UI, wf_segoe-ui_normal, helvetica, arial, sans-serif",
                       "fontSize": "11pt",
-                      "color": "#FFFFFF"
+                      "color": "#ffffff"
                     }
                   }
                 ]

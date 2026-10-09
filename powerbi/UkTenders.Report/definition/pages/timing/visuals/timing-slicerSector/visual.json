@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
   "name": "timing-slicerSector",
   "position": {
-    "x": 332,
+    "x": 268,
     "y": 146,
     "z": 2,
     "height": 44,
-    "width": 300,
+    "width": 236,
     "tabOrder": 0
   },
   "visual": {

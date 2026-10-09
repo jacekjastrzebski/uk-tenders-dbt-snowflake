@@ -1,0 +1,33 @@
+/// Choices for the "Stage" slicer on How long to award?; not linked to any table.
+/// The wait chart, its table and their titles show the chosen stage (tender to award when none).
+table Stage
+	lineageTag: 7d619e12-8bd8-42f2-a706-3848063edc71
+
+	column Stage
+		dataType: string
+		lineageTag: 8fe78d09-7479-4d6e-9646-7cfd44b92157
+		summarizeBy: none
+		sourceColumn: [Stage]
+		sortByColumn: Order
+
+	column Order
+		dataType: int64
+		isHidden
+		lineageTag: 9df67827-9a2f-437c-9367-1cb9946767bb
+		summarizeBy: none
+		sourceColumn: [Order]
+
+	partition Stage = calculated
+		mode: import
+		source =
+				DATATABLE(
+				    "Stage", STRING,
+				    "Order", INTEGER,
+				    {
+				        { "Tender to award", 1 },
+				        { "Award to contract", 2 }
+				    }
+				)
+
+	annotation PBI_ResultType = Table
+

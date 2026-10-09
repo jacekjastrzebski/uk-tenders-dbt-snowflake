@@ -1,11 +1,11 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
-  "name": "timing-slicerDaysLabel",
+  "name": "timing-slicerMonthsLabel",
   "position": {
-    "x": 964,
+    "x": 772,
     "y": 96,
-    "z": 1,
-    "width": 300,
+    "z": 44,
+    "width": 236,
     "height": 96,
     "tabOrder": 0
   },
@@ -19,7 +19,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "Days to award",
+                    "value": "Award months",
                     "textStyle": {
                       "fontFamily": "'DM Sans', 'Segoe UI Semibold', wf_segoe-ui_semibold, helvetica, arial, sans-serif",
                       "fontSize": "12pt",

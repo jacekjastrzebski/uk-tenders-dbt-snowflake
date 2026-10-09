@@ -70,7 +70,14 @@ table Procurements
 		displayFolder: Timings
 		lineageTag: 88b20e99-956c-48a4-90e3-f7cfa7bb0bdb
 
-	measure 'Median Days Award to Contract' = CALCULATE(MEDIAN(Procurements[Days Award to Contract]), USERELATIONSHIP(Procurements[Award Published Date], 'Date'[Date]))
+	/// Only awards at least 3 months old: contracts for newer awards are often not published yet, so
+	/// counting them would leave only the quick ones and make the wait look shorter than it is
+	measure 'Median Days Award to Contract' =
+			CALCULATE(
+			    MEDIAN(Procurements[Days Award to Contract]),
+			    USERELATIONSHIP(Procurements[Award Published Date], 'Date'[Date]),
+			    KEEPFILTERS(Procurements[Award Published Date] <= TODAY() - 91)
+			)
 		formatString: 0
 		displayFolder: Timings
 		lineageTag: 23b78e08-8560-453b-93cf-79a79e7efce1
@@ -86,29 +93,98 @@ table Procurements
 		displayFolder: Timings
 		lineageTag: 7b92cdb9-161f-4648-bb09-19728a5a4db1
 
-	/// Tenders awarded whose days from tender to award fall in the band on the axis (table Wait Band)
+	/// Days for the stage chosen in the Stage slicer (tender to award when none is chosen):
+	/// a tender's own days in a table row, the median elsewhere
+	measure 'Days for Stage' =
+			VAR StageName = SELECTEDVALUE(Stage[Stage], "Tender to award")
+			RETURN
+			    IF(StageName = "Award to contract", [Median Days Award to Contract], [Median Days Tender to Award])
+		formatString: 0
+		displayFolder: Timings
+		lineageTag: a14d73aa-c309-450a-9758-20b27647a011
+
+	/// Tenders awarded with days known for the chosen stage; for award to contract, only awards
+	/// at least 3 months old, as in Median Days Award to Contract
+	measure 'Tenders Timed' =
+			VAR StageName = SELECTEDVALUE(Stage[Stage], "Tender to award")
+			RETURN
+			    IF(
+			        StageName = "Award to contract",
+			        CALCULATE(
+			            [Tenders Awarded],
+			            KEEPFILTERS(NOT ISBLANK(Procurements[Days Award to Contract])),
+			            KEEPFILTERS(Procurements[Award Published Date] <= TODAY() - 91)
+			        ),
+			        CALCULATE([Tenders Awarded], KEEPFILTERS(NOT ISBLANK(Procurements[Days Tender to Award])))
+			    )
+		formatString: #,0
+		displayFolder: Timings
+		lineageTag: f7be6073-24b3-480b-9e06-b846dc066bb3
+
+	/// Tenders Timed whose days for the chosen stage fall in the band on the axis (table Wait Band)
 	measure 'Tenders in Wait Band' =
 			VAR FromDays = SELECTEDVALUE('Wait Band'[From Days])
 			VAR ToDays = SELECTEDVALUE('Wait Band'[To Days])
+			VAR StageName = SELECTEDVALUE(Stage[Stage], "Tender to award")
 			RETURN
-			    CALCULATE(
-			        [Tenders Awarded],
-			        KEEPFILTERS(Procurements[Days Tender to Award] >= FromDays),
-			        KEEPFILTERS(Procurements[Days Tender to Award] <= ToDays)
+			    IF(
+			        StageName = "Award to contract",
+			        CALCULATE(
+			            [Tenders Timed],
+			            KEEPFILTERS(Procurements[Days Award to Contract] >= FromDays),
+			            KEEPFILTERS(Procurements[Days Award to Contract] <= ToDays)
+			        ),
+			        CALCULATE(
+			            [Tenders Timed],
+			            KEEPFILTERS(Procurements[Days Tender to Award] >= FromDays),
+			            KEEPFILTERS(Procurements[Days Tender to Award] <= ToDays)
+			        )
 			    )
 		formatString: #,0
 		displayFolder: Timings
 		lineageTag: f55e7eec-5bad-44da-b616-6e41b09aad1a
 
-	/// Share of the tenders awarded (with known days) that fall in the band; the bands add up to 100%
-	measure 'Share in Wait Band' =
-			DIVIDE(
-			    [Tenders in Wait Band],
-			    CALCULATE([Tenders Awarded], KEEPFILTERS(NOT ISBLANK(Procurements[Days Tender to Award])))
-			)
+	/// Share of Tenders Timed that fall in the band; the bands add up to 100%
+	measure 'Share in Wait Band' = DIVIDE([Tenders in Wait Band], [Tenders Timed])
 		formatString: 0%
 		displayFolder: Timings
 		lineageTag: 4e3d4cde-4be0-4dc4-8fff-58df548aa2cf
+
+	/// The table's days column: each tender's days for the chosen stage. Clicking a bar in the wait
+	/// chart filters the disconnected Wait Band and Colour Group tables, so only tenders in that band
+	/// (and that bar's market group) keep a value and the table lists just them
+	measure 'Days in Chosen Band' =
+			VAR FromDays = MIN('Wait Band'[From Days])
+			VAR ToDays = MAX('Wait Band'[To Days])
+			VAR GroupName = SELECTEDVALUE('Colour Group'[Group])
+			VAR Days =
+			    SWITCH(
+			        TRUE(),
+			        ISBLANK(GroupName), [Days for Stage],
+			        GroupName = "Digital and data", CALCULATE([Days for Stage], KEEPFILTERS(Sector[Market] = "Digital and data")),
+			        GroupName = "Other markets", CALCULATE([Days for Stage], KEEPFILTERS(Sector[Market] <> "Digital and data")),
+			        CALCULATE([Days for Stage], KEEPFILTERS(Sector[Market] = GroupName))
+			    )
+			RETURN
+			    IF(NOT ISBLANK(Days) && Days >= FromDays && Days <= ToDays, Days)
+		formatString: 0
+		displayFolder: Timings
+		lineageTag: fdab407a-8756-45c0-8ccf-ec068ed24bd6
+
+	/// Chart and table titles that follow the Stage slicer
+	measure 'Wait Chart Title' =
+			VAR StageName = SELECTEDVALUE(Stage[Stage], "Tender to award")
+			RETURN
+			    IF(StageName = "Award to contract", "How long from award to contract", "How long tenders wait for an award")
+		displayFolder: Timings
+		lineageTag: 57581cff-b747-4544-b836-cfddcd8e0528
+
+	measure 'Wait Table Title' =
+			VAR StageName = SELECTEDVALUE(Stage[Stage], "Tender to award")
+			RETURN
+			    IF(StageName = "Award to contract", "Each award's wait for a contract, longest first", "Each tender's wait for an award, longest first")
+		displayFolder: Timings
+		lineageTag: 73ca0d5f-5077-4d42-94ea-6563f4a2294a
 
 	/// Share in Wait Band per legend group (table Colour Group), each group adding up to 100%:
 	/// Digital and data / Other markets when no market is chosen, otherwise one per chosen market
@@ -135,8 +211,9 @@ table Procurements
 	measure 'Timing Note' =
 			VAR Period = FORMAT(MIN('Date'[Date]), "mmm yyyy") & " to " & FORMAT(MAX('Date'[Date]), "mmm yyyy")
 			RETURN
-			    "Tenders awarded " & Period & ", in calendar days from tender notice to award notice; "
-			        & "award to contract only where both notices exist. Cards show the median: half were quicker, half slower."
+			    "Tenders awarded " & Period & ", in calendar days between notices. Earlier months are left out: the Act began "
+			        & "in Feb 2025, so they'd look falsely fast. Award to contract counts awards at least 3 months old and with "
+			        & "both notices. Cards show the median: half were quicker, half slower."
 		displayFolder: Timings
 		lineageTag: fb71fee9-7f93-4240-9770-509e41b60f5f
 

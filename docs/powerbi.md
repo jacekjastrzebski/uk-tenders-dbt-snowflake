@@ -23,7 +23,7 @@ A landing page, *Home*, explains why the report exists, the time horizon (from 2
 | What's open to bid? | All Open Tenders; Closing Soon (the slicer's window, 14 days by default, with a matching label) | "Closes within" slicer (today, 7, 14, 30 days, any time; table `Closing Window`); open tenders with closing date, "Closes in" (Today, 1 day, n days) and procurement ID (OCID), soonest first |
 | Who's buying? | Awarded Value, Awards | Top 10 buyers and top 10 sectors by awarded value, both in market colours (see below): who buys, and what they buy |
 | Who's winning? | Top 10 Supplier Share, Suppliers Awarded, Awarded Value | Supplier league table with market share, named suppliers only (no "Unknown supplier", no withheld names), so the shares add up to 100%; "How often suppliers win vs their share of awarded value": for each group (won once, 2–4, 5–9, 10 or more times; table `Win Band`) a pink bar for its share of suppliers and a navy bar for its share of awarded value, each labelled with what it is ("68% of suppliers", "30% of awarded value"), with a legend, and the key numbers in a live subtitle (measure `Win Chart Story`) |
-| How long to award? | Median days tender → award, award → contract, Tenders Awarded; "Days to award" range slider, which filters only the table (the chart and cards always cover every tender; page `visualInteractions`) | "How long tenders wait for an award": the share of tenders awarded within a month, 1–3, 3–6, 6–12 months or over a year (table `Wait Band`), in market colours; "From Tender to Award" table, longest wait first, with data bars |
+| How long to award? | Median days tender → award, award → contract (awards at least 3 months old, since newer ones often have no contract notice yet), Tenders Awarded; slicers "Award months" (a range within the page's 12 months) and "Stage" (tender to award, or award to contract) | "How long tenders wait for an award" (or "How long from award to contract"): the share of tenders in each wait band (table `Wait Band`), in market colours; a table of each tender's wait for the chosen stage, longest first, with data bars. Click a bar in the chart and the table lists just the tenders in that band and market group |
 
 Headline values exclude framework ceilings, single awards of £100m or more and awards under the old rules ([ADR 0022](adr/0022-award-fact-rules.md), [ADR 0034](adr/0034-award-data-corrections.md)); frameworks are not shown at all, as their ceilings are not spend. Each award in the footnote counts once: frameworks first, then large awards, then the old rules.
 
@@ -53,7 +53,7 @@ erDiagram
 | Table | Mart | Measures |
 |---|---|---|
 | `Awards` | `FCT_AWARD_SUPPLIERS` | Awarded Value, Awards, Suppliers Awarded and Market Share (both named suppliers only), Top 10 Supplier Share, Framework Ceiling Value, Large Awards, Awarded Value by Group, Suppliers in Win Band, Share of Suppliers in Win Band, Share of Value in Win Band, Win Chart Story (folder *Win bands*); folder *Not in totals*: Framework Awards, Large Award Value, Old Regime Awards, Old Regime Value, No Value Awards, Exclusions Note |
-| `Procurements` | `FCT_PROCUREMENTS` | Tenders, Open Tenders, All Open Tenders, Closing Soon (+ Label), Days to Close, Median Days Tender to Award, Median Days Award to Contract, Tenders Awarded, Timing Note, Tenders in Wait Band, Share in Wait Band (+ by Group) |
+| `Procurements` | `FCT_PROCUREMENTS` | Tenders, Open Tenders, All Open Tenders, Closing Soon (+ Label), Days to Close, Median Days Tender to Award, Median Days Award to Contract, Tenders Awarded, Timing Note, Days for Stage, Tenders Timed, Tenders in Wait Band, Share in Wait Band (+ by Group), Days in Chosen Band, Wait Chart Title, Wait Table Title |
 | `Date` | `DIM_DATES` | |
 | `Buyer`, `Supplier`, `Sector` | `DIM_BUYERS`, `DIM_SUPPLIERS`, `DIM_CPV_DIVISIONS` | (hidden helper columns: Buyer Sort, Buyer Name, Sector Name) |
 | `Data Freshness` | `DIM_DATA_FRESHNESS` | Data Loaded |
@@ -61,6 +61,7 @@ erDiagram
 | `Closing Window` | calculated in DAX (5 windows) | Window Days (hidden; used by Open Tenders) |
 | `Colour Group` | calculated in DAX (markets + Other markets) | legend groups for the "… by Group" measures |
 | `Wait Band`, `Win Band` | calculated in DAX (5 and 4 bands) | axes of the two distribution charts; not linked to the model |
+| `Stage` | calculated in DAX (2 stages) | the Stage slicer on How long to award?; not linked to the model |
 
 "Open" is worked out at query time (closing date from today, no award, not cancelled), so it stays right between refreshes. Timing measures (medians, Tenders Awarded) date procurements by award, through the inactive Award Published Date relationship (`USERELATIONSHIP`); everything else uses the tender date. Relationships are single direction, dimension to fact.
 
