@@ -26,18 +26,18 @@ The same notice data is also available to download from the data.gov.uk website 
 
 New schema - may be used for notices published from 21 July 2022 (to be confirmed):
 
-  * [R2.0.8.UK1.E01_002](/Home/Schema/XSD/R208/publication/UK1/E01_002) for defence forms F16, F17, F18 and F19
-  * [R2.0.9.UK1.E01_002](/Home/Schema/XSD/R209/publication/UK1/E01_002) for all other forms
+  * [R2.0.8.UK1.E01_002](https://www.find-tender.service.gov.uk/Home/Schema/XSD/R208/publication/UK1/E01_002) for defence forms F16, F17, F18 and F19
+  * [R2.0.9.UK1.E01_002](https://www.find-tender.service.gov.uk/Home/Schema/XSD/R209/publication/UK1/E01_002) for all other forms
 
 Current schema - may be used for notices published from 2 March 2021 to 20 July 2022 (to be confirmed):
 
-  * [R2.0.8.S05.E01_002](/Home/Schema/XSD/R208/publication/S05/E01) for defence forms F16, F17, F18 and F19
-  * [R2.0.9.S04.E01_002](/Home/Schema/XSD/R209/publication/S04/E01) for all other forms
+  * [R2.0.8.S05.E01_002](https://www.find-tender.service.gov.uk/Home/Schema/XSD/R208/publication/S05/E01) for defence forms F16, F17, F18 and F19
+  * [R2.0.9.S04.E01_002](https://www.find-tender.service.gov.uk/Home/Schema/XSD/R209/publication/S04/E01) for all other forms
 
 Previous schema - may be used for notices published to 3 May 2021:
 
-  * [R2.0.8.S04.E01_003](/Home/Schema/XSD/R208/publication/S04/E01) for defence forms F16, F17, F18 and F19
-  * [R2.0.9.S03.E01_009](/Home/Schema/XSD/R209/publication/S03/E01) for all other forms
+  * [R2.0.8.S04.E01_003](https://www.find-tender.service.gov.uk/Home/Schema/XSD/R208/publication/S04/E01) for defence forms F16, F17, F18 and F19
+  * [R2.0.9.S03.E01_009](https://www.find-tender.service.gov.uk/Home/Schema/XSD/R209/publication/S03/E01) for all other forms
 
 Note that from 2 March to 3 May 2021 notices may use either schema.
 

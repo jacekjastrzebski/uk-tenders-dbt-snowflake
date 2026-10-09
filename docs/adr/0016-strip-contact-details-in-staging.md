@@ -1,6 +1,6 @@
 # 0016. Strip contact details from staging, including the stored JSON
 
-Status: Accepted (2026-10-07)
+Status: Accepted (2026-10-07); amended by [0029](0029-guest-role-with-capped-warehouse.md): the guest role can read `RAW`, contact details included
 
 ## Context
 A data review found that `stg_find_a_tender__notices.notice` (the full notice JSON, kept for the child models) still held every party's `contactPoint`: 945 emails, 163 names and 135 phone numbers across 403 notices. The docs said staging left contact details out; only the `parties` model did. A recursive search showed `parties[].contactPoint` is the only structured place for contact details.

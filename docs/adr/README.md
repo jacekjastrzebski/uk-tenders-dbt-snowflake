@@ -16,8 +16,9 @@ One file per significant decision: the context, the decision and its consequence
 | [0010](0010-source-freshness-thresholds.md) | Source freshness: warn at 13 h (logged), error at 26 h (email) | Accepted |
 | [0011](0011-load-window-overlap.md) | Overlap each load window by 15 minutes | Accepted; time zone risk resolved by 0018 |
 | [0012](0012-business-terms-in-staging.md) | Name models in business terms: notices, not releases | Accepted |
+| [0014](0014-power-bi-project-files.md) | Power BI as a project (PBIP) in the repo | Accepted |
 | [0015](0015-staging-as-tables.md) | Staging models as tables; layers named raw → staging → marts | Accepted |
-| [0016](0016-strip-contact-details-in-staging.md) | Strip contact details from staging, including the stored JSON | Accepted |
+| [0016](0016-strip-contact-details-in-staging.md) | Strip contact details from staging, including the stored JSON | Accepted; guest can read RAW since 0029 |
 | [0017](0017-backfill-from-procurement-act-start.md) | Backfill from 24 February 2025, through the API | Accepted |
 | [0018](0018-api-dates-in-uk-local-time.md) | Send API window dates as UK local time | Accepted |
 | [0019](0019-deploy-after-ci-checks.md) | Deploy only after the CI checks pass | Accepted |
@@ -36,3 +37,5 @@ One file per significant decision: the context, the decision and its consequence
 | [0032](0032-serverless-load-warehouse-dbt.md) | Serverless compute for the load, a warehouse for dbt | Accepted |
 | [0033](0033-pipeline-safeguards.md) | Pipeline safeguards: CI role, deploy catch-up, stale-data alert, cost cap | Accepted |
 | [0034](0034-award-data-corrections.md) | Award data corrections: old regime out of the headline, rates, lots, ties | Accepted |
+
+There is no 0013: it was a research draft of the Power BI marts on a branch that has since been deleted, replaced by [0023](0023-star-schema-for-power-bi.md).

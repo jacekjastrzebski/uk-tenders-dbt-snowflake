@@ -18,4 +18,4 @@ The dashboard answers four questions, used as page headers: **What's open to bid
 - No double counting of awards; supplier market share sums to 100%.
 - A fact has several dates (e.g. tender, award, contract): one active relationship to `dim_dates` in Power BI, the others used through `USERELATIONSHIP`.
 - Equal split of joint awards is a simplification; framework awards carry a ceiling, not spend.
-- Headline numbers need history: thin until the backfill lands.
+- Headline numbers need history: the backfill from 24 February 2025 provides it ([ADR 0017](0017-backfill-from-procurement-act-start.md)).

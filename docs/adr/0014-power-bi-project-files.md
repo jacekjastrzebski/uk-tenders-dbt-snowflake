@@ -6,7 +6,7 @@ Status: Accepted (2026-10-07). Details: [powerbi.md](../powerbi.md).
 A `.pbix` file is a binary: changes can't be reviewed in a PR, and two people editing it overwrite each other.
 
 ## Decision
-Save the report as a Power BI Project (`powerbi/UkTenders.pbip`): the semantic model in TMDL, the report in PBIR (one JSON file per page and visual), the theme as JSON. Connection details are model parameters (schema `DEV_MARTS` or `MARTS`). Import mode.
+Save the report as a Power BI Project (`powerbi/UkTenders.pbip`): the semantic model in TMDL, the report in PBIR (one JSON file per page and visual), the theme as JSON. Connection details are model parameters (schema `DEV_MARTS` or `PROD_MARTS`; prod schemas got the `PROD_` prefix in [ADR 0024](0024-prod-schema-prefix.md)). Import mode.
 
 ## Consequences
 - Every change is a readable diff; measures, relationships and visuals can be edited as code.
