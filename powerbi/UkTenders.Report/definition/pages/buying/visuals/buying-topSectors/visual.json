@@ -1,16 +1,16 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
-  "name": "buying-trend",
+  "name": "buying-topSectors",
   "position": {
     "x": 648,
     "y": 304,
     "z": 5,
-    "height": 376,
+    "height": 360,
     "width": 616,
     "tabOrder": 5
   },
   "visual": {
-    "visualType": "lineChart",
+    "visualType": "barChart",
     "query": {
       "queryState": {
         "Category": {
@@ -20,15 +20,16 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Date"
+                      "Entity": "Sector"
                     }
                   },
-                  "Property": "Month Start"
+                  "Property": "Sector Name"
                 }
               },
-              "queryRef": "Date.Month Start",
-              "nativeQueryRef": "Month Start",
-              "active": true
+              "queryRef": "Sector.Sector Name",
+              "nativeQueryRef": "Sector Name",
+              "active": true,
+              "displayName": "Sector"
             }
           ]
         },
@@ -47,6 +48,25 @@
               },
               "queryRef": "Colour Group.Group",
               "nativeQueryRef": "Group"
+            }
+          ]
+        },
+        "Tooltips": {
+          "projections": [
+            {
+              "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Awards"
+                    }
+                  },
+                  "Property": "Awarded Value"
+                }
+              },
+              "queryRef": "Awards.Awarded Value",
+              "nativeQueryRef": "Awarded Value",
+              "displayName": "Total awarded"
             }
           ]
         },
@@ -69,47 +89,26 @@
             }
           ]
         }
+      },
+      "sortDefinition": {
+        "sort": [
+          {
+            "field": {
+              "Measure": {
+                "Expression": {
+                  "SourceRef": {
+                    "Entity": "Awards"
+                  }
+                },
+                "Property": "Awarded Value"
+              }
+            },
+            "direction": "Descending"
+          }
+        ]
       }
     },
     "objects": {
-      "labels": [
-        {
-          "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "false"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "valueAxis": [
-        {
-          "properties": {
-            "start": {
-              "expr": {
-                "Literal": {
-                  "Value": "0D"
-                }
-              }
-            },
-            "end": {
-              "expr": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Awards"
-                    }
-                  },
-                  "Property": "Monthly Trend Axis Max"
-                }
-              }
-            }
-          }
-        }
-      ],
       "dataPoint": [
         {
           "properties": {
@@ -563,13 +562,40 @@
           }
         }
       ],
-      "lineStyles": [
+      "labels": [
         {
           "properties": {
-            "strokeWidth": {
+            "show": {
               "expr": {
                 "Literal": {
-                  "Value": "3D"
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ],
+      "totals": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            },
+            "labelDisplayUnits": {
+              "expr": {
+                "Literal": {
+                  "Value": "0D"
+                }
+              }
+            },
+            "labelPrecision": {
+              "expr": {
+                "Literal": {
+                  "Value": "1L"
                 }
               }
             }
@@ -611,28 +637,28 @@
             "top": {
               "expr": {
                 "Literal": {
-                  "Value": "16D"
+                  "Value": "12D"
                 }
               }
             },
             "bottom": {
               "expr": {
                 "Literal": {
-                  "Value": "16D"
+                  "Value": "12D"
                 }
               }
             },
             "left": {
               "expr": {
                 "Literal": {
-                  "Value": "20D"
+                  "Value": "16D"
                 }
               }
             },
             "right": {
               "expr": {
                 "Literal": {
-                  "Value": "28D"
+                  "Value": "16D"
                 }
               }
             }
@@ -652,7 +678,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Awarded value by month'"
+                  "Value": "'Top 10 sectors by awarded value'"
                 }
               }
             }
@@ -664,6 +690,107 @@
   },
   "filterConfig": {
     "filters": [
+      {
+        "name": "top10",
+        "field": {
+          "Column": {
+            "Expression": {
+              "SourceRef": {
+                "Entity": "Sector"
+              }
+            },
+            "Property": "CPV Division"
+          }
+        },
+        "type": "TopN",
+        "filter": {
+          "Version": 2,
+          "From": [
+            {
+              "Name": "subquery",
+              "Expression": {
+                "Subquery": {
+                  "Query": {
+                    "Version": 2,
+                    "From": [
+                      {
+                        "Name": "c",
+                        "Entity": "Sector",
+                        "Type": 0
+                      },
+                      {
+                        "Name": "a",
+                        "Entity": "Awards",
+                        "Type": 0
+                      }
+                    ],
+                    "Select": [
+                      {
+                        "Column": {
+                          "Expression": {
+                            "SourceRef": {
+                              "Source": "c"
+                            }
+                          },
+                          "Property": "CPV Division"
+                        },
+                        "Name": "field"
+                      }
+                    ],
+                    "OrderBy": [
+                      {
+                        "Direction": 2,
+                        "Expression": {
+                          "Measure": {
+                            "Expression": {
+                              "SourceRef": {
+                                "Source": "a"
+                              }
+                            },
+                            "Property": "Awarded Value"
+                          }
+                        }
+                      }
+                    ],
+                    "Top": 10
+                  }
+                }
+              },
+              "Type": 2
+            },
+            {
+              "Name": "c",
+              "Entity": "Sector",
+              "Type": 0
+            }
+          ],
+          "Where": [
+            {
+              "Condition": {
+                "In": {
+                  "Expressions": [
+                    {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Source": "c"
+                          }
+                        },
+                        "Property": "CPV Division"
+                      }
+                    }
+                  ],
+                  "Table": {
+                    "SourceRef": {
+                      "Source": "subquery"
+                    }
+                  }
+                }
+              }
+            }
+          ]
+        }
+      },
       {
         "name": "groupsWithData",
         "field": {

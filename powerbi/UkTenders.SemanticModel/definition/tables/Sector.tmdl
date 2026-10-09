@@ -4,6 +4,7 @@ table Sector
 
 	column 'CPV Division'
 		dataType: string
+		isHidden
 		isKey
 		lineageTag: f06ae7f4-2154-481e-b963-5b3cd1cb35a6
 		summarizeBy: none

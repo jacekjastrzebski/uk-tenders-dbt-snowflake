@@ -1,6 +1,6 @@
 # 0028. Report navigation and market colours
 
-Status: Accepted (2026-10-08)
+Status: Accepted (2026-10-08). Since then the two monthly line charts became a sectors chart (Who's buying?) and a wait-band chart (How long to award?), still in market colours, and Who's winning? got "How often suppliers win", the share of suppliers (pink) and of value (navy) by how often they won (it isn't split by market) ([powerbi.md](../powerbi.md#pages)).
 
 ## Context
 The report has four question pages that people read in any order, and a public link (Publish to web) where viewers can't rely on Power BI's own page tabs. Its bar and line charts should show the digital and data market against the rest, and switch to one colour per market once a reader narrows the view.

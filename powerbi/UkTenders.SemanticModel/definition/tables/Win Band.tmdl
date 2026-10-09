@@ -1,0 +1,52 @@
+/// Bands for "How often suppliers win" on Who's winning?; not linked to any table.
+/// Suppliers in Win Band counts named suppliers whose number of awards falls in the band.
+table 'Win Band'
+	lineageTag: d605eaf7-6933-4c93-859f-463653ac975e
+
+	/// Shown on the chart's axis, in Order
+	column Wins
+		dataType: string
+		lineageTag: 29944a7c-b22a-4f55-8c48-529ef5b67868
+		summarizeBy: none
+		sourceColumn: [Wins]
+		sortByColumn: Order
+
+	column Order
+		dataType: int64
+		isHidden
+		lineageTag: dd34b876-4f2d-4d9a-bc97-f92cb94f4578
+		summarizeBy: none
+		sourceColumn: [Order]
+
+	column 'From Awards'
+		dataType: int64
+		isHidden
+		lineageTag: 839a3c73-9df0-43e4-9573-0e1bca9a86f6
+		summarizeBy: none
+		sourceColumn: [From Awards]
+
+	column 'To Awards'
+		dataType: int64
+		isHidden
+		lineageTag: 2a4548f9-2518-467b-9933-0b6da7fd75e8
+		summarizeBy: none
+		sourceColumn: [To Awards]
+
+	partition 'Win Band' = calculated
+		mode: import
+		source =
+				DATATABLE(
+				    "Wins", STRING,
+				    "Order", INTEGER,
+				    "From Awards", INTEGER,
+				    "To Awards", INTEGER,
+				    {
+				        { "Once", 1, 1, 1 },
+				        { "2–4 times", 2, 2, 4 },
+				        { "5–9 times", 3, 5, 9 },
+				        { "10 or more", 4, 10, 1000000 }
+				    }
+				)
+
+	annotation PBI_ResultType = Table
+

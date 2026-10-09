@@ -1,16 +1,16 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
-  "name": "winning-valueBySector",
+  "name": "timing-waitBands",
   "position": {
-    "x": 648,
+    "x": 16,
     "y": 304,
-    "z": 6,
-    "height": 376,
+    "z": 5,
+    "height": 360,
     "width": 616,
-    "tabOrder": 6
+    "tabOrder": 5
   },
   "visual": {
-    "visualType": "barChart",
+    "visualType": "clusteredColumnChart",
     "query": {
       "queryState": {
         "Category": {
@@ -20,16 +20,16 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Sector"
+                      "Entity": "Wait Band"
                     }
                   },
-                  "Property": "Sector Name"
+                  "Property": "Wait"
                 }
               },
-              "queryRef": "Sector.Sector Name",
-              "nativeQueryRef": "Sector Name",
+              "queryRef": "Wait Band.Wait",
+              "nativeQueryRef": "Wait",
               "active": true,
-              "displayName": "Sector"
+              "displayName": "Wait for an award"
             }
           ]
         },
@@ -51,25 +51,6 @@
             }
           ]
         },
-        "Tooltips": {
-          "projections": [
-            {
-              "field": {
-                "Measure": {
-                  "Expression": {
-                    "SourceRef": {
-                      "Entity": "Awards"
-                    }
-                  },
-                  "Property": "Awarded Value"
-                }
-              },
-              "queryRef": "Awards.Awarded Value",
-              "nativeQueryRef": "Awarded Value",
-              "displayName": "Total awarded"
-            }
-          ]
-        },
         "Y": {
           "projections": [
             {
@@ -77,15 +58,15 @@
                 "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Awards"
+                      "Entity": "Procurements"
                     }
                   },
-                  "Property": "Awarded Value by Group"
+                  "Property": "Share in Wait Band by Group"
                 }
               },
-              "queryRef": "Awards.Awarded Value by Group",
-              "nativeQueryRef": "Awarded Value by Group",
-              "displayName": "Awarded value"
+              "queryRef": "Procurements.Share in Wait Band by Group",
+              "nativeQueryRef": "Share in Wait Band by Group",
+              "displayName": "Share of tenders"
             }
           ]
         }
@@ -94,21 +75,34 @@
         "sort": [
           {
             "field": {
-              "Measure": {
+              "Column": {
                 "Expression": {
                   "SourceRef": {
-                    "Entity": "Awards"
+                    "Entity": "Wait Band"
                   }
                 },
-                "Property": "Awarded Value"
+                "Property": "Wait"
               }
             },
-            "direction": "Descending"
+            "direction": "Ascending"
           }
         ]
       }
     },
     "objects": {
+      "labels": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
+        }
+      ],
       "dataPoint": [
         {
           "properties": {
@@ -562,46 +556,6 @@
           }
         }
       ],
-      "labels": [
-        {
-          "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "false"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "totals": [
-        {
-          "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
-                }
-              }
-            },
-            "labelDisplayUnits": {
-              "expr": {
-                "Literal": {
-                  "Value": "0D"
-                }
-              }
-            },
-            "labelPrecision": {
-              "expr": {
-                "Literal": {
-                  "Value": "1L"
-                }
-              }
-            }
-          }
-        }
-      ],
       "legend": [
         {
           "properties": {
@@ -637,28 +591,28 @@
             "top": {
               "expr": {
                 "Literal": {
-                  "Value": "12D"
+                  "Value": "16D"
                 }
               }
             },
             "bottom": {
               "expr": {
                 "Literal": {
-                  "Value": "12D"
+                  "Value": "16D"
                 }
               }
             },
             "left": {
               "expr": {
                 "Literal": {
-                  "Value": "16D"
+                  "Value": "20D"
                 }
               }
             },
             "right": {
               "expr": {
                 "Literal": {
-                  "Value": "16D"
+                  "Value": "28D"
                 }
               }
             }
@@ -678,7 +632,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Top 10 sectors by awarded value'"
+                  "Value": "'How long tenders wait for an award'"
                 }
               }
             }
@@ -690,107 +644,6 @@
   },
   "filterConfig": {
     "filters": [
-      {
-        "name": "top10",
-        "field": {
-          "Column": {
-            "Expression": {
-              "SourceRef": {
-                "Entity": "Sector"
-              }
-            },
-            "Property": "CPV Division"
-          }
-        },
-        "type": "TopN",
-        "filter": {
-          "Version": 2,
-          "From": [
-            {
-              "Name": "subquery",
-              "Expression": {
-                "Subquery": {
-                  "Query": {
-                    "Version": 2,
-                    "From": [
-                      {
-                        "Name": "c",
-                        "Entity": "Sector",
-                        "Type": 0
-                      },
-                      {
-                        "Name": "a",
-                        "Entity": "Awards",
-                        "Type": 0
-                      }
-                    ],
-                    "Select": [
-                      {
-                        "Column": {
-                          "Expression": {
-                            "SourceRef": {
-                              "Source": "c"
-                            }
-                          },
-                          "Property": "CPV Division"
-                        },
-                        "Name": "field"
-                      }
-                    ],
-                    "OrderBy": [
-                      {
-                        "Direction": 2,
-                        "Expression": {
-                          "Measure": {
-                            "Expression": {
-                              "SourceRef": {
-                                "Source": "a"
-                              }
-                            },
-                            "Property": "Awarded Value"
-                          }
-                        }
-                      }
-                    ],
-                    "Top": 10
-                  }
-                }
-              },
-              "Type": 2
-            },
-            {
-              "Name": "c",
-              "Entity": "Sector",
-              "Type": 0
-            }
-          ],
-          "Where": [
-            {
-              "Condition": {
-                "In": {
-                  "Expressions": [
-                    {
-                      "Column": {
-                        "Expression": {
-                          "SourceRef": {
-                            "Source": "c"
-                          }
-                        },
-                        "Property": "CPV Division"
-                      }
-                    }
-                  ],
-                  "Table": {
-                    "SourceRef": {
-                      "Source": "subquery"
-                    }
-                  }
-                }
-              }
-            }
-          ]
-        }
-      },
       {
         "name": "groupsWithData",
         "field": {
@@ -814,7 +667,7 @@
             },
             {
               "Name": "m",
-              "Entity": "Awards",
+              "Entity": "Procurements",
               "Type": 0
             }
           ],
@@ -832,7 +685,7 @@
                               "Source": "m"
                             }
                           },
-                          "Property": "Awarded Value by Group"
+                          "Property": "Share in Wait Band by Group"
                         }
                       },
                       "Right": {

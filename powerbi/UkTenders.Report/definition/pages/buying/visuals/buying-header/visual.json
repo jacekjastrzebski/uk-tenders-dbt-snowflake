@@ -39,7 +39,7 @@
                     }
                   },
                   {
-                    "value": "Awarded value by buyer and month",
+                    "value": "Awarded value by buyer and sector",
                     "textStyle": {
                       "fontFamily": "'DM Sans', 'Segoe UI', wf_segoe-ui_normal, helvetica, arial, sans-serif",
                       "fontSize": "11pt",

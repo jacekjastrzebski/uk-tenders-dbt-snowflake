@@ -86,38 +86,59 @@ table Procurements
 		displayFolder: Timings
 		lineageTag: 7b92cdb9-161f-4648-bb09-19728a5a4db1
 
-	/// Median days tender to award per legend group (table Colour Group): Digital and data / Other
-	/// markets when no market is chosen, otherwise one line per chosen market
-	measure 'Median Days to Award by Group' =
+	/// Tenders awarded whose days from tender to award fall in the band on the axis (table Wait Band)
+	measure 'Tenders in Wait Band' =
+			VAR FromDays = SELECTEDVALUE('Wait Band'[From Days])
+			VAR ToDays = SELECTEDVALUE('Wait Band'[To Days])
+			RETURN
+			    CALCULATE(
+			        [Tenders Awarded],
+			        KEEPFILTERS(Procurements[Days Tender to Award] >= FromDays),
+			        KEEPFILTERS(Procurements[Days Tender to Award] <= ToDays)
+			    )
+		formatString: #,0
+		displayFolder: Timings
+		lineageTag: f55e7eec-5bad-44da-b616-6e41b09aad1a
+
+	/// Share of the tenders awarded (with known days) that fall in the band; the bands add up to 100%
+	measure 'Share in Wait Band' =
+			DIVIDE(
+			    [Tenders in Wait Band],
+			    CALCULATE([Tenders Awarded], KEEPFILTERS(NOT ISBLANK(Procurements[Days Tender to Award])))
+			)
+		formatString: 0%
+		displayFolder: Timings
+		lineageTag: 4e3d4cde-4be0-4dc4-8fff-58df548aa2cf
+
+	/// Share in Wait Band per legend group (table Colour Group), each group adding up to 100%:
+	/// Digital and data / Other markets when no market is chosen, otherwise one per chosen market
+	measure 'Share in Wait Band by Group' =
 			VAR GroupName = SELECTEDVALUE('Colour Group'[Group])
-			// colour by market once a Market, Sector or Buyer slicer is used. Only those slicers filter
-			// these columns: charts group by the copies (Sector Name, Buyer Name) and run Top N on keys
+			// colour by market once a Market, Sector or Buyer slicer is used (as Awarded Value by Group)
 			VAR MarketChosen =
 			    ISFILTERED(Sector[Market]) || ISFILTERED(Sector[Sector]) || ISFILTERED(Buyer[Buyer])
 			RETURN
 			    SWITCH(
 			        TRUE(),
 			        NOT MarketChosen && GroupName = "Digital and data",
-			            CALCULATE([Median Days Tender to Award], KEEPFILTERS(Sector[Market] = "Digital and data")),
+			            CALCULATE([Share in Wait Band], KEEPFILTERS(Sector[Market] = "Digital and data")),
 			        NOT MarketChosen && GroupName = "Other markets",
-			            CALCULATE([Median Days Tender to Award], KEEPFILTERS(Sector[Market] <> "Digital and data")),
+			            CALCULATE([Share in Wait Band], KEEPFILTERS(Sector[Market] <> "Digital and data")),
 			        NOT MarketChosen || GroupName = "Other markets", BLANK(),
-			        CALCULATE([Median Days Tender to Award], KEEPFILTERS(Sector[Market] = GroupName))
+			        CALCULATE([Share in Wait Band], KEEPFILTERS(Sector[Market] = GroupName))
 			    )
-		formatString: 0
+		formatString: 0%
 		displayFolder: Timings
-		lineageTag: c88f9000-211d-4ab3-ba8d-167542f2d330
+		lineageTag: d3632ee1-d539-4906-bea9-6b48c079ff5d
 
-	/// Top of the monthly median's value axis: the highest line in any month plus 20% headroom
-	measure 'Median Trend Axis Max' =
-			MAXX(
-			    CROSSJOIN(VALUES('Date'[Month Start]), VALUES('Colour Group'[Group])),
-			    [Median Days to Award by Group]
-			) * 1.2
-		formatString: 0
-		isHidden
+	/// Footnote on How long to award?: the months the page covers and how the numbers are counted
+	measure 'Timing Note' =
+			VAR Period = FORMAT(MIN('Date'[Date]), "mmm yyyy") & " to " & FORMAT(MAX('Date'[Date]), "mmm yyyy")
+			RETURN
+			    "Tenders awarded " & Period & ", in calendar days from tender notice to award notice; "
+			        & "award to contract only where both notices exist. Cards show the median: half were quicker, half slower."
 		displayFolder: Timings
-		lineageTag: cfbbeef3-13b9-42e0-bc77-021040c52287
+		lineageTag: fb71fee9-7f93-4240-9770-509e41b60f5f
 
 	column OCID
 		dataType: string

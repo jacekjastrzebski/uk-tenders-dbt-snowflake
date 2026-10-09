@@ -5,7 +5,7 @@
     "x": 16,
     "y": 304,
     "z": 0,
-    "height": 400,
+    "height": 360,
     "width": 1248,
     "tabOrder": 0
   },
@@ -85,6 +85,21 @@
               "queryRef": "Procurements.Days to Close",
               "nativeQueryRef": "Days to Close",
               "displayName": "Closes in"
+            },
+            {
+              "field": {
+                "Column": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Procurements"
+                    }
+                  },
+                  "Property": "OCID"
+                }
+              },
+              "queryRef": "Procurements.OCID",
+              "nativeQueryRef": "OCID",
+              "displayName": "Procurement ID"
             }
           ]
         }
@@ -127,7 +142,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "460D"
+                  "Value": "310D"
                 }
               }
             }
@@ -190,6 +205,20 @@
           },
           "selector": {
             "metadata": "Procurements.Days to Close"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "150D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Procurements.OCID"
           }
         }
       ],

@@ -1,6 +1,6 @@
 # 0023. Marts as a star schema for Power BI
 
-Status: Accepted (2026-10-07). Replaces the research draft (ADR 0013 on `research/gold-powerbi`).
+Status: Accepted (2026-10-07). Replaces the research draft (ADR 0013 on `research/gold-powerbi`). Market share sums to 100% since 2026-10-08, when `Market Share` started dividing by named suppliers only ([powerbi.md](../powerbi.md#pages)).
 
 ## Context
 The dashboard answers four questions, used as page headers: **What's open to bid?**, **Who's buying?**, **Who's winning?**, **How long to award?** (README). They are counted at two grains: a procurement (open tenders, durations) and a supplier on an award (value bought and won). Staging keeps one row per notice, so the same award and its value repeat across a procurement's notices. Power BI performs best, and its DAX stays simplest, with a star schema: facts joined directly to dimensions.
