@@ -2,7 +2,8 @@
 -- for "What's open to bid?" and "How long to award?".
 -- Dates are UK dates of the notices' publication; "open" is worked out in
 -- Power BI (closing date from today, no award, not cancelled), so it never
--- goes stale between refreshes.
+-- goes stale between refreshes. Value, framework and SME suitability come from
+-- the latest tender notice (ADR 0035).
 
 WITH notices AS (
     SELECT
@@ -13,6 +14,9 @@ WITH notices AS (
         buyer_name,
         COALESCE(cpv_code, procurement_cpv_code) AS cpv_code,
         title,
+        notice:tender.value.amountGross::NUMBER(38, 2) AS tender_value_gross,
+        notice:tender.value.currency::STRING AS tender_value_currency,
+        COALESCE(notice:tender.techniques.hasFrameworkAgreement::BOOLEAN, FALSE) AS is_framework,
         -- bid deadline, or the expression-of-interest deadline in two-stage procedures
         COALESCE(
             CONVERT_TIMEZONE('UTC', 'Europe/London', tender_closing_at)::DATE,
@@ -24,14 +28,30 @@ WITH notices AS (
         is_procurement_act
 ),
 
+sme_suitable_notices AS (
+    -- tender notices with at least one lot the buyer marks as suitable for SMEs
+    SELECT DISTINCT
+        n.notice_id
+    FROM
+        {{ ref('stg_find_a_tender__notices') }} AS n,
+        LATERAL FLATTEN(input => n.notice:tender.lots) AS l
+    WHERE
+        n.notice_type = 'UK4'
+        AND l.value:suitability.sme::BOOLEAN
+),
+
 latest_tender AS (
     -- the latest tender notice: updates can move the closing date either way
     SELECT
         ocid,
+        notice_id,
         buyer_name,
         cpv_code,
         title,
-        closing_date
+        closing_date,
+        tender_value_gross,
+        tender_value_currency,
+        is_framework
     FROM
         notices
     WHERE
@@ -56,9 +76,14 @@ milestones AS (
 dates AS (
     SELECT
         t.ocid,
+        t.notice_id AS tender_notice_id,
         t.buyer_name,
         t.cpv_code,
         t.title,
+        t.tender_value_gross,
+        t.tender_value_currency,
+        t.is_framework,
+        s.notice_id IS NOT NULL AS is_suitable_for_sme,
         IFF(t.closing_date BETWEEN '{{ var("dim_dates_start") }}' AND '{{ var("dim_dates_end") }}', t.closing_date, NULL) AS closing_date,
         CONVERT_TIMEZONE('UTC', 'Europe/London', m.tender_published_at)::DATE AS tender_published_date,
         -- award notice, or the contract notice for below-threshold contracts that skip it
@@ -72,6 +97,10 @@ dates AS (
         milestones AS m
     ON
         t.ocid = m.ocid
+    LEFT JOIN
+        sme_suitable_notices AS s
+    ON
+        t.notice_id = s.notice_id
 )
 
 SELECT
@@ -79,6 +108,13 @@ SELECT
     {{ normalise_org_name('buyer_name') }} AS buyer_key,
     COALESCE(LEFT(cpv_code, 2), 'UNKNOWN') AS cpv_division,   -- no CPV code: "Unknown sector" in dim_cpv_divisions
     title,
+    tender_notice_id,
+    'https://www.find-tender.service.gov.uk/Notice/' || tender_notice_id AS tender_notice_url,
+    -- estimated value incl. VAT, as most tenders publish it; in GBP only (a few dozen are not)
+    -- and never to be added up: framework values are spending caps (ADR 0035)
+    IFF(tender_value_currency = 'GBP' AND tender_value_gross > 0, tender_value_gross, NULL) AS tender_value_gbp,
+    is_framework,
+    is_suitable_for_sme,
     tender_published_date,
     closing_date,
     award_published_date,
