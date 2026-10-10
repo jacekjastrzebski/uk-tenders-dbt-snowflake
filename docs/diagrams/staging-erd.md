@@ -5,6 +5,7 @@ Raw tables and the dbt staging models: what one row is, the keys, and how tables
 ```mermaid
 erDiagram
     RAW_FIND_A_TENDER_INGEST_RUNS ||--o{ RAW_FIND_A_TENDER_RELEASES : "loads pages (run_id)"
+    RAW_FIND_A_TENDER_INGEST_RUNS ||--|| STG_INGEST_RUNS : "copied (run_id)"
     RAW_FIND_A_TENDER_RELEASES }o--o{ STG_NOTICES : "flattened; latest copy kept"
     STG_NOTICES ||--o{ STG_PARTIES : "names (notice_id)"
     STG_NOTICES ||--o{ STG_AWARDS : "contains (notice_id)"
@@ -19,6 +20,13 @@ erDiagram
         timestamp window_to
         string status "success or failed"
         timestamp finished_at
+    }
+    STG_INGEST_RUNS {
+        string run_id PK
+        string run_type "incremental or backfill"
+        string status
+        timestamp window_to "data complete up to here"
+        int releases "0 when nothing new"
     }
     RAW_FIND_A_TENDER_RELEASES {
         string run_id FK
@@ -83,6 +91,7 @@ erDiagram
 | `STG_AWARDS` | an award in a notice |
 | `STG_AWARD_SUPPLIERS` | a supplier on an award |
 | `STG_CONTRACTS` | a contract in a notice |
+| `STG_INGEST_RUNS` | a loader run; the latest successful scheduled one gives the report's "Data as of" |
 
 - Staging tables are named `stg_find_a_tender__<entity>`; the `STG_` names above are shortened.
 - **The same award or contract appears in several notices** of one procurement (`ocid`), e.g. a UK6 award and the later UK7 contract details. Staging keeps one row per notice; marts must deduplicate before summing values.
