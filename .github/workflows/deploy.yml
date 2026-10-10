@@ -7,7 +7,8 @@
 #   02_ingest_procedure.sql          -> recreate the stored procedure
 #   03_ingest_task.sql               -> recreate the scheduled tasks
 #   04_failure_alert.sql             -> recreate the failure alert
-#   dbt/** or snowflake/dbt/profiles.yml -> deploy a new version of the dbt project object (ADR 0009)
+#   dbt/** or snowflake/dbt/profiles.yml -> deploy a new version of the dbt project object (ADR 0009),
+#                                           then rebuild prod with it and fail if dbt fails (ADR 0036)
 #   snowflake/dbt/01_run_dbt_task.sql    -> recreate the dbt task and its alerts
 #   snowflake/powerbi/01_refresh_alert.sql -> recreate the Power BI refresh alert
 # A manual run (workflow_dispatch) deploys everything, and so does a push that changes this
@@ -32,7 +33,7 @@ jobs:
     environment: production
     permissions:
       contents: write        # to move the deployed tag
-    timeout-minutes: 10
+    timeout-minutes: 20      # includes waiting for the prod rebuild
     concurrency:
       group: deploy          # never run two deploys at once
       cancel-in-progress: false
@@ -132,6 +133,29 @@ jobs:
         env:
           ALERT_EMAIL: ${{ secrets.ALERT_EMAIL }}
         run: uvx --from snowflake-cli==3.28.0 snow sql -f snowflake/dbt/01_run_dbt_task.sql -D "alert_email=$ALERT_EMAIL" -c tender
+
+      # Build prod with the new project now, not at the next scheduled run (up to 12 hours
+      # away overnight): run the dbt task and wait for it. A failing build fails the deploy.
+      # If a scheduled run is already going, this run is skipped and that one builds.
+      - name: Rebuild prod
+        if: steps.changed.outputs.dbt == 'true'
+        run: |
+          snow() { uvx --from snowflake-cli==3.28.0 snow "$@" -c tender --role TENDER_TRANSFORM; }
+          started=$(date -u +%Y-%m-%dT%H:%M:%SZ)
+          snow sql -q "EXECUTE TASK TENDER_DB.DBT.RUN_DBT"
+          for _ in $(seq 1 40); do   # up to 10 minutes; a build takes about 2
+            sleep 15
+            state=$(snow sql --format json -q "SELECT state FROM TABLE(TENDER_DB.INFORMATION_SCHEMA.TASK_HISTORY(
+              TASK_NAME => 'RUN_DBT', SCHEDULED_TIME_RANGE_START => '$started'::TIMESTAMP_LTZ))
+              WHERE state IN ('SUCCEEDED', 'FAILED', 'CANCELLED', 'SKIPPED') ORDER BY scheduled_time DESC LIMIT 1" \
+              | jq -r '.[0].STATE // empty')
+            case "$state" in
+              SUCCEEDED) echo "prod rebuilt"; exit 0 ;;
+              SKIPPED) echo "::notice::a scheduled dbt run was already going; it builds prod"; exit 0 ;;
+              FAILED|CANCELLED) echo "::error::dbt run $state; see TASK_HISTORY for RUN_DBT"; exit 1 ;;
+            esac
+          done
+          echo "::error::dbt run did not finish within 10 minutes"; exit 1
 
       - name: Create Power BI refresh alert
         if: steps.changed.outputs.pbi_alert == 'true'
