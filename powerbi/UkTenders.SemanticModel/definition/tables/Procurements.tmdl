@@ -64,30 +64,40 @@ table Procurements
 
 		formatStringDefinition = SWITCH(SELECTEDMEASURE(), 0, """Today""", 1, """1 day""", "0 ""days""")
 
-	/// Timings are dated by award: date filters and axes apply to the award date, not the tender date
-	measure 'Median Days Tender to Award' = CALCULATE(MEDIAN(Procurements[Days Tender to Award]), USERELATIONSHIP(Procurements[Award Published Date], 'Date'[Date]))
+	/// Timings are dated by award: date filters and axes apply to the award date, not the tender date.
+	/// Only tenders whose days to award fall in the "Days waited" range (table Wait Days)
+	measure 'Median Days Tender to Award' =
+			CALCULATE(
+			    MEDIAN(Procurements[Days Tender to Award]),
+			    USERELATIONSHIP(Procurements[Award Published Date], 'Date'[Date]),
+			    KEEPFILTERS(TREATAS(VALUES('Wait Days'[Days]), Procurements[Days Tender to Award]))
+			)
 		formatString: 0
 		displayFolder: Timings
 		lineageTag: 88b20e99-956c-48a4-90e3-f7cfa7bb0bdb
 
 	/// Only awards at least 3 months old: contracts for newer awards are often not published yet, so
-	/// counting them would leave only the quick ones and make the wait look shorter than it is
+	/// counting them would leave only the quick ones and make the wait look shorter than it is.
+	/// Only awards whose days to contract fall in the "Days waited" range (table Wait Days)
 	measure 'Median Days Award to Contract' =
 			CALCULATE(
 			    MEDIAN(Procurements[Days Award to Contract]),
 			    USERELATIONSHIP(Procurements[Award Published Date], 'Date'[Date]),
-			    KEEPFILTERS(Procurements[Award Published Date] <= TODAY() - 91)
+			    KEEPFILTERS(Procurements[Award Published Date] <= TODAY() - 91),
+			    KEEPFILTERS(TREATAS(VALUES('Wait Days'[Days]), Procurements[Days Award to Contract]))
 			)
 		formatString: 0
 		displayFolder: Timings
 		lineageTag: 23b78e08-8560-453b-93cf-79a79e7efce1
 
-	/// Tenders with an award published, dated by the award
+	/// Tenders with an award published, dated by the award. Only tenders whose days to award fall
+	/// in the "Days waited" range (table Wait Days; every awarded tender has days to award)
 	measure 'Tenders Awarded' =
 			CALCULATE(
 			    COUNTROWS(Procurements),
 			    USERELATIONSHIP(Procurements[Award Published Date], 'Date'[Date]),
-			    KEEPFILTERS(NOT ISBLANK(Procurements[Award Published Date]))
+			    KEEPFILTERS(NOT ISBLANK(Procurements[Award Published Date])),
+			    KEEPFILTERS(TREATAS(VALUES('Wait Days'[Days]), Procurements[Days Tender to Award]))
 			)
 		formatString: #,0
 		displayFolder: Timings
@@ -147,9 +157,9 @@ table Procurements
 	measure 'Timing Note' =
 			VAR Period = FORMAT(MIN('Date'[Date]), "mmm yyyy") & " to " & FORMAT(MAX('Date'[Date]), "mmm yyyy")
 			RETURN
-			    "Tenders awarded " & Period & ", in calendar days between notices. Earlier months are left out: the Act began "
-			        & "in Feb 2025, so they'd look falsely fast. Award to contract counts awards at least 3 months old and with "
-			        & "both notices. Cards show the median: half were quicker, half slower."
+			    "Tenders awarded " & Period & ", in calendar days between notices; only tenders that reached an award count, "
+			        & "so slower ones still waiting are missing. Earlier months are left out: the Act began in Feb 2025, so they'd "
+			        & "look falsely fast. Award to contract counts awards at least 3 months old. Cards show medians."
 		displayFolder: Timings
 		lineageTag: fb71fee9-7f93-4240-9770-509e41b60f5f
 
@@ -164,18 +174,21 @@ table Procurements
 		lineageTag: a14d73aa-c309-450a-9758-20b27647a011
 
 	/// Tenders awarded with days known for the chosen stage; for award to contract, only awards
-	/// at least 3 months old, as in Median Days Award to Contract
+	/// at least 3 months old, as in Median Days Award to Contract. Only tenders whose days for the
+	/// stage fall in the "Days waited" range (table Wait Days); award to contract is counted here
+	/// rather than from Tenders Awarded, which follows the range by days to award
 	measure 'Tenders Timed' =
 			VAR StageName = SELECTEDVALUE(Stage[Stage], "Tender to award")
 			RETURN
 			    IF(
 			        StageName = "Award to contract",
 			        CALCULATE(
-			            [Tenders Awarded],
-			            KEEPFILTERS(NOT ISBLANK(Procurements[Days Award to Contract])),
-			            KEEPFILTERS(Procurements[Award Published Date] <= TODAY() - 91)
+			            COUNTROWS(Procurements),
+			            USERELATIONSHIP(Procurements[Award Published Date], 'Date'[Date]),
+			            KEEPFILTERS(Procurements[Award Published Date] <= TODAY() - 91),
+			            KEEPFILTERS(TREATAS(VALUES('Wait Days'[Days]), Procurements[Days Award to Contract]))
 			        ),
-			        CALCULATE([Tenders Awarded], KEEPFILTERS(NOT ISBLANK(Procurements[Days Tender to Award])))
+			        [Tenders Awarded]
 			    )
 		formatString: #,0
 		displayFolder: Timings
@@ -183,7 +196,8 @@ table Procurements
 
 	/// The table's days column: each tender's days for the chosen stage. Clicking a bar in the wait
 	/// chart filters the disconnected Wait Band and Colour Group tables, so only tenders in that band
-	/// (and that bar's market group) keep a value and the table lists just them
+	/// (and that bar's market group) keep a value and the table lists just them. Days for Stage
+	/// already follows the "Days waited" slider
 	measure 'Days in Chosen Band' =
 			VAR FromDays = MIN('Wait Band'[From Days])
 			VAR ToDays = MAX('Wait Band'[To Days])
@@ -202,6 +216,36 @@ table Procurements
 		displayFolder: Timings
 		lineageTag: fdab407a-8756-45c0-8ccf-ec068ed24bd6
 
+	/// Takeaway under the wait chart, following the Stage switch and the filters
+	measure 'Wait Chart Story' =
+			VAR StageName = SELECTEDVALUE(Stage[Stage], "Tender to award")
+			VAR Timed = [Tenders Timed]
+			VAR Quick =
+			    // 0 rather than blank when none are quick, so the line reads "0% of ..."
+			    COALESCE(
+			        IF(
+			            StageName = "Award to contract",
+			            CALCULATE([Tenders Timed], KEEPFILTERS(Procurements[Days Award to Contract] <= 90)),
+			            CALCULATE([Tenders Timed], KEEPFILTERS(Procurements[Days Tender to Award] <= 180))
+			        ),
+			        0
+			    )
+			RETURN
+			    SWITCH(
+			        TRUE(),
+			        ISBLANK(Timed), "No tenders match these filters.",
+			        // the Days waited slider can leave all or none of them quick
+			        Quick = Timed && StageName = "Award to contract", "All of these contracts follow within 3 months of the award.",
+			        Quick = Timed, "All of these tenders are awarded within 6 months.",
+			        Quick = 0 && StageName = "Award to contract", "None of these contracts follow within 3 months of the award.",
+			        Quick = 0, "None of these tenders are awarded within 6 months.",
+			        StageName = "Award to contract",
+			            FORMAT(DIVIDE(Quick, Timed), "0%") & " of contracts follow within 3 months of the award.",
+			        FORMAT(DIVIDE(Quick, Timed), "0%") & " of tenders are awarded within 6 months; the rest take longer."
+			    )
+		displayFolder: Timings
+		lineageTag: 8c7e661a-ac60-4374-b526-3392c63d1e6b
+
 	/// Chart and table titles that follow the Stage slicer
 	measure 'Wait Chart Title' =
 			VAR StageName = SELECTEDVALUE(Stage[Stage], "Tender to award")
@@ -210,10 +254,29 @@ table Procurements
 		displayFolder: Timings
 		lineageTag: 57581cff-b747-4544-b836-cfddcd8e0528
 
+	/// The table's title, with how many tenders it lists, so it visibly follows the Days waited
+	/// slider and a click on the chart (dated by award, like the table's days)
 	measure 'Wait Table Title' =
 			VAR StageName = SELECTEDVALUE(Stage[Stage], "Tender to award")
+			VAR Listed =
+			    COUNTROWS(
+			        FILTER(
+			            CALCULATETABLE(
+			                VALUES(Procurements[OCID]),
+			                USERELATIONSHIP(Procurements[Award Published Date], 'Date'[Date])
+			            ),
+			            NOT ISBLANK([Days in Chosen Band])
+			        )
+			    )
+			VAR ListedText = FORMAT(Listed, "#,0")
 			RETURN
-			    IF(StageName = "Award to contract", "Each award's wait for a contract, longest first", "Each tender's wait for an award, longest first")
+			    SWITCH(
+			        TRUE(),
+			        ISBLANK(Listed), "No tenders match these filters",
+			        StageName = "Award to contract",
+			            ListedText & IF(Listed = 1, " award", " awards") & " by wait for a contract, longest first",
+			        ListedText & IF(Listed = 1, " tender", " tenders") & " by wait for an award, longest first"
+			    )
 		displayFolder: Timings
 		lineageTag: 73ca0d5f-5077-4d42-94ea-6563f4a2294a
 

@@ -1,13 +1,13 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
-  "name": "timing-header",
+  "name": "timing-slicerDaysLabel",
   "position": {
-    "x": 16,
-    "y": 8,
-    "z": 0,
-    "width": 1248,
-    "height": 80,
-    "tabOrder": 0
+    "x": 1024,
+    "y": 96,
+    "z": 49,
+    "width": 236,
+    "height": 96,
+    "tabOrder": 49
   },
   "visual": {
     "visualType": "textbox",
@@ -19,31 +19,11 @@
               {
                 "textRuns": [
                   {
-                    "value": "UK public tenders",
+                    "value": "Days waited",
                     "textStyle": {
                       "fontFamily": "'DM Sans', 'Segoe UI Semibold', wf_segoe-ui_semibold, helvetica, arial, sans-serif",
-                      "fontSize": "20pt",
-                      "color": "#FFFFFF"
-                    }
-                  }
-                ]
-              },
-              {
-                "textRuns": [
-                  {
-                    "value": "How long to award?  ",
-                    "textStyle": {
-                      "fontFamily": "'DM Sans', 'Segoe UI Semibold', wf_segoe-ui_semibold, helvetica, arial, sans-serif",
-                      "fontSize": "11pt",
-                      "color": "#E07FA3"
-                    }
-                  },
-                  {
-                    "value": "Days to award and to contract, for awards in the last 12 months",
-                    "textStyle": {
-                      "fontFamily": "'DM Sans', 'Segoe UI', wf_segoe-ui_normal, helvetica, arial, sans-serif",
-                      "fontSize": "11pt",
-                      "color": "#FFFFFF"
+                      "fontSize": "12pt",
+                      "color": "#0C2340"
                     }
                   }
                 ]
@@ -69,7 +49,7 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#0C2340'"
+                      "Value": "'#FFFFFF'"
                     }
                   }
                 }
@@ -91,7 +71,18 @@
             "show": {
               "expr": {
                 "Literal": {
-                  "Value": "false"
+                  "Value": "true"
+                }
+              }
+            },
+            "color": {
+              "solid": {
+                "color": {
+                  "expr": {
+                    "Literal": {
+                      "Value": "'#DDE4E6'"
+                    }
+                  }
                 }
               }
             },
@@ -111,28 +102,28 @@
             "top": {
               "expr": {
                 "Literal": {
-                  "Value": "12D"
+                  "Value": "8D"
                 }
               }
             },
             "bottom": {
               "expr": {
                 "Literal": {
-                  "Value": "12D"
+                  "Value": "0D"
                 }
               }
             },
             "left": {
               "expr": {
                 "Literal": {
-                  "Value": "24D"
+                  "Value": "16D"
                 }
               }
             },
             "right": {
               "expr": {
                 "Literal": {
-                  "Value": "24D"
+                  "Value": "16D"
                 }
               }
             }

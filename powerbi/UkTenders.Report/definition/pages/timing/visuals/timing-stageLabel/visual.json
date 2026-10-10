@@ -1,13 +1,13 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
-  "name": "timing-slicerStageLabel",
+  "name": "timing-stageLabel",
   "position": {
-    "x": 1024,
-    "y": 96,
-    "z": 46,
-    "width": 240,
-    "height": 96,
-    "tabOrder": 0
+    "x": 36,
+    "y": 316,
+    "width": 404,
+    "height": 44,
+    "z": 47,
+    "tabOrder": 47
   },
   "visual": {
     "visualType": "textbox",
@@ -19,23 +19,11 @@
               {
                 "textRuns": [
                   {
-                    "value": "Stage",
+                    "value": "Show:",
                     "textStyle": {
                       "fontFamily": "'DM Sans', 'Segoe UI Semibold', wf_segoe-ui_semibold, helvetica, arial, sans-serif",
-                      "fontSize": "12pt",
+                      "fontSize": "10pt",
                       "color": "#0C2340"
-                    }
-                  }
-                ]
-              },
-              {
-                "textRuns": [
-                  {
-                    "value": "Switches the chart and table",
-                    "textStyle": {
-                      "fontFamily": "'DM Sans', 'Segoe UI', wf_segoe-ui_normal, helvetica, arial, sans-serif",
-                      "fontSize": "9pt",
-                      "color": "#4B5B70"
                     }
                   }
                 ]
@@ -61,7 +49,7 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#FDF0F5'"
+                      "Value": "'#F1F4F6'"
                     }
                   }
                 }
@@ -92,7 +80,7 @@
                 "color": {
                   "expr": {
                     "Literal": {
-                      "Value": "'#E07FA3'"
+                      "Value": "'#F1F4F6'"
                     }
                   }
                 }
@@ -114,7 +102,7 @@
             "top": {
               "expr": {
                 "Literal": {
-                  "Value": "8D"
+                  "Value": "10D"
                 }
               }
             },
@@ -128,14 +116,14 @@
             "left": {
               "expr": {
                 "Literal": {
-                  "Value": "16D"
+                  "Value": "12D"
                 }
               }
             },
             "right": {
               "expr": {
                 "Literal": {
-                  "Value": "16D"
+                  "Value": "0D"
                 }
               }
             }
