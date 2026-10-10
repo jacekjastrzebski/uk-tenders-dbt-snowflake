@@ -28,6 +28,8 @@ models:
           - accepted_values:
               arguments:
                 values: ['award net', 'contract net', 'award gross', 'contract gross']
+      - name: procurement_method
+        description: OCDS procurementMethod from the award's latest notice - open, selective, limited, direct, or null.
       - name: is_old_regime
         description: Every notice of the award is from before the Procurement Act (no notice type); left out of headline totals.
       - name: is_framework

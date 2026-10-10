@@ -103,8 +103,8 @@ Star schema for the Power BI report ([ADR 0023](adr/0023-star-schema-for-power-b
 | `dim_buyers` | Buyer organisation, grouped by normalised name | Who's buying? |
 | `dim_suppliers` | Supplier organisation, grouped by normalised name (lots removed); withheld flagged; plus "Unknown supplier" | Who's winning? |
 | `dim_data_freshness` | One row: latest load time, UK | The report's "Data loaded" card |
-| `fct_procurements` | Procurement Act tender (`ocid` with a UK4 notice) | What's open to bid? (closing_date from today, no award, not cancelled) How long to award? (median `days_tender_to_award`) |
-| `fct_award_suppliers` | Supplier on an award, deduplicated across notices ([ADR 0022](adr/0022-award-fact-rules.md)) | Who's buying? Who's winning? Sum `allocated_value_gbp` where `is_in_headline` |
+| `fct_procurements` | Procurement Act tender (`ocid` with a UK4 notice) | What's open to bid? (closing_date from today, no award, not cancelled; `tender_value_gbp`, `is_framework`, `is_suitable_for_sme`, `tender_notice_url`, [ADR 0035](adr/0035-bidder-fields.md)) How long to award? (median `days_tender_to_award`) |
+| `fct_award_suppliers` | Supplier on an award, deduplicated across notices ([ADR 0022](adr/0022-award-fact-rules.md)) | Who's buying? Who's winning? Sum `allocated_value_gbp` where `is_in_headline`; split by `competition` and `supplier_scale` ([ADR 0035](adr/0035-bidder-fields.md)) |
 
 Access: Power BI reads the marts as role `TENDER_REPORTER` (`snowflake/setup/04_reporting_role.sql`), which can query `PROD_MARTS` and `DEV_MARTS` only. dbt grants `SELECT` on every mart table at each build (`+grants` in `dbt_project.yml`), so access survives rebuilds. Snowflake activates a user's other roles too (secondary roles), so for real least privilege Power BI should connect as its own user that has only `TENDER_REPORTER`; to test the role yourself, run `USE SECONDARY ROLES NONE` first.
 

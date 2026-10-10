@@ -1,4 +1,5 @@
 -- One row per organisation named in a notice (buyer, supplier, review body).
+-- scale is the size a supplier declares on award notices: sme or large.
 -- contactPoint (names, emails, phone numbers) is personal data and left out.
 -- Keyed by position: a party id can appear more than once in a notice (one
 -- organisation in two roles, branches sharing a company number, publisher errors).
@@ -10,6 +11,7 @@ SELECT
     p.value:id::STRING AS party_id,
     p.value:name::STRING AS party_name,
     p.value:roles AS roles,
+    p.value:details.scale::STRING AS scale,
     p.value:address.locality::STRING AS locality,
     p.value:address.region::STRING AS region,
     p.value:address.postalCode::STRING AS postcode,
