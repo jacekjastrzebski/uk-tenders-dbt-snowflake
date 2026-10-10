@@ -3,10 +3,10 @@
   "name": "home-step2Number",
   "position": {
     "x": 332,
-    "y": 432,
+    "y": 448,
     "z": 14,
     "width": 300,
-    "height": 112,
+    "height": 156,
     "tabOrder": 14
   },
   "visual": {
@@ -28,7 +28,7 @@
               },
               "queryRef": "Awards.Awarded Value",
               "nativeQueryRef": "Awarded Value",
-              "displayName": "Awarded, last 12 months"
+              "displayName": "Contract value awarded, last 12 months"
             }
           ]
         }

@@ -3,10 +3,10 @@
   "name": "home-step3Number",
   "position": {
     "x": 648,
-    "y": 432,
+    "y": 448,
     "z": 17,
     "width": 300,
-    "height": 112,
+    "height": 156,
     "tabOrder": 17
   },
   "visual": {
@@ -23,12 +23,12 @@
                       "Entity": "Awards"
                     }
                   },
-                  "Property": "Top 10 Supplier Share"
+                  "Property": "Suppliers Won Once"
                 }
               },
-              "queryRef": "Awards.Top 10 Supplier Share",
-              "nativeQueryRef": "Top 10 Supplier Share",
-              "displayName": "Won by the top 10 suppliers"
+              "queryRef": "Awards.Suppliers Won Once",
+              "nativeQueryRef": "Suppliers Won Once",
+              "displayName": "Of suppliers won only once"
             }
           ]
         }

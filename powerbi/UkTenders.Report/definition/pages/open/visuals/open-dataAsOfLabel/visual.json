@@ -19,7 +19,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "Last refreshed",
+                    "value": "Data as of",
                     "textStyle": {
                       "fontFamily": "'DM Sans', 'Segoe UI', wf_segoe-ui_normal, helvetica, arial, sans-serif",
                       "fontSize": "9pt",

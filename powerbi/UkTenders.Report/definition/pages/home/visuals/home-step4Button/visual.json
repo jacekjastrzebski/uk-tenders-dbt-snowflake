@@ -3,7 +3,7 @@
   "name": "home-step4Button",
   "position": {
     "x": 964,
-    "y": 552,
+    "y": 612,
     "z": 21,
     "height": 48,
     "width": 300,
@@ -45,7 +45,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'See award times  →'"
+                  "Value": "'See waiting times  →'"
                 }
               }
             },

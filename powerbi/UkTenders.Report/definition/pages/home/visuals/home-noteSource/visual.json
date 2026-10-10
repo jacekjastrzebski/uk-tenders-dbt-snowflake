@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
   "name": "home-noteSource",
   "position": {
-    "x": 108,
-    "y": 688,
+    "x": 928,
+    "y": 668,
     "z": 56,
-    "width": 1140,
-    "height": 24,
+    "width": 320,
+    "height": 48,
     "tabOrder": 56
   },
   "visual": {
@@ -45,7 +45,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Source: Find a Tender, Open Government Licence v3.0.'"
+                  "Value": "'Source: Find a Tender · OGL v3.0'"
                 }
               }
             },
@@ -70,14 +70,14 @@
             "horizontalAlignment": {
               "expr": {
                 "Literal": {
-                  "Value": "'left'"
+                  "Value": "'right'"
                 }
               }
             },
             "verticalAlignment": {
               "expr": {
                 "Literal": {
-                  "Value": "'top'"
+                  "Value": "'middle'"
                 }
               }
             }

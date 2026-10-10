@@ -3,7 +3,7 @@
   "name": "home-step1Button",
   "position": {
     "x": 16,
-    "y": 552,
+    "y": 612,
     "z": 12,
     "height": 48,
     "width": 300,
@@ -45,7 +45,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'See open tenders  →'"
+                  "Value": "'Browse open tenders  →'"
                 }
               }
             },

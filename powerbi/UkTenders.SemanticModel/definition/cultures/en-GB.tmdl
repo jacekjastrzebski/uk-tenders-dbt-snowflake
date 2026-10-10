@@ -211,16 +211,6 @@ cultureInfo en-GB
 			            },
 			            "Weight": 0.9
 			          }
-			        },
-			        {
-			          "Days to award": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
 			        }
 			      ]
 			    },
@@ -466,6 +456,27 @@ cultureInfo en-GB
 			      "Terms": [
 			        {
 			          "Wait for an award": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "procurements.days_in_chosen_band": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Procurements",
+			          "ConceptualProperty": "Days in Chosen Band"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Days": {
 			            "State": "Suggested",
 			            "Source": {
 			              "Type": "External",
