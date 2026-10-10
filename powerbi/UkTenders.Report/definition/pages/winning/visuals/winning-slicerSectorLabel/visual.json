@@ -2,10 +2,10 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
   "name": "winning-slicerSectorLabel",
   "position": {
-    "x": 437,
+    "x": 268,
     "y": 96,
     "z": 1,
-    "width": 405,
+    "width": 236,
     "height": 96,
     "tabOrder": 0
   },

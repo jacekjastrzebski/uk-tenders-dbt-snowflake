@@ -63,7 +63,7 @@
               },
               "queryRef": "Awards.Share of Value in Win Band",
               "nativeQueryRef": "Share of Value in Win Band",
-              "displayName": "Share of awarded value"
+              "displayName": "Share of contract value"
             }
           ]
         }
@@ -254,7 +254,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'How often suppliers win vs their share of awarded value'"
+                  "Value": "'How often suppliers win vs their share of contract value'"
                 }
               }
             }

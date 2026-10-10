@@ -55,7 +55,8 @@
                 }
               },
               "queryRef": "Awards.Awarded Value",
-              "nativeQueryRef": "Awarded Value"
+              "nativeQueryRef": "Awarded Value",
+              "displayName": "Contract value"
             },
             {
               "field": {
@@ -258,7 +259,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Named suppliers only: unknown and withheld names are left out'"
+                  "Value": "'Leaves out awards with no supplier named, or with the name withheld by the buyer'"
                 }
               }
             },

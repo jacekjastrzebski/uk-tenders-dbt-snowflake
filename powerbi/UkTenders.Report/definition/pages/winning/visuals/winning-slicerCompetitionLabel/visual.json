@@ -1,10 +1,10 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
-  "name": "winning-slicerBuyerLabel",
+  "name": "winning-slicerCompetitionLabel",
   "position": {
-    "x": 520,
+    "x": 772,
     "y": 96,
-    "z": 1,
+    "z": 43,
     "width": 236,
     "height": 96,
     "tabOrder": 0
@@ -19,7 +19,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "Buyer",
+                    "value": "How awarded",
                     "textStyle": {
                       "fontFamily": "'DM Sans', 'Segoe UI Semibold', wf_segoe-ui_semibold, helvetica, arial, sans-serif",
                       "fontSize": "12pt",
@@ -31,7 +31,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "Type to search",
+                    "value": "Choose one or more",
                     "textStyle": {
                       "fontFamily": "'DM Sans', 'Segoe UI', wf_segoe-ui_normal, helvetica, arial, sans-serif",
                       "fontSize": "9pt",
