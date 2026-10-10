@@ -30,6 +30,7 @@ ref table 'Colour Group'
 ref table 'Wait Band'
 ref table 'Win Band'
 ref table Stage
+ref table 'Wait Days'
 
 ref cultureInfo en-GB
 

@@ -1,0 +1,24 @@
+/// Range for the "Days waited" slider on How long to award?; not linked to any table.
+/// Every number on the page follows it by the wait it measures: the cards by days to award or to
+/// contract, the chart and table by the chosen stage. Measures filter with TREATAS: a per-row
+/// range check made the table take about a minute. Until it is moved, the range covers every tender.
+table 'Wait Days'
+	lineageTag: c5d5ba8f-234d-43f4-9d71-32852d55c86f
+
+	column Days
+		dataType: int64
+		formatString: 0
+		lineageTag: fac6d269-3c78-48e7-a139-ded312a54f54
+		summarizeBy: none
+		sourceColumn: [Days]
+
+	partition 'Wait Days' = calculated
+		mode: import
+		source =
+				VAR Longest =
+				    MAX(MAX(Procurements[Days Tender to Award]), MAX(Procurements[Days Award to Contract]))
+				RETURN
+				    SELECTCOLUMNS(GENERATESERIES(0, Longest, 1), "Days", [Value])
+
+	annotation PBI_ResultType = Table
+
