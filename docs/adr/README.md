@@ -38,5 +38,6 @@ One file per significant decision: the context, the decision and its consequence
 | [0033](0033-pipeline-safeguards.md) | Pipeline safeguards: CI role, deploy catch-up, stale-data alert, cost cap | Accepted |
 | [0034](0034-award-data-corrections.md) | Award data corrections: old regime out of the headline, rates, lots, ties | Accepted |
 | [0035](0035-bidder-fields.md) | Bidder fields: tender value, notice link, SME and competition | Accepted |
+| [0036](0036-rebuild-prod-on-deploy.md) | Rebuild prod when dbt changes are deployed | Accepted |
 
 There is no 0013: it was a research draft of the Power BI marts on a branch that has since been deleted, replaced by [0023](0023-star-schema-for-power-bi.md).

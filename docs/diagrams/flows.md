@@ -157,7 +157,7 @@ flowchart TB
         P1{"Which files changed<br/>since tag deployed?"}
         P2["Upload loader to CODE_STAGE"]
         P3["Recreate procedure / task / alert"]
-        P4["snow dbt deploy UK_TENDERS"]
+        P4["snow dbt deploy UK_TENDERS,<br/>then run RUN_DBT and wait<br/>(fails the deploy if dbt fails)"]
         P5["Recreate RUN_DBT task and alerts"]
         P7["Recreate Power BI<br/>refresh alert"]
         P6["Move tag deployed<br/>to this commit"]
