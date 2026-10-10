@@ -1,71 +1,38 @@
 {
-  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
-  "name": "winning-slicerMarket",
+  "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
+  "name": "winning-kpiSmeShare",
   "position": {
-    "x": 16,
-    "y": 146,
-    "z": 2,
-    "height": 44,
-    "width": 236,
-    "tabOrder": 0
+    "x": 858,
+    "y": 200,
+    "z": 3,
+    "width": 405,
+    "height": 96,
+    "tabOrder": 3
   },
   "visual": {
-    "visualType": "slicer",
+    "visualType": "card",
     "query": {
       "queryState": {
         "Values": {
           "projections": [
             {
               "field": {
-                "Column": {
+                "Measure": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Sector"
+                      "Entity": "Awards"
                     }
                   },
-                  "Property": "Market"
+                  "Property": "SME Award Share"
                 }
               },
-              "queryRef": "Sector.Market",
-              "nativeQueryRef": "Market",
-              "active": true
+              "queryRef": "Awards.SME Award Share",
+              "nativeQueryRef": "SME Award Share",
+              "displayName": "Of awards won by SMEs"
             }
           ]
         }
       }
-    },
-    "objects": {
-      "data": [
-        {
-          "properties": {
-            "mode": {
-              "expr": {
-                "Literal": {
-                  "Value": "'Dropdown'"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "header": [
-        {
-          "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "false"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "general": [
-        {
-          "properties": {}
-        }
-      ]
     },
     "visualContainerObjects": {
       "padding": [
@@ -74,21 +41,21 @@
             "top": {
               "expr": {
                 "Literal": {
-                  "Value": "0D"
+                  "Value": "12D"
                 }
               }
             },
             "bottom": {
               "expr": {
                 "Literal": {
-                  "Value": "8D"
+                  "Value": "12D"
                 }
               }
             },
             "left": {
               "expr": {
                 "Literal": {
-                  "Value": "11D"
+                  "Value": "16D"
                 }
               }
             },
@@ -103,32 +70,6 @@
         }
       ],
       "title": [
-        {
-          "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "false"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "background": [
-        {
-          "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "false"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "border": [
         {
           "properties": {
             "show": {
@@ -168,11 +109,21 @@
         }
       ]
     },
-    "syncGroup": {
-      "groupName": "Market",
-      "fieldChanges": true,
-      "filterChanges": true
-    },
-    "drillFilterOtherVisuals": true
+    "drillFilterOtherVisuals": true,
+    "objects": {
+      "categoryLabels": [
+        {
+          "properties": {
+            "show": {
+              "expr": {
+                "Literal": {
+                  "Value": "false"
+                }
+              }
+            }
+          }
+        }
+      ]
+    }
   }
 }

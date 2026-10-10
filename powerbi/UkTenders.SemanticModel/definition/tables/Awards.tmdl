@@ -64,6 +64,31 @@ table Awards
 		formatString: 0%
 		lineageTag: 5427742b-71f4-4da1-bd2b-d1aa188b2bc6
 
+	/// Share of headline awards with an SME among their suppliers (size as the supplier declares it)
+	measure 'SME Award Share' =
+			DIVIDE(
+			    CALCULATE([Awards], KEEPFILTERS(Awards[Supplier Scale] = "SME")),
+			    [Awards]
+			)
+		formatString: 0%
+		displayFolder: SMEs
+		lineageTag: 1e7b5bf8-2005-4406-9b05-601451bce00c
+
+	/// Share of headline contract value won by SMEs
+	measure 'SME Value Share' =
+			DIVIDE(
+			    CALCULATE([Awarded Value], KEEPFILTERS(Awards[Supplier Scale] = "SME")),
+			    [Awarded Value]
+			)
+		formatString: 0%
+		displayFolder: SMEs
+		lineageTag: 01432ac7-37f4-460a-8131-7e8268ee3b7d
+
+	/// Label under the SME card on Who's winning?, e.g. "Of awards won by SMEs, 40% of value"
+	measure 'SME Card Label' = "Of awards won by SMEs, " & FORMAT([SME Value Share] + 0, "0%") & " of value"
+		displayFolder: SMEs
+		lineageTag: f5f07a88-6018-4e2d-8106-96f80789e9ec
+
 	/// Framework ceilings: the most that could be spent, not spend; shown separately
 	measure 'Framework Ceiling Value' = CALCULATE(SUM(Awards[Allocated Value]), KEEPFILTERS(Awards[Is Framework] = TRUE()))
 		formatString: £#,0
@@ -217,7 +242,7 @@ table Awards
 		displayFolder: Win bands
 		lineageTag: 8deb9bff-f027-49f3-ae6e-dc5a5267fdf7
 
-		formatStringDefinition = "0%"" of awarded value"""
+		formatStringDefinition = "0%"" of contract value"""
 
 	/// Subtitle of "How often suppliers win": the chart's story in words, under the current filters
 	measure 'Win Chart Story' =
@@ -225,9 +250,15 @@ table Awards
 			VAR FrequentSuppliers = CALCULATE([Share of Suppliers in Win Band], 'Win Band'[Wins] = "10 or more")
 			VAR FrequentValue = CALCULATE([Share of Value in Win Band], 'Win Band'[Wins] = "10 or more")
 			RETURN
-			    FORMAT(OnceSuppliers + 0, "0%") & " of suppliers won just once; the "
-			        & FORMAT(FrequentSuppliers + 0, "0%") & " who won 10 or more times took "
-			        & FORMAT(FrequentValue + 0, "0%") & " of the awarded value."
+			    SWITCH(
+			        TRUE(),
+			        ISBLANK([Suppliers Awarded]), "No awards match these filters.",
+			        FrequentSuppliers + 0 = 0,
+			            FORMAT(OnceSuppliers + 0, "0%") & " of suppliers won just once; none won 10 or more times.",
+			        FORMAT(OnceSuppliers + 0, "0%") & " of suppliers won just once; the "
+			            & FORMAT(FrequentSuppliers + 0, "0%") & " who won 10 or more times took "
+			            & FORMAT(FrequentValue + 0, "0%") & " of the contract value."
+			    )
 		displayFolder: Win bands
 		lineageTag: 2a235781-d807-4068-8b33-fa452beaf769
 
