@@ -56,6 +56,14 @@ table Awards
 		formatString: 0.0%
 		lineageTag: 16e6ab32-0de3-45dc-88cb-469beb517bb5
 
+	/// Share of contract value awarded by the 10 biggest buyers, for Who's buying?
+	measure 'Top 10 Buyer Share' =
+			VAR TopBuyers = TOPN(10, VALUES(Buyer[Buyer Key]), [Awarded Value])
+			RETURN
+			    DIVIDE(CALCULATE([Awarded Value], TopBuyers), [Awarded Value])
+		formatString: 0%
+		lineageTag: 5427742b-71f4-4da1-bd2b-d1aa188b2bc6
+
 	/// Framework ceilings: the most that could be spent, not spend; shown separately
 	measure 'Framework Ceiling Value' = CALCULATE(SUM(Awards[Allocated Value]), KEEPFILTERS(Awards[Is Framework] = TRUE()))
 		formatString: £#,0
