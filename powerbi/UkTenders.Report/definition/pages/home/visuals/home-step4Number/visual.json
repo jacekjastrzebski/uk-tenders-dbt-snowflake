@@ -3,10 +3,10 @@
   "name": "home-step4Number",
   "position": {
     "x": 964,
-    "y": 432,
+    "y": 448,
     "z": 20,
     "width": 300,
-    "height": 112,
+    "height": 156,
     "tabOrder": 20
   },
   "visual": {

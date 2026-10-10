@@ -3,7 +3,7 @@
   "name": "home-step3Button",
   "position": {
     "x": 648,
-    "y": 552,
+    "y": 612,
     "z": 18,
     "height": 48,
     "width": 300,
@@ -45,7 +45,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'See top suppliers  →'"
+                  "Value": "'See the supplier league table  →'"
                 }
               }
             },

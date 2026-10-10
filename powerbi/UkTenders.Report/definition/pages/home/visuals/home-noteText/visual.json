@@ -3,10 +3,10 @@
   "name": "home-noteText",
   "position": {
     "x": 108,
-    "y": 672,
+    "y": 668,
     "z": 55,
-    "width": 1140,
-    "height": 24,
+    "width": 820,
+    "height": 48,
     "tabOrder": 55
   },
   "visual": {
@@ -45,7 +45,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Award totals leave out frameworks (spending caps), awards of £100m or more, awards from procurements begun before 24 Feb 2025 and awards with no value.'"
+                  "Value": "'Totals leave out frameworks, awards of £100m+, pre-2025 procurements and awards with no value.'"
                 }
               }
             },
@@ -77,7 +77,7 @@
             "verticalAlignment": {
               "expr": {
                 "Literal": {
-                  "Value": "'bottom'"
+                  "Value": "'middle'"
                 }
               }
             }
