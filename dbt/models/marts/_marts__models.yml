@@ -109,6 +109,18 @@ models:
         description: An award under the rules before the Procurement Act (its notices have no notice type).
       - name: is_in_headline
         description: Counts in the headline totals - not a framework set-up, not a large value, not under the old rules, value known.
+      - name: competition
+        description: How the award was made, from its latest notice - Competed (open, selective or limited), Direct award (direct award or below threshold without competition), or Not stated (ADR 0035).
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['Competed', 'Direct award', 'Not stated']
+      - name: supplier_scale
+        description: The size the supplier declares on the award's latest notice - SME, Large, or Not stated.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: ['SME', 'Large', 'Not stated']
 
   - name: fct_procurements
     description: >
@@ -167,6 +179,15 @@ models:
         description: Days from the award notice (UK6) to the contract notice (UK7); null without an award notice, or when published out of order.
       - name: is_cancelled
         description: A termination notice (UK12) and no award.
+      - name: tender_notice_url
+        description: Link to the latest tender notice (UK4) on Find a Tender.
+        data_tests: [not_null]
+      - name: tender_value_gbp
+        description: Estimated value incl. VAT from the latest tender notice, GBP only; never add up, framework values are spending caps (ADR 0035).
+      - name: is_framework
+        description: The tender sets up a framework agreement; its value is a cap, not spend.
+      - name: is_suitable_for_sme
+        description: At least one lot is marked suitable for SMEs by the buyer.
 
   - name: dim_data_freshness
     description: One row with the time of the latest load from the API, for the report's "Data loaded" card.

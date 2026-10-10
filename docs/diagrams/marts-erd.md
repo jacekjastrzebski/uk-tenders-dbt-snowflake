@@ -24,6 +24,10 @@ erDiagram
         int days_tender_to_award
         int days_award_to_contract
         boolean is_cancelled "UK12 and no award"
+        string tender_notice_url "latest UK4 on Find a Tender"
+        number tender_value_gbp "incl. VAT, never summed"
+        boolean is_framework "value is a cap"
+        boolean is_suitable_for_sme "any lot"
     }
 
     FCT_AWARD_SUPPLIERS {
@@ -39,6 +43,8 @@ erDiagram
         boolean is_large_value "100m or more"
         boolean is_old_regime "before the Procurement Act"
         boolean is_in_headline "counts in headline totals"
+        string competition "Competed, Direct award, Not stated"
+        string supplier_scale "SME, Large, Not stated"
     }
     DIM_DATES {
         date calendar_date PK "1990-01-01 to 2035-12-31"

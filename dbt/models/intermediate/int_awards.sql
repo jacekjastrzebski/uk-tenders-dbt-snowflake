@@ -25,6 +25,7 @@ WITH award_rows AS (
         n.buyer_name,
         COALESCE(n.cpv_code, n.procurement_cpv_code) AS cpv_code,   -- award notices often have no CPV code
         n.title,
+        n.notice:tender.procurementMethod::STRING AS procurement_method,
         n.notice:tender.techniques.hasFrameworkAgreement::BOOLEAN AS has_framework_agreement,
         n.notice:tender.procurementMethodDetails::STRING ILIKE 'Award under framework%' AS is_call_off
     FROM
@@ -43,7 +44,8 @@ latest_notice AS (
         award_status,
         buyer_name,
         cpv_code,
-        title
+        title,
+        procurement_method
     FROM
         award_rows
     QUALIFY
@@ -195,6 +197,7 @@ SELECT
     {{ normalise_org_name('r.buyer_name') }} AS buyer_key,
     COALESCE(LEFT(r.cpv_code, 2), 'UNKNOWN') AS cpv_division,   -- no CPV code: "Unknown sector" in dim_cpv_divisions
     r.title,
+    r.procurement_method,
     r.value,
     COALESCE(r.currency, 'GBP') AS currency,
     r.value_source,

@@ -70,6 +70,8 @@ models:
       - name: party_key
         description: notice_id/position of the party in the notice; party_id alone is not unique within a notice.
         data_tests: [unique, not_null]
+      - name: scale
+        description: Size a supplier declares on award notices - sme or large; null for buyers and when not given.
       - name: notice_id
         data_tests:
           - not_null
