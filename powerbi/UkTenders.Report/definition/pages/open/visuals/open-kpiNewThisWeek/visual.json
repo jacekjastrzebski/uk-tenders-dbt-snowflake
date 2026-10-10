@@ -1,13 +1,13 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
-  "name": "open-kpiClosingSoon",
+  "name": "open-kpiNewThisWeek",
   "position": {
-    "x": 437,
+    "x": 858,
     "y": 200,
-    "z": 1,
+    "z": 47,
     "width": 405,
     "height": 96,
-    "tabOrder": 1
+    "tabOrder": 0
   },
   "visual": {
     "visualType": "card",
@@ -23,11 +23,12 @@
                       "Entity": "Procurements"
                     }
                   },
-                  "Property": "Closing Soon"
+                  "Property": "New This Week"
                 }
               },
-              "queryRef": "Procurements.Closing Soon",
-              "nativeQueryRef": "Closing Soon"
+              "queryRef": "Procurements.New This Week",
+              "nativeQueryRef": "New This Week",
+              "displayName": "New this week"
             }
           ]
         }
@@ -40,14 +41,14 @@
             "top": {
               "expr": {
                 "Literal": {
-                  "Value": "8D"
+                  "Value": "12D"
                 }
               }
             },
             "bottom": {
               "expr": {
                 "Literal": {
-                  "Value": "30D"
+                  "Value": "12D"
                 }
               }
             },
@@ -117,19 +118,6 @@
               "expr": {
                 "Literal": {
                   "Value": "1D"
-                }
-              }
-            }
-          }
-        }
-      ],
-      "categoryLabels": [
-        {
-          "properties": {
-            "show": {
-              "expr": {
-                "Literal": {
-                  "Value": "false"
                 }
               }
             }

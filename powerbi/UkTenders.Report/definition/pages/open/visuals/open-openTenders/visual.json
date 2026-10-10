@@ -88,18 +88,33 @@
             },
             {
               "field": {
+                "Measure": {
+                  "Expression": {
+                    "SourceRef": {
+                      "Entity": "Procurements"
+                    }
+                  },
+                  "Property": "Tender Value"
+                }
+              },
+              "queryRef": "Procurements.Tender Value",
+              "nativeQueryRef": "Tender Value",
+              "displayName": "Value (incl. VAT)"
+            },
+            {
+              "field": {
                 "Column": {
                   "Expression": {
                     "SourceRef": {
                       "Entity": "Procurements"
                     }
                   },
-                  "Property": "OCID"
+                  "Property": "Notice"
                 }
               },
-              "queryRef": "Procurements.OCID",
-              "nativeQueryRef": "OCID",
-              "displayName": "Procurement ID"
+              "queryRef": "Procurements.Notice",
+              "nativeQueryRef": "Notice",
+              "displayName": "Notice"
             }
           ]
         }
@@ -142,7 +157,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "310D"
+                  "Value": "360D"
                 }
               }
             }
@@ -156,7 +171,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "290D"
+                  "Value": "250D"
                 }
               }
             }
@@ -170,7 +185,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "180D"
+                  "Value": "160D"
                 }
               }
             }
@@ -184,7 +199,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "120D"
+                  "Value": "110D"
                 }
               }
             }
@@ -198,7 +213,7 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "140D"
+                  "Value": "100D"
                 }
               }
             }
@@ -212,13 +227,27 @@
             "value": {
               "expr": {
                 "Literal": {
-                  "Value": "150D"
+                  "Value": "170D"
                 }
               }
             }
           },
           "selector": {
-            "metadata": "Procurements.OCID"
+            "metadata": "Procurements.Tender Value"
+          }
+        },
+        {
+          "properties": {
+            "value": {
+              "expr": {
+                "Literal": {
+                  "Value": "60D"
+                }
+              }
+            }
+          },
+          "selector": {
+            "metadata": "Procurements.Notice"
           }
         }
       ],
@@ -368,6 +397,19 @@
       "columnHeaders": [
         {
           "properties": {}
+        }
+      ],
+      "values": [
+        {
+          "properties": {
+            "urlIcon": {
+              "expr": {
+                "Literal": {
+                  "Value": "true"
+                }
+              }
+            }
+          }
         }
       ]
     },
