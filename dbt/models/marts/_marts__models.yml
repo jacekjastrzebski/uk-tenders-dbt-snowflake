@@ -190,8 +190,8 @@ models:
         description: At least one lot is marked suitable for SMEs by the buyer.
 
   - name: dim_data_freshness
-    description: One row with the time of the latest load from the API, for the report's "Data loaded" card.
+    description: One row with the time the data was last confirmed up to date, for the report's "Data as of".
     columns:
       - name: last_loaded_at
-        description: Latest load time in staging, UK local time.
+        description: End of the window the latest successful scheduled loader run asked the API for, UK local time. A run that finds nothing new still counts; backfills don't.
         data_tests: [not_null]

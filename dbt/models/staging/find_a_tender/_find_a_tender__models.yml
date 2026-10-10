@@ -176,3 +176,25 @@ models:
                 where: "contract_value_currency != 'GBP'"   # GBP is the base currency, no rate needed
       - name: signed_at
         description: Date signed, UTC.
+
+  - name: stg_find_a_tender__ingest_runs
+    description: One row per loader run, with the window it asked the API for and how it ended. Timestamps in UTC.
+    columns:
+      - name: run_id
+        description: Run start time as an ID, e.g. 20261010T180014Z.
+        data_tests: [unique, not_null]
+      - name: run_type
+        description: incremental for the scheduled runs, backfill for one-off loads of past windows.
+        data_tests:
+          - accepted_values:
+              arguments:
+                values: [incremental, backfill]
+      - name: status
+        description: success, or the reason the run failed.
+        data_tests: [not_null]
+      - name: window_to
+        description: End of the time window asked for, UTC; for a successful scheduled run, the data is complete up to here.
+      - name: releases
+        description: Notices returned; 0 when nothing new was published.
+      - name: finished_at
+        description: When the run ended, UTC.

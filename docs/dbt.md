@@ -102,7 +102,7 @@ Star schema for the Power BI report ([ADR 0023](adr/0023-star-schema-for-power-b
 | `dim_cpv_divisions` | CPV division (seed `cpv_divisions`), plus "Unknown sector" for notices without a CPV code | Sector and Market filters: 9 markets from the seed, e.g. Digital and data (48, 72) |
 | `dim_buyers` | Buyer organisation, grouped by normalised name | Who's buying? |
 | `dim_suppliers` | Supplier organisation, grouped by normalised name (lots removed); withheld flagged; plus "Unknown supplier" | Who's winning? |
-| `dim_data_freshness` | One row: latest load time, UK | The report's "Data loaded" card |
+| `dim_data_freshness` | One row: when the data was last confirmed up to date (latest successful scheduled load), UK | The report's "Data as of" |
 | `fct_procurements` | Procurement Act tender (`ocid` with a UK4 notice) | What's open to bid? (closing_date from today, no award, not cancelled; `tender_value_gbp`, `is_framework`, `is_suitable_for_sme`, `tender_notice_url`, [ADR 0035](adr/0035-bidder-fields.md)) How long to award? (median `days_tender_to_award`) |
 | `fct_award_suppliers` | Supplier on an award, deduplicated across notices ([ADR 0022](adr/0022-award-fact-rules.md)) | Who's buying? Who's winning? Sum `allocated_value_gbp` where `is_in_headline`; split by `competition` and `supplier_scale` ([ADR 0035](adr/0035-bidder-fields.md)) |
 

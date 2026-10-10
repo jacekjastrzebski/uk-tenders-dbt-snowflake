@@ -19,6 +19,7 @@ flowchart TB
         S3["awards<br/>1 per award in a notice"]
         S4["award_suppliers<br/>1 per supplier on an award"]
         S5["contracts<br/>1 per contract in a notice"]
+        S6["ingest_runs<br/>1 per loader run"]
         SH["seed: hmrc_exchange_rates<br/>1 per currency and month"]
         SC["seed: cpv_divisions<br/>1 per CPV division"]
     end
@@ -28,7 +29,8 @@ flowchart TB
     subgraph MARTS["PROD_MARTS: tables, star schema"]
         F1["fct_procurements<br/>1 row = 1 Procurement Act tender"]
         F2["fct_award_suppliers<br/>1 row = 1 supplier on an award"]
-        DIM["dim_buyers · dim_suppliers ·<br/>dim_cpv_divisions · dim_dates ·<br/>dim_data_freshness"]
+        DIM["dim_buyers · dim_suppliers ·<br/>dim_cpv_divisions · dim_dates"]
+        FR["dim_data_freshness<br/>1 row: when the data was last checked"]
     end
     API --> R1
     R1 --> S1 --> S2 & S3 & S4 & S5
@@ -36,9 +38,10 @@ flowchart TB
     S1 --> F1
     I1 & S3 & S4 --> F2
     S1 & S4 & SC --> DIM
+    R2 --> S6 --> FR
 ```
 
-`FIND_A_TENDER_INGEST_RUNS` feeds the loader's watermark and dbt's freshness check, not the models. `parties` is not read by any mart yet. `dim_dates` is generated from project variables.
+`FIND_A_TENDER_INGEST_RUNS` feeds the loader's watermark, dbt's freshness check and `dim_data_freshness`: the latest successful scheduled run is when the data was last confirmed up to date, even if it found nothing new. `parties` is not read by any mart yet. `dim_dates` is generated from project variables.
 
 ## dbt lineage
 
@@ -60,6 +63,7 @@ flowchart LR
     awards["stg_find_a_tender__awards"]
     award_sup["stg_find_a_tender__award_suppliers"]
     contracts["stg_find_a_tender__contracts"]
+    runs["stg_find_a_tender__ingest_runs"]
     int_awards["int_awards"]
 
     fct_proc["fct_procurements"]:::mart
@@ -78,7 +82,7 @@ flowchart LR
     notices --> dim_buyers
     notices & award_sup --> dim_sup
     cpv --> dim_cpv
-    notices --> dim_fresh
+    raw_runs --> runs --> dim_fresh
 ```
 
-`raw.find_a_tender_ingest_runs` is declared for freshness only; no model reads it. `dim_dates` has no inputs.
+`raw.find_a_tender_ingest_runs` feeds `dim_data_freshness` and dbt's freshness check. `dim_dates` has no inputs.
