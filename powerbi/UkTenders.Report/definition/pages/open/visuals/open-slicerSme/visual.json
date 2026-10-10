@@ -1,12 +1,12 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
-  "name": "open-slicerBuyer",
+  "name": "open-slicerSme",
   "position": {
-    "x": 520,
+    "x": 1024,
     "y": 146,
-    "z": 2,
+    "z": 46,
     "height": 44,
-    "width": 236,
+    "width": 240,
     "tabOrder": 0
   },
   "visual": {
@@ -20,14 +20,14 @@
                 "Column": {
                   "Expression": {
                     "SourceRef": {
-                      "Entity": "Buyer"
+                      "Entity": "Procurements"
                     }
                   },
-                  "Property": "Buyer"
+                  "Property": "Suitable for SMEs"
                 }
               },
-              "queryRef": "Buyer.Buyer",
-              "nativeQueryRef": "Buyer",
+              "queryRef": "Procurements.Suitable for SMEs",
+              "nativeQueryRef": "Suitable for SMEs",
               "active": true
             }
           ]
@@ -41,7 +41,7 @@
             "mode": {
               "expr": {
                 "Literal": {
-                  "Value": "'Dropdown'"
+                  "Value": "'Basic'"
                 }
               }
             }
@@ -63,15 +63,7 @@
       ],
       "general": [
         {
-          "properties": {
-            "selfFilterEnabled": {
-              "expr": {
-                "Literal": {
-                  "Value": "true"
-                }
-              }
-            }
-          }
+          "properties": {}
         }
       ]
     },
@@ -176,33 +168,28 @@
         }
       ]
     },
-    "syncGroup": {
-      "groupName": "Buyer",
-      "fieldChanges": true,
-      "filterChanges": true
-    },
     "drillFilterOtherVisuals": true
   },
   "filterConfig": {
     "filters": [
       {
-        "name": "buyersWithData",
+        "name": "onlyYes",
         "field": {
-          "Measure": {
+          "Column": {
             "Expression": {
               "SourceRef": {
                 "Entity": "Procurements"
               }
             },
-            "Property": "Open Tenders"
+            "Property": "Suitable for SMEs"
           }
         },
-        "type": "Advanced",
+        "type": "Categorical",
         "filter": {
           "Version": 2,
           "From": [
             {
-              "Name": "x",
+              "Name": "p",
               "Entity": "Procurements",
               "Type": 0
             }
@@ -210,23 +197,28 @@
           "Where": [
             {
               "Condition": {
-                "Comparison": {
-                  "ComparisonKind": 1,
-                  "Left": {
-                    "Measure": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Source": "x"
+                "In": {
+                  "Expressions": [
+                    {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Source": "p"
+                          }
+                        },
+                        "Property": "Suitable for SMEs"
+                      }
+                    }
+                  ],
+                  "Values": [
+                    [
+                      {
+                        "Literal": {
+                          "Value": "'SME-friendly only'"
                         }
-                      },
-                      "Property": "Open Tenders"
-                    }
-                  },
-                  "Right": {
-                    "Literal": {
-                      "Value": "0D"
-                    }
-                  }
+                      }
+                    ]
+                  ]
                 }
               }
             }

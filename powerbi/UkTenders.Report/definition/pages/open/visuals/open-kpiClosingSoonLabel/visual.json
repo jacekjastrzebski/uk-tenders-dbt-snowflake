@@ -2,11 +2,11 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.13.0/schema.json",
   "name": "open-kpiClosingSoonLabel",
   "position": {
-    "x": 648,
+    "x": 437,
     "y": 260,
     "z": 2,
     "height": 28,
-    "width": 616,
+    "width": 405,
     "tabOrder": 1
   },
   "visual": {

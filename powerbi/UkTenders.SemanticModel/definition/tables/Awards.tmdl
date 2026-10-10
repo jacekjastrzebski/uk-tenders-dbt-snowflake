@@ -174,12 +174,6 @@ table Awards
 		displayFolder: Win bands
 		lineageTag: 781c35f0-2516-4baf-ab72-160c61fa04ee
 
-	/// Share of named suppliers that won only once, for the Home tile of Who's winning?
-	measure 'Suppliers Won Once' = CALCULATE([Share of Suppliers in Win Band], 'Win Band'[Wins] = "Once")
-		formatString: 0%
-		displayFolder: Win bands
-		lineageTag: c82f7caf-c718-4a06-bc56-673856f68c5e
-
 	/// Share of named suppliers in the band; the bands add up to 100%. Labelled "68% of suppliers"
 	measure 'Share of Suppliers in Win Band' = DIVIDE([Suppliers in Win Band], [Suppliers Awarded])
 		displayFolder: Win bands
@@ -242,6 +236,12 @@ table Awards
 		formatString: #,0
 		displayFolder: Not in totals
 		lineageTag: 00552950-5615-4932-a4c3-da4cc5ed0e17
+
+	/// Share of named suppliers that won only once, for the Home tile of Who's winning?
+	measure 'Suppliers Won Once' = CALCULATE([Share of Suppliers in Win Band], 'Win Band'[Wins] = "Once")
+		formatString: 0%
+		displayFolder: Win bands
+		lineageTag: c82f7caf-c718-4a06-bc56-673856f68c5e
 
 	column 'Award Supplier Key'
 		dataType: string
@@ -353,6 +353,24 @@ table Awards
 		lineageTag: d3f9a56a-da3a-43a0-a662-0187c7cad4f7
 		summarizeBy: none
 		sourceColumn: IS_OLD_REGIME
+
+	/// Competed, Direct award or Not stated (ADR 0035)
+	column Competition
+		dataType: string
+		lineageTag: fd34373f-74fe-4e9c-bbce-baf7738716be
+		summarizeBy: none
+		sourceColumn: COMPETITION
+
+		annotation SummarizationSetBy = Automatic
+
+	/// SME, Large or Not stated, as the supplier declares it
+	column 'Supplier Scale'
+		dataType: string
+		lineageTag: d7bbdb3d-2eeb-46ae-9280-bd4fc74e63aa
+		summarizeBy: none
+		sourceColumn: SUPPLIER_SCALE
+
+		annotation SummarizationSetBy = Automatic
 
 	partition Awards = m
 		mode: import

@@ -217,6 +217,25 @@ table Procurements
 		displayFolder: Timings
 		lineageTag: 73ca0d5f-5077-4d42-94ea-6563f4a2294a
 
+	/// Estimated value incl. VAT of an open tender, from its latest tender notice (blank when not open).
+	/// Framework values are spending caps and show as "£… (cap)"; never add these up
+	measure 'Tender Value' = IF([Open Tenders] > 0, SUM(Procurements[Tender Value GBP]))
+		displayFolder: Open tenders
+		lineageTag: b067f0b5-4c92-47bb-9dde-1b5f4d7cf3e1
+
+		formatStringDefinition = IF(CALCULATE(COUNTROWS(Procurements), KEEPFILTERS(Procurements[Is Framework] = TRUE())) > 0, "£#,0"" (cap)""", "£#,0")
+
+	/// Open tenders first published in the last 7 days, whatever the "Closes within" slicer says
+	measure 'New This Week' =
+			CALCULATE(
+			    [Open Tenders],
+			    REMOVEFILTERS('Closing Window'),
+			    KEEPFILTERS(Procurements[Tender Published Date] >= TODAY() - 7)
+			) + 0   // 0, not (Blank), when nothing matches
+		formatString: #,0
+		displayFolder: Open tenders
+		lineageTag: a13ecf11-6d10-44fd-be1f-5bb5c283b65f
+
 	column OCID
 		dataType: string
 		isKey
@@ -304,13 +323,64 @@ table Procurements
 		summarizeBy: none
 		sourceColumn: IS_CANCELLED
 
+	/// Link to the latest tender notice on Find a Tender
+	column Notice
+		dataType: string
+		lineageTag: ca4444b2-7307-47f1-bef7-8ab8db9e028a
+		dataCategory: WebUrl
+		summarizeBy: none
+		sourceColumn: TENDER_NOTICE_URL
+
+	column 'Tender Value GBP'
+		dataType: double
+		isHidden
+		formatString: £#,0
+		lineageTag: 7b287e20-5df2-4ba5-ac43-dcfae354f7bf
+		summarizeBy: none
+		sourceColumn: TENDER_VALUE_GBP
+
+	column 'Is Framework'
+		dataType: boolean
+		isHidden
+		lineageTag: 97412547-daf5-4856-b24d-92526bb547b6
+		summarizeBy: none
+		sourceColumn: IS_FRAMEWORK
+
+	/// "SME-friendly only" when at least one lot is marked suitable for SMEs, else "Other"; for the tick box on What's open to bid?
+	column 'Suitable for SMEs'
+		dataType: string
+		lineageTag: 0489fff1-8c10-423b-90fb-503fd9f734b2
+		summarizeBy: none
+		sourceColumn: SUITABLE_FOR_SMES
+
+	column 'Tender Notice ID'
+		dataType: string
+		isHidden
+		lineageTag: 6f5cce53-f64b-4708-bb8e-6fd9b1c6daf5
+		summarizeBy: none
+		sourceColumn: TENDER_NOTICE_ID
+
+		annotation SummarizationSetBy = Automatic
+
+	column 'Is Suitable For SME'
+		dataType: boolean
+		isHidden
+		formatString: """TRUE"";""TRUE"";""FALSE"""
+		lineageTag: 7a2416fb-34b2-41b1-bb6f-e079e7e3e331
+		summarizeBy: none
+		sourceColumn: IS_SUITABLE_FOR_SME
+
+		annotation SummarizationSetBy = Automatic
+
 	partition Procurements = m
 		mode: import
 		source =
 				let
-				    Source = Marts{[Name = "FCT_PROCUREMENTS", Kind = "Table"]}[Data]
+				    Source = Marts{[Name = "FCT_PROCUREMENTS", Kind = "Table"]}[Data],
+				    // the slicer shows one tick box, "SME-friendly only"
+				    WithSmes = Table.AddColumn(Source, "SUITABLE_FOR_SMES", each if [IS_SUITABLE_FOR_SME] then "SME-friendly only" else "Other", type text)
 				in
-				    Source
+				    WithSmes
 
 	annotation PBI_ResultType = Table
 

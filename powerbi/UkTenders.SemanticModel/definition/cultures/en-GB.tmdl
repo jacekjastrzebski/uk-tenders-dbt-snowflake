@@ -15,7 +15,7 @@ cultureInfo en-GB
 			      "State": "Generated",
 			      "Terms": [
 			        {
-			          "Awarded, last 12 months": {
+			          "Contract value awarded, last 12 months": {
 			            "State": "Suggested",
 			            "Source": {
 			              "Type": "External",
@@ -389,19 +389,7 @@ cultureInfo en-GB
 			          "ConceptualProperty": "OCID"
 			        }
 			      },
-			      "State": "Generated",
-			      "Terms": [
-			        {
-			          "Procurement ID": {
-			            "State": "Suggested",
-			            "Source": {
-			              "Type": "External",
-			              "Agent": "PowerBI.VisualColumnRename"
-			            },
-			            "Weight": 0.9
-			          }
-			        }
-			      ]
+			      "State": "Generated"
 			    },
 			    "procurements.share_in_wait_band_by_group": {
 			      "Definition": {
@@ -477,6 +465,90 @@ cultureInfo en-GB
 			      "Terms": [
 			        {
 			          "Days": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "awards.suppliers_won_once": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Awards",
+			          "ConceptualProperty": "Suppliers Won Once"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Of suppliers won only once": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "procurements.tender_value": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Procurements",
+			          "ConceptualProperty": "Tender Value"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Value (incl. VAT)": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "procurements.notice": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Procurements",
+			          "ConceptualProperty": "Notice"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "Notice": {
+			            "State": "Suggested",
+			            "Source": {
+			              "Type": "External",
+			              "Agent": "PowerBI.VisualColumnRename"
+			            },
+			            "Weight": 0.9
+			          }
+			        }
+			      ]
+			    },
+			    "procurements.new_this_week": {
+			      "Definition": {
+			        "Binding": {
+			          "ConceptualEntity": "Procurements",
+			          "ConceptualProperty": "New This Week"
+			        }
+			      },
+			      "State": "Generated",
+			      "Terms": [
+			        {
+			          "New this week": {
 			            "State": "Suggested",
 			            "Source": {
 			              "Type": "External",

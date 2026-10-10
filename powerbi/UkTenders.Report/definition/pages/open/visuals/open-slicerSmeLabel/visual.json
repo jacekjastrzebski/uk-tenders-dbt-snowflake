@@ -1,11 +1,11 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
-  "name": "open-slicerBuyerLabel",
+  "name": "open-slicerSmeLabel",
   "position": {
-    "x": 520,
+    "x": 1024,
     "y": 96,
-    "z": 1,
-    "width": 236,
+    "z": 45,
+    "width": 240,
     "height": 96,
     "tabOrder": 0
   },
@@ -19,7 +19,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "Buyer",
+                    "value": "Suitable for SMEs",
                     "textStyle": {
                       "fontFamily": "'DM Sans', 'Segoe UI Semibold', wf_segoe-ui_semibold, helvetica, arial, sans-serif",
                       "fontSize": "12pt",
@@ -31,7 +31,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "Type to search",
+                    "value": "Tick to narrow",
                     "textStyle": {
                       "fontFamily": "'DM Sans', 'Segoe UI', wf_segoe-ui_normal, helvetica, arial, sans-serif",
                       "fontSize": "9pt",
