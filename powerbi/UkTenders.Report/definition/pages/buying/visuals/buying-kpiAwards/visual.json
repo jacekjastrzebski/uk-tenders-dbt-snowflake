@@ -2,10 +2,10 @@
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
   "name": "buying-kpiAwards",
   "position": {
-    "x": 648,
+    "x": 437,
     "y": 200,
     "z": 2,
-    "width": 616,
+    "width": 405,
     "height": 96,
     "tabOrder": 2
   },

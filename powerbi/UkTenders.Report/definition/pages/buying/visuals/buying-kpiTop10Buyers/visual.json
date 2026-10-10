@@ -1,13 +1,13 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
-  "name": "buying-kpiAwardedValue",
+  "name": "buying-kpiTop10Buyers",
   "position": {
-    "x": 16,
+    "x": 858,
     "y": 200,
-    "z": 1,
+    "z": 43,
     "width": 405,
     "height": 96,
-    "tabOrder": 1
+    "tabOrder": 2
   },
   "visual": {
     "visualType": "card",
@@ -23,12 +23,12 @@
                       "Entity": "Awards"
                     }
                   },
-                  "Property": "Awarded Value"
+                  "Property": "Top 10 Buyer Share"
                 }
               },
-              "queryRef": "Awards.Awarded Value",
-              "nativeQueryRef": "Awarded Value",
-              "displayName": "Contract value awarded"
+              "queryRef": "Awards.Top 10 Buyer Share",
+              "nativeQueryRef": "Top 10 Buyer Share",
+              "displayName": "Awarded by the top 10 buyers"
             }
           ]
         }
@@ -110,20 +110,6 @@
       ]
     },
     "drillFilterOtherVisuals": true,
-    "objects": {
-      "labels": [
-        {
-          "properties": {
-            "labelDisplayUnits": {
-              "expr": {
-                "Literal": {
-                  "Value": "0D"
-                }
-              }
-            }
-          }
-        }
-      ]
-    }
+    "objects": {}
   }
 }

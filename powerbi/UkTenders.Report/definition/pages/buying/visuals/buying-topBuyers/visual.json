@@ -678,7 +678,7 @@
             "text": {
               "expr": {
                 "Literal": {
-                  "Value": "'Top 10 buyers by awarded value'"
+                  "Value": "'Top 10 buyers by contract value awarded'"
                 }
               }
             }
