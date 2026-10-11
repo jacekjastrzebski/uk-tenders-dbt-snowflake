@@ -41,14 +41,14 @@
             "top": {
               "expr": {
                 "Literal": {
-                  "Value": "12D"
+                  "Value": "10D"
                 }
               }
             },
             "bottom": {
               "expr": {
                 "Literal": {
-                  "Value": "12D"
+                  "Value": "28D"
                 }
               }
             },

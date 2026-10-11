@@ -79,6 +79,16 @@ table Date
 
 		annotation SummarizationSetBy = Automatic
 
+	/// The dates the historical pages show (Home's tiles, Who's buying?, Who's winning?, How long to
+	/// award?): from 24 Feb 2025, when the Procurement Act 2023 came in, to the day of the refresh.
+	/// Their page filters keep In Report = True, so the window moves with each refresh and the report
+	/// stores no dates (ADR 0037). Wait Days takes its range from it too.
+	column 'In Report' = 'Date'[Date] >= DATE(2025, 2, 24) && 'Date'[Date] <= TODAY()
+		dataType: boolean
+		isHidden
+		lineageTag: 9bf4eb2b-a91d-49a5-adc1-909a6bd47cfd
+		summarizeBy: none
+
 	partition Date = m
 		mode: import
 		source =

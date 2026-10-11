@@ -174,14 +174,15 @@ table Awards
 			VAR OldValue = [Old Regime Value] + 0
 			VAR LargeText = IF(LargeValue >= 1000000000, FORMAT(LargeValue / 1000000000, "£0.0") & "bn", FORMAT(LargeValue / 1000000, "£0") & "m")
 			VAR OldText = IF(OldValue >= 1000000000, FORMAT(OldValue / 1000000000, "£0.0") & "bn", FORMAT(OldValue / 1000000, "£0") & "m")
-			// the months the page filter covers, e.g. Oct 2025 to Sep 2026
+			// the months shown: from Feb 2025 (Date[In Report]) unless the Awarded between slider narrows them
 			VAR Period = FORMAT(MIN('Date'[Date]), "mmm yyyy") & " to " & FORMAT(MAX('Date'[Date]), "mmm yyyy")
 			RETURN
-			    "Awards published " & Period & ". Left out of the totals: "
+			    "Awards made " & Period & ". Left out of the totals: "
 			        & FORMAT([Framework Awards] + 0, "#,0") & " frameworks and other multi-supplier awards (spending caps, not money spent), "
 			        & FORMAT([Large Awards] + 0, "#,0") & " awards of £100m or more (" & LargeText & ", would swamp the rest), "
 			        & FORMAT([Old Regime Awards] + 0, "#,0") & " awards from procurements begun before 24 Feb 2025 (" & OldText & ") and "
-			        & FORMAT([No Value Awards] + 0, "#,0") & " awards with no value given."
+			        & FORMAT([No Value Awards] + 0, "#,0") & " awards with no value given. The first months are thin: "
+			        & "most awards then came from procurements begun under the old rules."
 		displayFolder: Not in totals
 		lineageTag: 945923a8-ba2d-4658-a723-e208c33fd48b
 

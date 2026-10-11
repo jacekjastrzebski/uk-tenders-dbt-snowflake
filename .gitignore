@@ -62,3 +62,7 @@ dbt/dbt_packages/
 # --- Power BI (local cache and per-user settings) ---
 **/.pbi/localSettings.json
 **/.pbi/cache.abf
+# --- Spec Kit (local scaffolding and feature specs) ---
+.specify/
+.claude/skills/speckit-*/
+specs/

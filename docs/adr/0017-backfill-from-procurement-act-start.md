@@ -15,7 +15,7 @@ The API returns past windows: a test on 2026-10-07 fetched 207 notices for 4 Mar
 - Run it inside Snowflake as `TENDER_INGEST` (procedure `RAW.BACKFILL_FIND_A_TENDER_RELEASES`), like the scheduled load ([ADR 0001](0001-run-ingestion-in-snowflake.md), [ADR 0004](0004-least-privilege-roles-and-deploy-user.md)), so it reuses the API access integration and needs no laptop.
 
 ## Consequences
-- The report can show a rolling 12 months and still have earlier tenders for procurements awarded inside that window.
+- The report can show a rolling 12 months and still have earlier tenders for procurements awarded inside that window. (Since [0037](0037-historical-pages-since-act-start.md) the historical pages show everything from 24 Feb 2025 instead.)
 - About 150–200k notices, roughly 2,000 API pages; estimated at about an hour.
 - Same JSON format and the same raw table, so staging and marts need no changes.
 - Older-regime notices published before 24 February 2025 are not loaded, except those updated later, which the scheduled load picks up.

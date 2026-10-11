@@ -8,7 +8,7 @@
   "filterConfig": {
     "filters": [
       {
-        "name": "last12CompleteMonths",
+        "name": "inReport",
         "field": {
           "Column": {
             "Expression": {
@@ -16,10 +16,10 @@
                 "Entity": "Date"
               }
             },
-            "Property": "Date"
+            "Property": "In Report"
           }
         },
-        "type": "RelativeDate",
+        "type": "Categorical",
         "filter": {
           "Version": 2,
           "From": [
@@ -32,45 +32,28 @@
           "Where": [
             {
               "Condition": {
-                "Between": {
-                  "Expression": {
-                    "Column": {
-                      "Expression": {
-                        "SourceRef": {
-                          "Source": "d"
-                        }
-                      },
-                      "Property": "Date"
+                "In": {
+                  "Expressions": [
+                    {
+                      "Column": {
+                        "Expression": {
+                          "SourceRef": {
+                            "Source": "d"
+                          }
+                        },
+                        "Property": "In Report"
+                      }
                     }
-                  },
-                  "LowerBound": {
-                    "DateSpan": {
-                      "Expression": {
-                        "DateAdd": {
-                          "Expression": {
-                            "Now": {}
-                          },
-                          "Amount": -12,
-                          "TimeUnit": 2
+                  ],
+                  "Values": [
+                    [
+                      {
+                        "Literal": {
+                          "Value": "true"
                         }
-                      },
-                      "TimeUnit": 2
-                    }
-                  },
-                  "UpperBound": {
-                    "DateSpan": {
-                      "Expression": {
-                        "DateAdd": {
-                          "Expression": {
-                            "Now": {}
-                          },
-                          "Amount": -1,
-                          "TimeUnit": 2
-                        }
-                      },
-                      "TimeUnit": 2
-                    }
-                  }
+                      }
+                    ]
+                  ]
                 }
               }
             }
@@ -78,5 +61,12 @@
         }
       }
     ]
-  }
+  },
+  "visualInteractions": [
+    {
+      "source": "timing-slicerStage",
+      "target": "timing-slicerDays",
+      "type": "DataFilter"
+    }
+  ]
 }

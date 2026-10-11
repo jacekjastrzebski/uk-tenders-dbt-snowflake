@@ -55,7 +55,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "Open tenders are live, as of today. Everything else covers the last 12 complete months; the earlier months are kept so that tenders which started before that still count when they're awarded.",
+                    "value": "Open tenders are live, as of today. Everything else covers awards from 24 February 2025 to today, and you can narrow the dates on each page. The first months are thin: most awards then came from procurements begun under the old rules, and only quick tenders could be awarded so soon.",
                     "textStyle": {
                       "fontFamily": "'DM Sans', 'Segoe UI', wf_segoe-ui_normal, helvetica, arial, sans-serif",
                       "fontSize": "9.5pt",

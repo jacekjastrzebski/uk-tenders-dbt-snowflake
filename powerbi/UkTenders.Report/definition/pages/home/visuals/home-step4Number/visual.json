@@ -28,7 +28,7 @@
               },
               "queryRef": "Procurements.Median Days Tender to Award",
               "nativeQueryRef": "Median Days Tender to Award",
-              "displayName": "Median days, tender to award"
+              "displayName": "Median days to award, since 24 Feb 2025"
             }
           ]
         }
