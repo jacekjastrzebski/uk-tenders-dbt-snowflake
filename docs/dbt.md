@@ -9,7 +9,7 @@ dbt turns the raw API pages in `TENDER_DB.RAW` into clean tables. The project is
 | Sources | `RAW` | tables, loaded by the stored procedure | One row per API page |
 | Staging | `PROD_STAGING` / `DEV_STAGING` | tables ([ADR 0015](adr/0015-staging-as-tables.md)) | One row per notice, party, award, award supplier, contract; deduplicated, typed, no personal data |
 | Intermediate | `PROD_INTERMEDIATE` / `DEV_INTERMEDIATE` | views | Business rules shared by marts, e.g. `int_awards` (one row per award across notices); not for Power BI |
-| Seeds | `PROD_STAGING` / `DEV_STAGING` | tables, from CSV in `dbt/seeds/` | Reference data: HMRC exchange rates (refresh monthly: `uv run ingestion/fetch_hmrc_exchange_rates.py`, then commit the CSV; the test `assert_fx_rates_recent` warns when it falls behind), CPV divisions |
+| Seeds | `PROD_STAGING` / `DEV_STAGING` | tables, from CSV in `dbt/seeds/` | Reference data: HMRC exchange rates (refresh monthly: `uv run ingestion/fetch_hmrc_exchange_rates.py`, then commit the CSV; the test `assert_fx_rates_recent` warns when it falls behind), CPV divisions, bank holidays in England and Wales for the working-day alert (refresh once a year: `uv run ingestion/fetch_uk_bank_holidays.py`; the test `assert_bank_holidays_ahead` warns when it runs low) |
 | Marts | `PROD_MARTS` / `DEV_MARTS` | tables | Star schema for Power BI ([ADR 0023](adr/0023-star-schema-for-power-bi.md)), see [Marts](#marts) |
 
 dbt runs as role `TENDER_TRANSFORM` (`snowflake/setup/03_transform_role.sql`): it can read `RAW` and create its own schemas, nothing else. The `dev` target writes to `DEV_*` schemas, so development never overwrites prod.
@@ -60,12 +60,13 @@ The project is deployed as a dbt project object and runs on a schedule inside Sn
 | :20 | `dbt source freshness`, then `dbt build --target prod` → `PROD_STAGING`, `PROD_MARTS` | task `DBT.RUN_DBT`, warehouse `TENDER_WH` |
 | :50 | Email if a dbt run failed since the last check | alert `DBT.RUN_DBT_FAILED` |
 | :50 | Email if no load or no dbt run has succeeded for 4 hours, e.g. a task suspended itself ([ADR 0033](adr/0033-pipeline-safeguards.md)) | alert `DBT.PIPELINE_STALE` |
+| 13:50, 16:50, 19:50 on weekdays | Email if the last two loads brought no notices on a working day ([ADR 0038](adr/0038-quiet-days-only-warn.md)) | alert `DBT.NOTICES_NOT_ARRIVING` |
 
 - **Deploy:** merging a change under `dbt/` deploys a new version of `TENDER_DB.DBT.UK_TENDERS` (`snow dbt deploy` in `deploy.yml`, after CI), then rebuilds prod by running the `RUN_DBT` task and waits for it; a failing build fails the deploy ([ADR 0036](adr/0036-rebuild-prod-on-deploy.md)). The prod profile is `snowflake/dbt/profiles.yml`. dbt is pinned to 1.12.3 there, because the account default (1.9.4) can't compile the project; local dbt is held to 1.12 in `pyproject.toml` (`<1.13`) so the two stay in step; when upgrading, check `SELECT SYSTEM$SUPPORTED_DBT_VERSIONS();` and move both pins together.
 - **Run by hand:** `EXECUTE DBT PROJECT TENDER_DB.DBT.UK_TENDERS ARGS = 'build --target prod';`, or `EXECUTE TASK TENDER_DB.DBT.RUN_DBT;` to run the task as scheduled.
 - **Logs:** Snowsight → Monitoring → dbt projects shows each run with its output. Task runs are in `TABLE(TENDER_DB.INFORMATION_SCHEMA.TASK_HISTORY(TASK_NAME => 'RUN_DBT'))`.
 - **One-off setup:** run `snowflake/dbt/00_dbt_setup.sql` as ACCOUNTADMIN before the first deploy.
-- **Failures:** any failing dbt command (a freshness error, a model or a test) makes `EXECUTE DBT PROJECT` raise an error, so the task run fails and the alert emails. A freshness error stops the task before the build. Checked on 2026-10-08 with a missing macro, a division by zero and a failing test ([ADR 0033](adr/0033-pipeline-safeguards.md)).
+- **Failures:** any failing dbt command (a freshness error, a model or a test) makes `EXECUTE DBT PROJECT` raise an error, so the task run fails and the alert emails. A freshness error stops the task before the build; only a loader that stops succeeding raises one, as days without new notices only warn ([ADR 0038](adr/0038-quiet-days-only-warn.md)). Checked on 2026-10-08 with a missing macro, a division by zero and a failing test ([ADR 0033](adr/0033-pipeline-safeguards.md)).
 
 ## CI
 

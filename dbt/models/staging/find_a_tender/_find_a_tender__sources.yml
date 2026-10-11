@@ -7,22 +7,21 @@ sources:
     schema: RAW
     config:
       loaded_at_field: loaded_at
-      freshness:   # loads run every 3 hours by day; the overnight gap is 12 hours
-        warn_after: {count: 13, period: hour}
-        error_after: {count: 26, period: hour}
+      # thresholds are set per table: a source-level error_after would be inherited by both
     tables:
       - name: find_a_tender_releases
         description: One row per API page, stored unchanged; payload:releases holds up to 100 notices.
         config:
-          freshness:   # a table's freshness replaces the source's, so the thresholds are repeated
+          # warn only: weekends and bank holidays bring no notices for days (ADR 0038); the
+          # NOTICES_NOT_ARRIVING alert emails when a working day has none
+          freshness:
             warn_after: {count: 13, period: hour}
-            error_after: {count: 26, period: hour}
             filter: ARRAY_SIZE(payload:releases) > 0   # an empty page isn't new data
       - name: find_a_tender_ingest_runs
         description: One row per loader run, with its time window and status.
         config:
           loaded_at_field: finished_at
-          freshness:
+          freshness:   # loads run every 3 hours by day; the overnight gap is 12 hours (ADR 0010)
             warn_after: {count: 13, period: hour}
             error_after: {count: 26, period: hour}
             filter: status = 'success'   # a failed run isn't a load

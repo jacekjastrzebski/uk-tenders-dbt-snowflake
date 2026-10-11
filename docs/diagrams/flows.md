@@ -97,7 +97,7 @@ sequenceDiagram
 
 ## dbt run and failure alerts
 
-How dbt runs after each load, and how a failure of either job reaches you. The ingest alert looks back 3 hours, the gap between runs; the dbt alert looks at runs that ended since its last check, so a run stopped by its timeout is still caught. Either way a failure is emailed once. A third alert emails when nothing has succeeded for 4 hours, e.g. after a task suspended itself ([ADR 0003](../adr/0003-failure-alert-by-email.md), [ADR 0010](../adr/0010-source-freshness-thresholds.md), [ADR 0033](../adr/0033-pipeline-safeguards.md)).
+How dbt runs after each load, and how a failure of either job reaches you. The ingest alert looks back 3 hours, the gap between runs; the dbt alert looks at runs that ended since its last check, so a run stopped by its timeout is still caught. Either way a failure is emailed once. A third alert emails when nothing has succeeded for 4 hours, e.g. after a task suspended itself; a fourth emails when the last two loads of a working day brought no notices ([ADR 0003](../adr/0003-failure-alert-by-email.md), [ADR 0010](../adr/0010-source-freshness-thresholds.md), [ADR 0033](../adr/0033-pipeline-safeguards.md)).
 
 ```mermaid
 sequenceDiagram
@@ -108,14 +108,15 @@ sequenceDiagram
     participant IA as Alert<br/>RAW.INGEST_FIND_A_TENDER_FAILED
     participant DA as Alert<br/>DBT.RUN_DBT_FAILED
     participant SA as Alert<br/>DBT.PIPELINE_STALE
+    participant NA as Alert<br/>DBT.NOTICES_NOT_ARRIVING
     participant M as Email (TENDER_EMAIL)
 
     Note over DT: 20 past 07, 10, 13, 16, 19
     DT->>DP: source freshness --target prod
-    DP->>DB: MAX(loaded_at) in RAW
-    alt raw data older than 26 h
+    DP->>DB: last successful load and last page with notices in RAW
+    alt no successful load for 26 h
         DP-->>DT: freshness error: the task run fails, no build
-    else fresh (a warning is logged after 13 h)
+    else loads succeed (a warning is logged after 13 h without a load or without notices)
         DT->>DP: build --target prod
         DP->>DB: seeds, staging, intermediate, marts, tests
         DP->>DB: GRANT SELECT on marts TO TENDER_REPORTER
@@ -134,6 +135,11 @@ sequenceDiagram
     SA->>DB: last successful load (INGEST_RUNS) and dbt run (TASK_HISTORY)
     opt either more than 4 h ago
         SA->>M: "Find a Tender data is out of date"
+    end
+    Note over NA: weekdays 13:50, 16:50, 19:50
+    NA->>DB: notices in the last two successful loads (INGEST_RUNS); today in UK_BANK_HOLIDAYS?
+    opt no notices and not a bank holiday
+        NA->>M: "Find a Tender: no new notices today"
     end
 ```
 

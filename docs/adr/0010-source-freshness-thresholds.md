@@ -9,6 +9,6 @@ Freshness catches loads that stop arriving. The longest normal gap is overnight 
 Warn after 13 hours (logged only), error after 26 hours (task fails, email).
 
 ## Consequences
-- No false alarms on quiet periods.
+- No false alarms on quiet periods. (Since [0038](0038-quiet-days-only-warn.md), these thresholds apply to loader runs; days without new notices only warn, and a working-day alert catches missing notices.)
 - If loads stop entirely, the email arrives after about a day; the ingest failure alert (0003) usually reports failed loads within 30 minutes.
 - `loaded_at` records when a load ran, not when new notices arrived: each load saves at least the first API page.

@@ -98,6 +98,50 @@ CREATE OR REPLACE ALERT TENDER_DB.DBT.PIPELINE_STALE
 
 ALTER ALERT TENDER_DB.DBT.PIPELINE_STALE RESUME;
 
+-- Email when notices stop arriving on a working day (ADR 0038): the last two scheduled loads
+-- both succeeded but brought no notices. Normal weekdays bring at least 15 notices in any
+-- 6 daytime hours, while weekends and bank holidays can bring none, so this only checks on
+-- weekday afternoons and skips the bank holidays in the uk_bank_holidays seed. It only
+-- emails: dbt keeps building, as no new notices is not bad data.
+CREATE OR REPLACE ALERT TENDER_DB.DBT.NOTICES_NOT_ARRIVING
+  SCHEDULE = 'USING CRON 50 13,16,19 * * MON-FRI Europe/London'
+  IF (EXISTS (
+    SELECT
+        1
+    FROM
+        (
+            SELECT
+                COUNT(*) AS loads,
+                COALESCE(SUM(releases), 0) AS notices
+            FROM
+                TENDER_DB.RAW.FIND_A_TENDER_INGEST_RUNS
+            WHERE
+                COALESCE(run_type, 'incremental') = 'incremental'   -- backfills don't count
+                AND status = 'success'
+                AND finished_at > DATEADD('hour', -6, SYSDATE())     -- UTC: the last two loads
+        ) AS recent
+    WHERE
+        recent.loads >= 2
+        AND recent.notices = 0
+        AND NOT EXISTS (
+            SELECT
+                1
+            FROM
+                TENDER_DB.PROD_STAGING.UK_BANK_HOLIDAYS
+            WHERE
+                holiday_date = CONVERT_TIMEZONE('Europe/London', CURRENT_TIMESTAMP())::DATE
+        )
+  ))
+  THEN
+    CALL SYSTEM$SEND_EMAIL(
+      'TENDER_EMAIL',
+      '<% alert_email %>',
+      'Find a Tender: no new notices today',
+      'The last two loads on a working day brought no new notices. Check that Find a Tender is publishing, then TENDER_DB.RAW.FIND_A_TENDER_INGEST_RUNS.'
+    );
+
+ALTER ALERT TENDER_DB.DBT.NOTICES_NOT_ARRIVING RESUME;
+
 -- Run once now instead of waiting for the schedule, then check the result:
 --   EXECUTE TASK TENDER_DB.DBT.RUN_DBT;
 --   SELECT * FROM TABLE(TENDER_DB.INFORMATION_SCHEMA.TASK_HISTORY(TASK_NAME => 'RUN_DBT'))
