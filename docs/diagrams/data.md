@@ -22,6 +22,7 @@ flowchart TB
         S6["ingest_runs<br/>1 per loader run"]
         SH["seed: hmrc_exchange_rates<br/>1 per currency and month"]
         SC["seed: cpv_divisions<br/>1 per CPV division"]
+        SB["seed: uk_bank_holidays<br/>1 per bank holiday"]
     end
     subgraph INT["PROD_INTERMEDIATE: views"]
         I1["int_awards<br/>1 row = 1 award across all its notices, in GBP"]
@@ -85,4 +86,4 @@ flowchart LR
     raw_runs --> runs --> dim_fresh
 ```
 
-`raw.find_a_tender_ingest_runs` feeds `dim_data_freshness` and dbt's freshness check. `dim_dates` has no inputs.
+`raw.find_a_tender_ingest_runs` feeds `dim_data_freshness` and dbt's freshness check. `dim_dates` has no inputs. The seed `uk_bank_holidays` is read by the alert `NOTICES_NOT_ARRIVING`, not by a model.

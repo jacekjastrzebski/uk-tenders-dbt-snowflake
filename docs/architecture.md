@@ -44,9 +44,10 @@ All decisions: [adr/](adr/README.md).
 | pre-commit: private keys, YAML/TOML, mypy strict, pytest | Each commit, and CI | Broken Python, committed keys |
 | CI must pass before deploy | `ci.yml` → `deploy.yml` | Untested code reaching Snowflake |
 | dbt build and tests on pull requests; `checks` and `dbt` required to merge | `ci.yml` job `dbt`, as `TENDER_CI` in throwaway schemas | Broken models or failing tests reaching `main` |
-| Source freshness: warn 13 h, error 26 h | First step of `RUN_DBT` | Rebuilding marts on stale data |
+| Source freshness: loader runs warn 13 h, error 26 h; new notices only warn | First step of `RUN_DBT` | Rebuilding marts when the loader has stopped |
 | dbt tests: keys, relationships, singular tests | `dbt build` | Bad rows going unnoticed: a failing test fails the build |
 | Failure alerts, and a stale-data alert (no successful load or dbt run for 4 hours) | 30 and 50 minutes past each run | Silent failures, and a task that suspended itself |
+| Working-day alert: the last two loads brought no notices, bank holidays skipped | Weekdays 13:50, 16:50, 19:50 | Find a Tender no longer sending notices while every load still succeeds |
 | Cost cap: 30 credits a month on `TENDER_WH`, statements stop after 30 minutes | Resource monitor, warehouse setting | Runaway cost |
 
 ## Security and privacy

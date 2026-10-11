@@ -24,7 +24,7 @@ A review of the pipeline in October 2026 found ways it could break prod, fail wi
 - **Alerts:**
   - `RUN_DBT_FAILED` now checks the runs that ended since its last successful check (`SNOWFLAKE.ALERT.LAST_SUCCESSFUL_SCHEDULED_TIME()`).
   - A new alert, `PIPELINE_STALE`, emails when no load or no dbt run has succeeded for 4 hours. It checks at :50, by day only.
-- **Freshness** counts only pages with releases, and successful runs.
+- **Freshness** counts only pages with releases, and successful runs. (Since [0038](0038-quiet-days-only-warn.md), pages with releases only warn.)
 - **Cost:**
   - resource monitor `TENDER_WH_MONITOR` on `TENDER_WH`: 30 credits a month, notify at 75%, suspend at 100%
   - statement timeout of 30 minutes on the warehouse

@@ -13,7 +13,7 @@ One file per significant decision: the context, the decision and its consequence
 | [0007](0007-classify-notices-by-notice-type.md) | Classify notices by `noticeType`, not `tag` | Accepted |
 | [0008](0008-dbt-environments-and-staging-views.md) | dbt: dev/prod by schema, staging as views | Accepted; views superseded by 0015 |
 | [0009](0009-run-dbt-on-a-schedule-in-snowflake.md) | Run dbt in Snowflake, 20 minutes after each load | Accepted; failure behaviour confirmed in 0033 |
-| [0010](0010-source-freshness-thresholds.md) | Source freshness: warn at 13 h (logged), error at 26 h (email) | Accepted |
+| [0010](0010-source-freshness-thresholds.md) | Source freshness: warn at 13 h (logged), error at 26 h (email) | Accepted; applies to loader runs since 0038 |
 | [0011](0011-load-window-overlap.md) | Overlap each load window by 15 minutes | Accepted; time zone risk resolved by 0018 |
 | [0012](0012-business-terms-in-staging.md) | Name models in business terms: notices, not releases | Accepted |
 | [0014](0014-power-bi-project-files.md) | Power BI as a project (PBIP) in the repo | Accepted |
@@ -35,10 +35,11 @@ One file per significant decision: the context, the decision and its consequence
 | [0030](0030-build-dbt-in-ci.md) | Build and test dbt on pull requests | Accepted; CI role changed by 0033 |
 | [0031](0031-alert-when-power-bi-stops-refreshing.md) | Alert from Snowflake when Power BI stops refreshing | Accepted |
 | [0032](0032-serverless-load-warehouse-dbt.md) | Serverless compute for the load, a warehouse for dbt | Accepted |
-| [0033](0033-pipeline-safeguards.md) | Pipeline safeguards: CI role, deploy catch-up, stale-data alert, cost cap | Accepted |
+| [0033](0033-pipeline-safeguards.md) | Pipeline safeguards: CI role, deploy catch-up, stale-data alert, cost cap | Accepted; notice freshness changed by 0038 |
 | [0034](0034-award-data-corrections.md) | Award data corrections: old regime out of the headline, rates, lots, ties | Accepted |
 | [0035](0035-bidder-fields.md) | Bidder fields: tender value, notice link, SME and competition | Accepted |
 | [0036](0036-rebuild-prod-on-deploy.md) | Rebuild prod when dbt changes are deployed | Accepted |
 | [0037](0037-historical-pages-since-act-start.md) | Historical pages show everything since 24 February 2025 | Accepted |
+| [0038](0038-quiet-days-only-warn.md) | Quiet days only warn; a working-day alert catches missing notices | Accepted |
 
 There is no 0013: it was a research draft of the Power BI marts on a branch that has since been deleted, replaced by [0023](0023-star-schema-for-power-bi.md).

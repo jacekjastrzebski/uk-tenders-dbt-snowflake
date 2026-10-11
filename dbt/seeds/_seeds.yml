@@ -45,3 +45,19 @@ seeds:
       - name: market
         description: One of 9 markets, e.g. Digital and data (48, 72), Health and social care, Construction and property.
         data_tests: [not_null]
+
+  - name: uk_bank_holidays
+    description: >
+      Bank holidays in England and Wales, from GOV.UK via
+      ingestion/fetch_uk_bank_holidays.py (refresh once a year). The working-day
+      alert NOTICES_NOT_ARRIVING skips these days, as Find a Tender publishes few
+      or no notices on them (ADR 0038).
+    config:
+      column_types:
+        holiday_date: date
+        title: varchar
+    columns:
+      - name: holiday_date
+        data_tests: [unique, not_null]
+      - name: title
+        data_tests: [not_null]
