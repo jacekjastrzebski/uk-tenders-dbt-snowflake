@@ -39,7 +39,7 @@
                     }
                   },
                   {
-                    "value": "Days to award and to contract, for awards in the last 12 months",
+                    "value": "Time to award and to contract",
                     "textStyle": {
                       "fontFamily": "'DM Sans', 'Segoe UI', wf_segoe-ui_normal, helvetica, arial, sans-serif",
                       "fontSize": "11pt",

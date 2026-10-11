@@ -1,9 +1,18 @@
-/// Range for the "Days waited" slider on How long to award?; not linked to any table.
-/// Every number on the page follows it by the wait it measures: the cards by days to award or to
-/// contract, the chart and table by the chosen stage. Measures filter with TREATAS: a per-row
-/// range check made the table take about a minute. Until it is moved, the range covers every tender.
+/// Range for the "Days waited" slider on How long to award?: a row per stage and day, from 0 to
+/// that stage's longest wait in the report window (Date[In Report], ADR 0037). Linked to Stage, so the
+/// slider's range follows the Stage switch. Every number on the page follows the slider by the
+/// wait it measures (the cards by days to award or to contract, the chart and table by the chosen
+/// stage). Measures filter with TREATAS, as a per-row range check made the table take about a
+/// minute, and ignore the Stage link, so a card's range never depends on the switch.
 table 'Wait Days'
 	lineageTag: c5d5ba8f-234d-43f4-9d71-32852d55c86f
+
+	column Stage
+		dataType: string
+		isHidden
+		lineageTag: 48b95fea-617a-4c71-a142-deb69e86b97b
+		summarizeBy: none
+		sourceColumn: [Stage]
 
 	column Days
 		dataType: int64
@@ -15,10 +24,27 @@ table 'Wait Days'
 	partition 'Wait Days' = calculated
 		mode: import
 		source =
-				VAR Longest =
-				    MAX(MAX(Procurements[Days Tender to Award]), MAX(Procurements[Days Award to Contract]))
+				// the report window the page filters use: 24 Feb 2025 to the refresh date, by award date
+				VAR FirstDay = CALCULATE(MIN('Date'[Date]), 'Date'[In Report])
+				VAR LastDay = CALCULATE(MAX('Date'[Date]), 'Date'[In Report])
+				VAR ToAward =
+				    CALCULATE(
+				        MAX(Procurements[Days Tender to Award]),
+				        Procurements[Award Published Date] >= FirstDay,
+				        Procurements[Award Published Date] <= LastDay
+				    )
+				// as Median Days Award to Contract: only awards at least 3 months old
+				VAR ToContract =
+				    CALCULATE(
+				        MAX(Procurements[Days Award to Contract]),
+				        Procurements[Award Published Date] >= FirstDay,
+				        Procurements[Award Published Date] <= MIN(LastDay, TODAY() - 91)
+				    )
 				RETURN
-				    SELECTCOLUMNS(GENERATESERIES(0, Longest, 1), "Days", [Value])
+				    UNION(
+				        SELECTCOLUMNS(GENERATESERIES(0, ToAward, 1), "Stage", "Tender to award", "Days", [Value]),
+				        SELECTCOLUMNS(GENERATESERIES(0, ToContract, 1), "Stage", "Award to contract", "Days", [Value])
+				    )
 
 	annotation PBI_ResultType = Table
 

@@ -31,3 +31,7 @@ relationship procurements_cpv_division
 	fromColumn: Procurements.'CPV Division'
 	toColumn: Sector.'CPV Division'
 
+relationship wait_days_stage
+	fromColumn: 'Wait Days'.Stage
+	toColumn: Stage.Stage
+

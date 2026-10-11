@@ -70,7 +70,7 @@ table Procurements
 			CALCULATE(
 			    MEDIAN(Procurements[Days Tender to Award]),
 			    USERELATIONSHIP(Procurements[Award Published Date], 'Date'[Date]),
-			    KEEPFILTERS(TREATAS(VALUES('Wait Days'[Days]), Procurements[Days Tender to Award]))
+			    KEEPFILTERS(TREATAS(CALCULATETABLE(VALUES('Wait Days'[Days]), REMOVEFILTERS(Stage)), Procurements[Days Tender to Award]))
 			)
 		formatString: 0
 		displayFolder: Timings
@@ -84,7 +84,7 @@ table Procurements
 			    MEDIAN(Procurements[Days Award to Contract]),
 			    USERELATIONSHIP(Procurements[Award Published Date], 'Date'[Date]),
 			    KEEPFILTERS(Procurements[Award Published Date] <= TODAY() - 91),
-			    KEEPFILTERS(TREATAS(VALUES('Wait Days'[Days]), Procurements[Days Award to Contract]))
+			    KEEPFILTERS(TREATAS(CALCULATETABLE(VALUES('Wait Days'[Days]), REMOVEFILTERS(Stage)), Procurements[Days Award to Contract]))
 			)
 		formatString: 0
 		displayFolder: Timings
@@ -97,7 +97,7 @@ table Procurements
 			    COUNTROWS(Procurements),
 			    USERELATIONSHIP(Procurements[Award Published Date], 'Date'[Date]),
 			    KEEPFILTERS(NOT ISBLANK(Procurements[Award Published Date])),
-			    KEEPFILTERS(TREATAS(VALUES('Wait Days'[Days]), Procurements[Days Tender to Award]))
+			    KEEPFILTERS(TREATAS(CALCULATETABLE(VALUES('Wait Days'[Days]), REMOVEFILTERS(Stage)), Procurements[Days Tender to Award]))
 			)
 		formatString: #,0
 		displayFolder: Timings
@@ -158,8 +158,8 @@ table Procurements
 			VAR Period = FORMAT(MIN('Date'[Date]), "mmm yyyy") & " to " & FORMAT(MAX('Date'[Date]), "mmm yyyy")
 			RETURN
 			    "Tenders awarded " & Period & ", in calendar days between notices; only tenders that reached an award count, "
-			        & "so slower ones still waiting are missing. Earlier months are left out: the Act began in Feb 2025, so they'd "
-			        & "look falsely fast. Award to contract counts awards at least 3 months old. Cards show medians."
+			        & "so slower ones still waiting are missing. The first months after Feb 2025 look fast, as only quick "
+			        & "tenders could be awarded so soon. Award to contract counts awards at least 3 months old. Cards show medians."
 		displayFolder: Timings
 		lineageTag: fb71fee9-7f93-4240-9770-509e41b60f5f
 
@@ -186,7 +186,7 @@ table Procurements
 			            COUNTROWS(Procurements),
 			            USERELATIONSHIP(Procurements[Award Published Date], 'Date'[Date]),
 			            KEEPFILTERS(Procurements[Award Published Date] <= TODAY() - 91),
-			            KEEPFILTERS(TREATAS(VALUES('Wait Days'[Days]), Procurements[Days Award to Contract]))
+			            KEEPFILTERS(TREATAS(CALCULATETABLE(VALUES('Wait Days'[Days]), REMOVEFILTERS(Stage)), Procurements[Days Award to Contract]))
 			        ),
 			        [Tenders Awarded]
 			    )

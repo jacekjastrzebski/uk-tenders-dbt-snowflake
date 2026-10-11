@@ -28,7 +28,7 @@
               },
               "queryRef": "Awards.Awarded Value",
               "nativeQueryRef": "Awarded Value",
-              "displayName": "Contract value awarded, last 12 months"
+              "displayName": "Contract value awarded, since 24 Feb 2025"
             }
           ]
         }

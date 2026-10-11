@@ -3,7 +3,7 @@
   "name": "winning-kpiSmeLabel",
   "position": {
     "x": 858,
-    "y": 260,
+    "y": 263.5,
     "z": 45,
     "height": 28,
     "width": 405,
@@ -52,6 +52,13 @@
               "expr": {
                 "Literal": {
                   "Value": "10D"
+                }
+              }
+            },
+            "fontFamily": {
+              "expr": {
+                "Literal": {
+                  "Value": "'''DM Sans'', ''Segoe UI'', wf_segoe-ui_normal, helvetica, arial, sans-serif'"
                 }
               }
             }
