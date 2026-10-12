@@ -29,7 +29,8 @@ ALTER TASK TENDER_DB.DBT.RUN_DBT RESUME;
 -- Email when a dbt run failed, timed out or was cancelled since the previous check.
 -- The window runs from the last check to this one, by when each run ended, so a run the
 -- 30-minute timeout stops at :50 is caught by the next check, even the next morning.
--- After a redeploy the alert has no last check yet, so it looks back 3 hours.
+-- After a redeploy the alert has no last check yet, so it looks back 3 hours. With no last
+-- check the function returns 1970-01-01, not NULL, hence the date test.
 -- Separate from the ingest alert: that one runs as TENDER_INGEST, which can't see this task.
 CREATE OR REPLACE ALERT TENDER_DB.DBT.RUN_DBT_FAILED
   SCHEDULE = 'USING CRON 50 7,10,13,16,19 * * * Europe/London'
@@ -39,7 +40,8 @@ CREATE OR REPLACE ALERT TENDER_DB.DBT.RUN_DBT_FAILED
     FROM
         TABLE(TENDER_DB.INFORMATION_SCHEMA.TASK_HISTORY(TASK_NAME => 'RUN_DBT', ERROR_ONLY => TRUE))
     WHERE
-        completed_time > COALESCE(
+        completed_time > IFF(
+            SNOWFLAKE.ALERT.LAST_SUCCESSFUL_SCHEDULED_TIME() > '2000-01-01'::TIMESTAMP_LTZ,
             SNOWFLAKE.ALERT.LAST_SUCCESSFUL_SCHEDULED_TIME(),
             DATEADD('hour', -3, SNOWFLAKE.ALERT.SCHEDULED_TIME())
         )
