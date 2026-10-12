@@ -22,7 +22,7 @@ A review of the pipeline in October 2026 found ways it could break prod, fail wi
 - **Deploy catch-up:** the tag `deployed` marks the last successful deploy. Each deploy compares with it and moves it once every step has succeeded. A run for a commit older than the tag deploys nothing.
 - **dbt failures:** checked on 2026-10-08. A missing macro, a database error and a failing test each make `EXECUTE DBT PROJECT` raise inside the task's script, so the run fails. The task is unchanged.
 - **Alerts:**
-  - `RUN_DBT_FAILED` now checks the runs that ended since its last successful check (`SNOWFLAKE.ALERT.LAST_SUCCESSFUL_SCHEDULED_TIME()`).
+  - `RUN_DBT_FAILED` now checks the runs that ended since its last successful check (`SNOWFLAKE.ALERT.LAST_SUCCESSFUL_SCHEDULED_TIME()`). Right after a redeploy that function returns 1970-01-01, not NULL, so on 2026-10-12 the first check re-sent the previous day's failures. The alert now looks back 3 hours instead.
   - A new alert, `PIPELINE_STALE`, emails when no load or no dbt run has succeeded for 4 hours. It checks at :50, by day only.
 - **Freshness** counts only pages with releases, and successful runs. (Since [0038](0038-quiet-days-only-warn.md), pages with releases only warn.)
 - **Cost:**
