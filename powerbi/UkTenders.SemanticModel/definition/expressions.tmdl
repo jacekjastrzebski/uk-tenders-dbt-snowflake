@@ -36,7 +36,3 @@ expression Marts =
 			Schema
 
 	annotation PBI_ResultType = Table
-
-queryGroup Parameters
-
-	annotation PBI_QueryGroupOrder = 0
