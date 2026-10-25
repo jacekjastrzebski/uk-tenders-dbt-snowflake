@@ -1,6 +1,6 @@
 {
   "$schema": "https://developer.microsoft.com/json-schemas/fabric/item/report/definition/visualContainer/2.4.0/schema.json",
-  "name": "winning-slicerBuyerLabel",
+  "name": "winning-slicerSupplierLabel",
   "position": {
     "x": 520,
     "y": 96,
@@ -19,7 +19,7 @@
               {
                 "textRuns": [
                   {
-                    "value": "Buyer",
+                    "value": "Supplier",
                     "textStyle": {
                       "fontFamily": "'DM Sans', 'Segoe UI Semibold', wf_segoe-ui_semibold, helvetica, arial, sans-serif",
                       "fontSize": "12pt",
